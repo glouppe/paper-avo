@@ -78,7 +78,7 @@ The simulator $g$ is assumed to be a non-invertible function, that can
 only be used to generate data in forward mode.
 For this reason, evaluating the integral in Eqn.~\ref{eqn:p_x_sim} is intractable.
 Importantly, and as increasingly found in science, we consider the additional constraint that $g$ is a non-differentiable
-model, e.g. as when specified as a computer program.
+model, e.g. when specified as a computer program.
 
 Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the (unknown) true distribution $p_r$, our goal is the inference
 of the parameters of interest $\mathbf{\theta}^*$ that minimize the divergence
@@ -87,7 +87,7 @@ data distribution $p_\mathbf{\theta}$ induced by $g(\cdot; \mathbf{\theta})$. Th
 \begin{equation}
     \mathbf{\theta}^* = \arg \min_\mathbf{\theta} \rho(p_r, p_\mathbf{\theta}),
 \end{equation}
-where $\rho$ is some divergence.
+where $\rho$ is some distance or divergence.
 
 
 % ==============================================================================
@@ -104,10 +104,10 @@ network $d$ whose antigonistic objective is to recognize real data $\mathbf{x}$
 from generated data $g(\mathbf{z}; \mathbf{\theta})$. Both models $g$ and $d$
 are trained simultaneously, in such a way that $g$ learns to maximally confuse
 its adversary $d$ (which happens when $g$ produces samples comparable to the
-observed data), while $d$ continuously adapts to changes in $g$. At the
-equilibrium and assuming enough capacity in the networks, it can be shown that
-$g$ induces a distribution  that is indistinguishable from the distribution of
-the observed data $\mathbf{x}$.
+observed data), while $d$ continuously adapts to changes in $g$. When $d$ is
+trained to optimality before each parameter update of the generator, it can
+be shown that the original adversarial learning procedure amounts to minimizing
+the Jensen-Shannon divergence between $p_r$ and $p_\theta$.
 
 More recently, ...
 
@@ -152,7 +152,7 @@ More recently, ...
 
 \section*{Acknowledgments}
 
-KC and GL are both supported through NSF ACI-1450310, additionally KC is
+GL and KL are both supported through NSF ACI-1450310, additionally KC is
 supported through PHY-1505463 and PHY-1205376.
 
 
