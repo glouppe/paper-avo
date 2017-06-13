@@ -1,0 +1,143 @@
+\documentclass[twocolumn,superscriptaddress,aps]{revtex4-1}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\usepackage{bm}
+\usepackage{cancel}
+\usepackage{bbold}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+
+\newcommand{\glnote}[1]{\textcolor{red}{[GL: #1]}}
+\newcommand{\kcnote}[1]{\textcolor{red}{[KC: #1]}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\begin{document}
+
+
+% ==============================================================================
+
+\title{\Large{Adversarial Variational Optimization of Non-Differentiable Simulators}}
+\vspace{1cm}
+\author{\small{\bf Gilles Louppe}\thanks{\texttt{g.louppe@nyu.edu}}}
+\affiliation{New York University}
+\author{\small{\bf Kyle Cranmer}\thanks{\texttt{kyle.cranmer@nyu.edu}}}
+\affiliation{New York University}
+
+\begin{abstract}
+
+In this note, ... \glnote{todo.}
+
+
+\end{abstract}
+
+\maketitle
+
+% ==============================================================================
+
+\section{Introduction}
+
+\glnote{Prescribed vs. implicit. See case of non-diff models in Balaji et al.}
+
+
+% ==============================================================================
+
+\section{Problem statement}
+
+Consider a family of conditional densities $p(\mathbf{x}|\mathbf{\theta})$
+defined implicitly through the simulation of a stochastic generative
+process, where $\mathbf{x} \in \mathbb{R}^d$ is the observed data and
+$\mathbf{\theta}$ are the parameters of interest. The simulation may involve
+some complicated latent process, such that
+\begin{equation}\label{eqn:p_x}
+    p(\mathbf{x}|\mathbf{\theta}) = \int p(\mathbf{x}|\mathbf{z},\mathbf{\theta}) p(\mathbf{z}) d\mathbf{z}
+\end{equation}
+where $\mathbf{z} \in \mathbb{R}^m$ is a latent variable providing an external source
+of randomness.
+
+We assume that we already have an accurate simulation of the stochastic process
+underlying $p(\mathbf{x}|\mathbf{z},\mathbf{\theta})$, specified as a function $g(\cdot;
+\theta) : \mathbb{R}^m \to \mathbb{R}^d$. That is,
+\begin{equation}\label{eqn:p_x_sim}
+    p(\mathbf{x}|\mathbf{\theta}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\mathbf{\theta}) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
+\end{equation}
+In particular, the simulator $g$ is assumed to be a non-invertible function, that can
+only be used to generate data in forward mode.
+For this reason, evaluating the integral in Eqn.~\ref{eqn:p_x_sim} is intractable.
+Importantly, and as increasingly found in science, we consider the additional constraint that $g$ is a non-differentiable
+model, e.g. as specified by computer program.
+
+Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$, our goal is the inference
+of the parameters of interest $\mathbf{\theta}^*$ that maximize the (marginal) log-likelihood of the observations:
+\begin{equation}
+    \mathbf{\theta}^* = \arg \max_\mathbf{\theta} \sum_i \log p(\mathbf{x}_i | \mathbf{\theta}).
+\end{equation}
+\glnote{Or rather, define the goal as the minimization of a divergence?}
+
+
+% ==============================================================================
+
+\section{Method}
+
+\subsection{Variational optimization}
+
+\subsection{Generative adversarial networks}
+
+\subsection{Adversarial variational optimization}
+
+
+% ==============================================================================
+
+\section{Experiments}
+
+\subsection{Toy problem}
+
+\subsection{Physics example}
+
+
+% ==============================================================================
+
+\section{Related works}
+
+
+\glnote{Implicit generative models.}
+\glnote{ABC.}
+\glnote{carl~\citep{cranmer2015approximating}.}
+\glnote{Wood's papers.}
+\glnote{CMA-ES.}
+
+
+% ==============================================================================
+
+\section{Summary}
+
+
+
+% ==============================================================================
+
+\section*{Acknowledgments}
+
+KC and GL are both supported through NSF ACI-1450310, additionally KC is
+supported through PHY-1505463 and PHY-1205376.
+
+
+% ==============================================================================
+
+\bibliographystyle{acm}
+\bibliography{bibliography.bib}
+
+
+\end{document}
