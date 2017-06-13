@@ -57,7 +57,7 @@ In this note, ... \glnote{todo.}
 
 \section{Problem statement}
 
-Consider a family of conditional densities $p(\mathbf{x}|\mathbf{\theta})$
+We consider a family of conditional densities $p(\mathbf{x}|\mathbf{\theta})$
 defined implicitly through the simulation of a stochastic generative
 process, where $\mathbf{x} \in \mathbb{R}^d$ is the observed data and
 $\mathbf{\theta}$ are the parameters of interest. The simulation may involve
@@ -68,35 +68,53 @@ some complicated latent process, such that
 where $\mathbf{z} \in \mathbb{R}^m$ is a latent variable providing an external source
 of randomness.
 
-We assume that we already have an accurate simulation of the stochastic process
-underlying $p(\mathbf{x}|\mathbf{z},\mathbf{\theta})$, specified as a function $g(\cdot;
+We assume that we already have an accurate simulation of the stochastic generative process
+$p(\mathbf{x}|\mathbf{z},\mathbf{\theta})$, as specified through a deterministic function $g(\cdot;
 \theta) : \mathbb{R}^m \to \mathbb{R}^d$. That is,
 \begin{equation}\label{eqn:p_x_sim}
     p(\mathbf{x}|\mathbf{\theta}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\mathbf{\theta}) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
 \end{equation}
-In particular, the simulator $g$ is assumed to be a non-invertible function, that can
+The simulator $g$ is assumed to be a non-invertible function, that can
 only be used to generate data in forward mode.
 For this reason, evaluating the integral in Eqn.~\ref{eqn:p_x_sim} is intractable.
 Importantly, and as increasingly found in science, we consider the additional constraint that $g$ is a non-differentiable
-model, e.g. as specified by computer program.
+model, e.g. as when specified as a computer program.
 
 Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$, our goal is the inference
 of the parameters of interest $\mathbf{\theta}^*$ that maximize the (marginal) log-likelihood of the observations:
 \begin{equation}
     \mathbf{\theta}^* = \arg \max_\mathbf{\theta} \sum_i \log p(\mathbf{x}_i | \mathbf{\theta}).
 \end{equation}
-\glnote{Or rather, define the goal as the minimization of a divergence?}
+\glnote{Redefine the goal as the minimization of a divergence between the true and the induced distribution?}
 
 
 % ==============================================================================
 
-\section{Method}
-
-\subsection{Variational optimization}
+\section{Background}
 
 \subsection{Generative adversarial networks}
 
-\subsection{Adversarial variational optimization}
+Generative adversarial networks were first proposed by
+\cite{goodfellow2014generative} as a way to build an implicit generative model
+capable of producing samples from random noise $\mathbf{z}$. More specifically,
+a generative model $g(\cdot; \mathbf{\theta})$ is pit against an adversarial
+network $d$ whose antigonistic objective is to recognize real data $\mathbf{x}$
+from generated data $g(\mathbf{z}; \mathbf{\theta})$. Both models $g$ and $d$
+are trained simultaneously, in such a way that $g$ learns to maximally confuse
+its adversary $d$ (which happens when $g$ produces samples comparable to the
+observed data), while $d$ continuously adapts to changes in $g$. At the
+equilibrium and assuming enough capacity in the networks, it can be shown that
+$g$ induces a distribution  that is indistinguishable from the distribution of
+the observed data $\mathbf{x}$.
+
+\glnote{Explain WGAN, loss and optimum.}
+
+\subsection{Variational optimization}
+
+
+% ==============================================================================
+
+\section{Adversarial variational optimization}
 
 
 % ==============================================================================
