@@ -57,22 +57,22 @@ In this note, ... \glnote{todo.}
 
 \section{Problem statement}
 
-We consider a family of conditional densities $p(\mathbf{x}|\mathbf{\theta})$
+We consider a family of parameterized densities $p_\mathbf{\theta}(\mathbf{x})$
 defined implicitly through the simulation of a stochastic generative
-process, where $\mathbf{x} \in \mathbb{R}^d$ is the observed data and
+process, where $\mathbf{x} \in \mathbb{R}^d$ is the data and
 $\mathbf{\theta}$ are the parameters of interest. The simulation may involve
 some complicated latent process, such that
 \begin{equation}\label{eqn:p_x}
-    p(\mathbf{x}|\mathbf{\theta}) = \int p(\mathbf{x}|\mathbf{z},\mathbf{\theta}) p(\mathbf{z}) d\mathbf{z}
+    p_\mathbf{\theta}(\mathbf{x}) = \int p_\mathbf{\theta}(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}
 \end{equation}
 where $\mathbf{z} \in \mathbb{R}^m$ is a latent variable providing an external source
 of randomness.
 
 We assume that we already have an accurate simulation of the stochastic generative process
-$p(\mathbf{x}|\mathbf{z},\mathbf{\theta})$, as specified through a deterministic function $g(\cdot;
+that defines $p_\mathbf{\theta}(\mathbf{x}|\mathbf{z})$, as specified through a deterministic function $g(\cdot;
 \theta) : \mathbb{R}^m \to \mathbb{R}^d$. That is,
 \begin{equation}\label{eqn:p_x_sim}
-    p(\mathbf{x}|\mathbf{\theta}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\mathbf{\theta}) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
+    p_\mathbf{\theta}(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\mathbf{\theta}) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
 \end{equation}
 The simulator $g$ is assumed to be a non-invertible function, that can
 only be used to generate data in forward mode.
@@ -80,12 +80,14 @@ For this reason, evaluating the integral in Eqn.~\ref{eqn:p_x_sim} is intractabl
 Importantly, and as increasingly found in science, we consider the additional constraint that $g$ is a non-differentiable
 model, e.g. as when specified as a computer program.
 
-Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$, our goal is the inference
-of the parameters of interest $\mathbf{\theta}^*$ that maximize the (marginal) log-likelihood of the observations:
+Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the (unknown) true distribution $p_r$, our goal is the inference
+of the parameters of interest $\mathbf{\theta}^*$ that minimize the divergence
+between $p_r$ and the modeled
+data distribution $p_\mathbf{\theta}$ induced by $g(\cdot; \mathbf{\theta})$. That is,
 \begin{equation}
-    \mathbf{\theta}^* = \arg \max_\mathbf{\theta} \sum_i \log p(\mathbf{x}_i | \mathbf{\theta}).
+    \mathbf{\theta}^* = \arg \min_\mathbf{\theta} \rho(p_r, p_\mathbf{\theta}),
 \end{equation}
-\glnote{Redefine the goal as the minimization of a divergence between the true and the induced distribution?}
+where $\rho$ is some divergence.
 
 
 % ==============================================================================
@@ -94,7 +96,7 @@ of the parameters of interest $\mathbf{\theta}^*$ that maximize the (marginal) l
 
 \subsection{Generative adversarial networks}
 
-Generative adversarial networks were first proposed by
+Generative adversarial networks (GAN) were first proposed by
 \cite{goodfellow2014generative} as a way to build an implicit generative model
 capable of producing samples from random noise $\mathbf{z}$. More specifically,
 a generative model $g(\cdot; \mathbf{\theta})$ is pit against an adversarial
@@ -106,6 +108,8 @@ observed data), while $d$ continuously adapts to changes in $g$. At the
 equilibrium and assuming enough capacity in the networks, it can be shown that
 $g$ induces a distribution  that is indistinguishable from the distribution of
 the observed data $\mathbf{x}$.
+
+More recently, ...
 
 \glnote{Explain WGAN, loss and optimum.}
 
