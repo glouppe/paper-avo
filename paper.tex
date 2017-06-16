@@ -39,8 +39,9 @@
 
 \begin{abstract}
 
-In this note, ... \glnote{todo.}
-
+\glnote{
+In this note, lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque justo arcu, facilisis id convallis in, vestibulum cursus leo. Pellentesque non nisl quis dolor dignissim elementum non ut orci. Mauris lobortis convallis elit, eget vulputate erat placerat id. Aliquam aliquet posuere eros, a molestie odio molestie ac. Morbi orci sem, consectetur non tincidunt sed, viverra non eros. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla maximus, ex et malesuada hendrerit, est eros cursus velit, sed scelerisque libero turpis nec dolor. Fusce vitae metus aliquet ipsum mollis aliquet in a velit. Nullam mi ante, dictum at urna quis, suscipit tempor nulla. Vivamus at suscipit lectus, a tristique leo. Sed et cursus lacus.
+}
 
 \end{abstract}
 
@@ -188,12 +189,31 @@ respectively over $\phi$ and $\psi$.
 When updating $d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be
 obtained by sampling mini-batches of true and generated data, as ordinarily
 done in stochastic gradient descent. When updating $g$, gradient estimates
-of $\nabla_\psi U_g$ can be derived as described in Eqn.~\ref{eqn:vo-grad},
-which gives
+of $\nabla_\psi U_g$ can be derived with forward simulations, as described in Eqn.~\ref{eqn:vo-grad}.
+That is,
 \begin{equation}
-    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)].
+    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
 \end{equation}
-\glnote{Smarter approach by exploiting the fact that $\partial d / \partial x$ is known exactly.}
+which we can approximate by sampling mini-batches of generated data
+\begin{equation}
+    \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
+\end{equation}
+for $\theta_m \sim q_\psi$ and $\mathbf{z}_m \sim p_z$.
+
+\glnote{
+While the above gradient estimate $\tilde{\nabla}_\psi U_g$ can readily be plugged
+into the adversarial training procedure, it may also exhibit a sampling
+variance that is larger than necessary, hence making the optimization unstable.
+However, one can exploit the fact that $-d(g(\mathbf{z}; \theta); \phi)$
+is a composition where $-d(\tilde{\mathbf{x}})$ is
+known and differentiable with respect to $\tilde{\mathbf{x}}$.
+In practice, using
+\begin{equation}
+    \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
+\end{equation}
+works much better ite seems, but I am not sure to precisely understand why, nor whether this is correct...
+It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
+}
 
 Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
@@ -204,7 +224,10 @@ a distribution parameterized in terms of $\psi$:
 Intuitively, this corresponds to a family of simulators, each configured
 with randomly sampled parameters $\theta \sim q_\psi$, whose collection
 of generated samples is optimized to approach the real data distribution $p_r$.
-
+In particular, this formulation does not necessarily guarantee that the
+proposal distribution $q_\psi$ will place its mass arbitrarily tight
+around the parameters of interest $\theta^*$. \glnote{Describe regularization
+penalty on the parameters of the proposal to enforce that.}
 
 
 
