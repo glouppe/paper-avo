@@ -187,14 +187,15 @@ over the parameters of $g$ and minimize in alternance the variational upper boun
 \end{align}
 respectively over $\phi$ and $\psi$.
 When updating $d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be
-obtained by sampling mini-batches of true and generated data, as ordinarily
+obtained by evaluating the exact and known gradient of $U_d$ over
+mini-batches of true and generated data, as ordinarily
 done in stochastic gradient descent. When updating $g$, gradient estimates
 of $\nabla_\psi U_g$ can be derived with forward simulations, as described in Eqn.~\ref{eqn:vo-grad}.
 That is,
 \begin{equation}
     \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
 \end{equation}
-which we can approximate by sampling mini-batches of generated data
+which we can approximate with mini-batches of generated data
 \begin{equation}
     \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
 \end{equation}
@@ -211,7 +212,7 @@ In practice, using
 \begin{equation}
     \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
 \end{equation}
-works much better ite seems, but I am not sure to precisely understand why, nor whether this is correct...
+works much better it seems, but I am not sure to precisely understand why, nor whether this is correct...
 It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
 }
 
@@ -222,7 +223,7 @@ a distribution parameterized in terms of $\psi$:
     \mathbf{x} \sim p_\psi \equiv \mathbf{z} \sim p_z, \theta \sim q_\psi, \mathbf{x} = g(\mathbf{z}; \theta).
 \end{equation}
 Intuitively, this corresponds to a family of simulators, each configured
-with randomly sampled parameters $\theta \sim q_\psi$, whose collection
+with randomly sampled parameters $\theta \sim q_\psi$, whose joint collection
 of generated samples is optimized to approach the real data distribution $p_r$.
 In particular, this formulation does not necessarily guarantee that the
 proposal distribution $q_\psi$ will place its mass arbitrarily tight
