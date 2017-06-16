@@ -56,37 +56,43 @@ In this note, ... \glnote{todo.}
 % ==============================================================================
 
 \section{Problem statement}
+\label{sec:problem}
 
-We consider a family of parameterized densities $p_\mathbf{\theta}(\mathbf{x})$
+We consider a family of parameterized densities $p_\theta(\mathbf{x})$
 defined implicitly through the simulation of a stochastic generative process,
-where $\mathbf{x} \in \mathbb{R}^d$ is the data and $\mathbf{\theta}$ are the
+where $\mathbf{x} \in \mathbb{R}^d$ is the data and $\theta$ are the
 parameters of interest. The simulation may involve some complicated latent
 process, such that
 \begin{equation}\label{eqn:p_x}
-    p_\mathbf{\theta}(\mathbf{x}) = \int p_\mathbf{\theta}(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}
+    p_\theta(\mathbf{x}) = \int p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}
 \end{equation}
 where $\mathbf{z} \in \mathbb{R}^m$ is a latent variable providing an external source
 of randomness.
 
 We assume that we already have an accurate simulation of the stochastic
-generative process that defines $p_\mathbf{\theta}(\mathbf{x}|\mathbf{z})$, as
+generative process that defines $p_\theta(\mathbf{x}|\mathbf{z})$, as
 specified through a deterministic function $g(\cdot; \theta) : \mathbb{R}^m \to
-\mathbb{R}^d$. That is
-\begin{equation}\label{eqn:p_x_sim}
-    p_\mathbf{\theta}(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\mathbf{\theta}) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
+\mathbb{R}^d$. That is, we consider
+\begin{equation}\label{eqn:p_theta}
+    \mathbf{x} \sim p_\theta \equiv \mathbf{z} \sim p_z, \mathbf{x} = g(\mathbf{z}; \theta)
 \end{equation}
-The simulator $g$ is assumed to be a non-invertible function, that can only be
+such that the likelihood $p_\theta(\mathbf{x})$ can be rewritten as
+\begin{equation}\label{eqn:p_x_sim}
+    p_\theta(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
+\end{equation}
+Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
 used to generate data in forward mode. For this reason, evaluating the integral
-in Eqn.~\ref{eqn:p_x_sim} is intractable. Importantly, and as commonly found
-in science, we finally assume the lack of access to or existence of derivatives of $g$ with respect to $\theta$, e.g. when specified as a computer program.
+in Eqn.~\ref{eqn:p_x_sim} is intractable. As commonly found
+in science, we finally assume the lack of access to or existence of derivatives of $g$ with respect to $\theta$,
+e.g. as when $g$ is specified as a computer program.
 
 Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the
 (unknown) true distribution $p_r$, our goal is the inference of the parameters
-of interest $\mathbf{\theta}^*$ that minimize the divergence between $p_r$ and
-the modeled data distribution $p_\mathbf{\theta}$ induced by $g(\cdot;
-\mathbf{\theta})$ over $\mathbf{z}$. That is,
+of interest $\theta^*$ that minimize the divergence between $p_r$ and
+the modeled data distribution $p_\theta$ induced by $g(\cdot;
+\theta)$ over $\mathbf{z}$. That is,
 \begin{equation}
-    \mathbf{\theta}^* = \arg \min_\mathbf{\theta} \rho(p_r, p_\mathbf{\theta}),
+    \theta^* = \arg \min_\theta \rho(p_r, p_\theta),
 \end{equation}
 where $\rho$ is some distance or divergence.
 
@@ -100,9 +106,9 @@ where $\rho$ is some distance or divergence.
 Generative adversarial networks (GANs) were first proposed by
 \cite{goodfellow2014generative} as a way to build an implicit generative model
 capable of producing samples from random noise $\mathbf{z}$. More specifically,
-a generative model $g(\cdot; \mathbf{\theta})$ is pit against an adversarial
+a generative model $g(\cdot; \theta)$ is pit against an adversarial
 classifier $d(\cdot; \phi):\mathbb{R}^d \to [0,1]$ with parameters $\phi$ and whose antagonistic objective is to recognize real data $\mathbf{x}$
-from generated data $g(\mathbf{z}; \mathbf{\theta})$. Both models $g$ and $d$
+from generated data $\tilde{\mathbf{x}} = g(\mathbf{z}; \theta)$. Both models $g$ and $d$
 are trained simultaneously, in such a way that $g$ learns to maximally confuse
 its adversary $d$ (which happens when $g$ produces samples comparable to the
 observed data), while $d$ continuously adapts to changes in $g$. When $d$ is
@@ -129,7 +135,7 @@ where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}
 
 \subsection{Variational optimization}
 
-Following \citep{2012arXiv1212.4507S}, variational optimization (VO) (also known as the search gradient algorithm~\citep{2011arXiv1106.4487W}) is a general
+Following \citep{2012arXiv1212.4507S}, variational optimization (VO) (also known as the search gradient algorithm~\citep{2011arXiv1106.4487W} related to evolution strategies) is a general
 optimization technique that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize, VO
 is based on the simple fact that
@@ -157,13 +163,53 @@ in order to minimize $U(\psi)$.
 
 
 
-
 % ==============================================================================
 
 \section{Adversarial variational optimization}
 
-\glnote{Naive approach by using VO on ${\cal L}_g$.}
+The alternating stochastic gradient descent on ${\cal L}_d$ and ${\cal L}_g$ in
+GANs inherently assume that the generator $g$ is a differentiable function. In
+the setting where we are not interested in learning an implicit model but are
+rather interested in the inference of parameters of a fixed
+non-differentiable simulator (as outlined in Section~\ref{sec:problem}),
+gradients $\nabla_\theta g$ either do not exist or cannot be accessed. As a
+result, gradients $\nabla_\theta {\cal L}_g$ cannot be constructed and the
+optimization procedure cannot be carried out.
+
+In this work, we propose to perform variational optimization
+on ${\cal L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability
+of $g$. More specifically, we consider a proposal distribution $q_\psi(\theta)$
+over the parameters of $g$ and minimize in alternance the variational upper bounds
+\begin{align}
+    U_d &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_d ] \label{eqn:vo-ud} \\
+    U_g &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] \label{eqn:vo-ug}
+\end{align}
+respectively over $\phi$ and $\psi$.
+When updating $d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be
+obtained by sampling mini-batches of true and generated data, as ordinarily
+done in stochastic gradient descent. When updating $g$, gradient estimates
+of $\nabla_\psi U_g$ can be derived as described in Eqn.~\ref{eqn:vo-grad},
+which gives
+\begin{equation}
+    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)].
+\end{equation}
 \glnote{Smarter approach by exploiting the fact that $\partial d / \partial x$ is known exactly.}
+
+Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
+have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
+a distribution parameterized in terms of $\psi$:
+\begin{equation}\label{eqn:p_psi}
+    \mathbf{x} \sim p_\psi \equiv \mathbf{z} \sim p_z, \theta \sim q_\psi, \mathbf{x} = g(\mathbf{z}; \theta).
+\end{equation}
+Intuitively, this corresponds to a family of simulators, each configured
+with randomly sampled parameters $\theta \sim q_\psi$, whose collection
+of generated samples is optimized to approach the real data distribution $p_r$.
+
+
+
+
+
+
 
 
 % ==============================================================================
