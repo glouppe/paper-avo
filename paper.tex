@@ -243,6 +243,11 @@ the proposal distribution. That is,
 \end{equation}
 where $\lambda \in \mathbb{R}^+$ is a hyperparameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
+For large values of $\lambda$, the procedure is constrained to fit a proposal
+distribution with low entropy, which has the effect of concentrating its density
+tightly around one or a few $\theta$ values. On the other hand, for small values of $\lambda$,
+proposal distributions with larger entropy are not penalized, which may result
+in learning a smeared variation of the original simulator.
 
 
 
