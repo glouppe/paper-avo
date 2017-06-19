@@ -39,9 +39,22 @@
 
 \begin{abstract}
 
-\glnote{
-In this note, lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque justo arcu, facilisis id convallis in, vestibulum cursus leo. Pellentesque non nisl quis dolor dignissim elementum non ut orci. Mauris lobortis convallis elit, eget vulputate erat placerat id. Aliquam aliquet posuere eros, a molestie odio molestie ac. Morbi orci sem, consectetur non tincidunt sed, viverra non eros. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla maximus, ex et malesuada hendrerit, est eros cursus velit, sed scelerisque libero turpis nec dolor. Fusce vitae metus aliquet ipsum mollis aliquet in a velit. Nullam mi ante, dictum at urna quis, suscipit tempor nulla. Vivamus at suscipit lectus, a tristique leo. Sed et cursus lacus.
-}
+Complex computer simulators are increasingly used across fields of science to
+describe generative models tying parameters of an underlying theory to
+experimental observations. Inference in this likelihood-free setup is often
+intractable, as simulators rarely provide a way to evaluate the likehood
+function for a given observation. In this note, we develop a likelihood-free
+inference algorithm for fitting a forward non-differentiable generative model to
+observed data. We adapt the adversarial training procedure of generative
+adversarial networks by replacing the implicit generative network with a
+domain-based scientific simulator, and solve the resulting non-differentiable
+minimax problem with variational optimization. Effectively, the adversarial
+variational optimization procedure results in learning an arbitrarily tight
+proposal distribution over simulator parameters, such that the respective
+hierarchical model matches the observed data.
+\glnote{Mention experimental results.}
+\glnote{Add 'so what?' conclusion.}
+
 
 \end{abstract}
 
@@ -51,7 +64,16 @@ In this note, lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentes
 
 \section{Introduction}
 
-\glnote{Prescribed vs. implicit. See case of non-diff models in Balaji et al.}
+In many fields of science, computer simulators are used to describe complex
+processes that tie parameters of an underlying theory to high dimensional
+observations. In most cases, these implicit generative
+models~\citep{2016arXiv161003483M} are specified as forward stochastic processes
+that generate data. Because it is usually computationally intractable,
+simulators often do not provide a way to directly evaluate the likelihood
+function for a given observation,  which motivates a class of algorithms for
+likelihood-free inference.
+
+\glnote{State contributions clearly.}
 
 
 % ==============================================================================
@@ -200,21 +222,7 @@ which we can approximate with mini-batches of generated data
     \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
 \end{equation}
 for $\theta_m \sim q_\psi$ and $\mathbf{z}_m \sim p_z$.
-
-\glnote{
-While the above gradient estimate $\tilde{\nabla}_\psi U_g$ can readily be plugged
-into the adversarial training procedure, it may also exhibit a sampling
-variance that is larger than necessary, hence making the optimization unstable.
-However, one can exploit the fact that $-d(g(\mathbf{z}; \theta); \phi)$
-is a composition where $-d(\tilde{\mathbf{x}})$ is
-known and differentiable with respect to $\tilde{\mathbf{x}}$.
-In practice, using
-\begin{equation}
-    \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
-\end{equation}
-works much better it seems, but I am not sure to precisely understand why, nor whether this is correct...
-It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
-}
+\glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$ is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?}
 
 Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
@@ -224,11 +232,37 @@ a distribution parameterized in terms of $\psi$:
 \end{equation}
 Intuitively, this corresponds to a family of simulators, each configured
 with randomly sampled parameters $\theta \sim q_\psi$, whose joint collection
-of generated samples is optimized to approach the real data distribution $p_r$.
-In particular, this formulation does not necessarily guarantee that the
+of generated samples is optimized with adversarial training to approach the real data distribution $p_r$.
+However, this formulation does not necessarily guarantee that the
 proposal distribution $q_\psi$ will place its mass arbitrarily tight
-around the parameters of interest $\theta^*$. \glnote{Describe regularization
-penalty on the parameters of the proposal to enforce that.}
+around the parameters of interest $\theta^*$. For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
+with a regularization term corresponding to the differential entropy $H$ of
+the proposal distribution. That is,
+\begin{equation}
+    U_g = \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] + \lambda H(q_\psi)
+\end{equation}
+where $\lambda \in \mathbb{R}^+$ is a hyperparameter controlling the trade-off
+between the generator objective and the tightness of the proposal distribution.
+
+
+
+% \glnote{
+% While the above gradient estimate $\tilde{\nabla}_\psi U_g$ can readily be plugged
+% into the adversarial training procedure, it may also exhibit a sampling
+% variance that is larger than necessary, hence making the optimization unstable.
+% However, one can exploit the fact that $-d(g(\mathbf{z}; \theta); \phi)$
+% is a composition where $-d(\tilde{\mathbf{x}})$ is
+% known and differentiable with respect to $\tilde{\mathbf{x}}$.
+% In practice, using
+% \begin{equation}
+%     \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
+% \end{equation}
+% works as good it seems, but I am not sure to precisely understand why, nor whether this is correct...
+% It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
+% With large mini-batches, both approaches seem to work fine, though the former seems to be less stable.
+% }
+
+
 
 
 
@@ -251,9 +285,8 @@ penalty on the parameters of the proposal to enforce that.}
 
 
 \glnote{Implicit generative models.}
-\glnote{ABC.}
+\glnote{classifier ABC.}
 \glnote{carl~\citep{cranmer2015approximating}.}
-\glnote{Wood's papers.}
 \glnote{CMA-ES.}
 
 
