@@ -41,7 +41,7 @@
 
 Complex computer simulators are increasingly used across fields of science to
 describe generative models tying parameters of an underlying theory to
-experimental observations. Inference in this likelihood-free setup is often
+experimental observations. However, inference in this likelihood-free setup is often
 intractable, as simulators rarely provide a way to evaluate the likehood
 function for a given observation. In this note, we develop a likelihood-free
 inference algorithm for fitting a forward non-differentiable generative model to
@@ -67,11 +67,11 @@ hierarchical model matches the observed data.
 In many fields of science, computer simulators are used to describe complex
 processes that tie parameters of an underlying theory to high dimensional
 observations. In most cases, these implicit generative
-models~\citep{2016arXiv161003483M} are specified as forward stochastic processes
-that generate data. Because it is usually computationally intractable,
-simulators often do not provide a way to directly evaluate the likelihood
-function for a given observation,  which motivates a class of algorithms for
-likelihood-free inference.
+models~\citep{2016arXiv161003483M} are specified as imperative implementations
+of forward stochastic processes that generate data. Because it is usually
+computationally intractable, simulators often do not provide a way to directly
+evaluate the likelihood function for a given observation,  which motivates a
+class of algorithms for likelihood-free inference.
 
 \glnote{State contributions clearly.}
 
@@ -191,8 +191,8 @@ in order to minimize $U(\psi)$.
 \section{Adversarial variational optimization}
 
 The alternating stochastic gradient descent on ${\cal L}_d$ and ${\cal L}_g$ in
-GANs inherently assume that the generator $g$ is a differentiable function. In
-the setting where we are not interested in learning an implicit model but are
+GANs inherently assumes that the generator $g$ is a differentiable function. In
+the setting where we are not interested in learning the implicit model itself but are
 rather interested in the inference of parameters of a fixed
 non-differentiable simulator (as outlined in Section~\ref{sec:problem}),
 gradients $\nabla_\theta g$ either do not exist or cannot be accessed. As a
