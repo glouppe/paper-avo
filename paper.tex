@@ -41,8 +41,8 @@
 
 Complex computer simulators are increasingly used across fields of science to
 describe generative models tying parameters of an underlying theory to
-experimental observations. However, inference in this likelihood-free setup is often
-intractable, as simulators rarely provide a way to evaluate the likehood
+experimental observations. Inference in this setup is often
+difficult, as simulators rarely provide a way to evaluate the likehood
 function for a given observation. In this note, we develop a likelihood-free
 inference algorithm for fitting a forward non-differentiable generative model to
 observed data. We adapt the adversarial training procedure of generative
@@ -64,16 +64,25 @@ hierarchical model matches the observed data.
 
 \section{Introduction}
 
-In many fields of science, computer simulators are used to describe complex
-processes that tie parameters of an underlying theory to high dimensional
-observations. In most cases, these implicit generative
-models~\citep{2016arXiv161003483M} are specified as imperative implementations
-of forward stochastic processes that generate data. Because it is usually
-computationally intractable, simulators often do not provide a way to directly
-evaluate the likelihood function for a given observation,  which motivates a
-class of algorithms for likelihood-free inference.
+In many fields of science such as particle physics, climatology or population
+genetics, computer simulators are used to describe complex processes that tie
+parameters of an underlying theory to high dimensional observations. In most
+cases, these implicit generative models~\citep{2016arXiv161003483M} are
+specified as imperative implementations of forward stochastic processes that
+generate data. Because it is usually computationally intractable, simulators
+often do not provide a way to directly evaluate the likelihood function for a
+given observation, thereby making inference difficult.
 
-\glnote{State contributions clearly.}
+In this note, we develop a likelihood-free inference algorithm for fitting a
+forward non-differentiable generative model to observed data. We propose to
+adapt the adversarial training procedure of generative adversarial
+networks~\cite{goodfellow2014generative} by replacing the implicit generative
+network with a domain-based scientific simulator, and solve the resulting
+non-differentiable minimax problem with variational
+optimization~\citep{2012arXiv1212.4507S}. The adversarial variational
+optimization procedure results in learning a proposal distribution over
+simulator parameters, hence producing an abitrarily tight family of models whose
+joint collection of generated samples matches the observed data.
 
 
 % ==============================================================================
@@ -154,6 +163,7 @@ training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\the
     {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p_\theta} [d(\tilde{\mathbf{x}};\phi)]
 \end{align}
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim p_r$ and $\tilde{\mathbf{x}} \sim p_\theta$.
+\glnote{Mention that we use WGAN-GP in this note, but that the VO procedure can be coupled other vairants of GANs.}
 
 
 \subsection{Variational optimization}
@@ -249,6 +259,8 @@ tightly around one or a few $\theta$ values. On the other hand, for small values
 proposal distributions with larger entropy are not penalized, which may result
 in learning a smeared variation of the original simulator.
 
+\glnote{add algorithm}
+
 
 
 % \glnote{
@@ -290,9 +302,12 @@ in learning a smeared variation of the original simulator.
 
 
 \glnote{Implicit generative models.}
-\glnote{classifier ABC.}
+\glnote{gan + classifier ABC.}
+
+\glnote{likelihood free inference, density ratio by classification}
 \glnote{carl~\citep{cranmer2015approximating}.}
-\glnote{CMA-ES.}
+
+
 
 
 % ==============================================================================
