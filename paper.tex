@@ -42,7 +42,7 @@
 Complex computer simulators are increasingly used across fields of science to
 describe generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
-difficult, as simulators rarely provide a way to evaluate the likehood
+difficult, as simulators rarely provide a way to directly evaluate the likehood
 function for a given observation. In this note, we develop a likelihood-free
 inference algorithm for fitting a forward non-differentiable generative model to
 observed data. We adapt the adversarial training procedure of generative
@@ -69,8 +69,8 @@ genetics, computer simulators are used to describe complex processes that tie
 parameters of an underlying theory to high dimensional observations. In most
 cases, these implicit generative models~\citep{2016arXiv161003483M} are
 specified as imperative implementations of forward stochastic processes that
-generate data. Because it is usually computationally intractable, simulators
-often do not provide a way to directly evaluate the likelihood function for a
+generate data. Because it is usually computationally intractable, most simulators
+do not provide a way to directly evaluate the likelihood function for a
 given observation, thereby making inference difficult.
 
 In this note, we develop a likelihood-free inference algorithm for fitting a
@@ -134,6 +134,7 @@ where $\rho$ is some distance or divergence.
 \section{Background}
 
 \subsection{Generative adversarial networks}
+\label{sec:gans}
 
 Generative adversarial networks (GANs) were first proposed by
 \cite{goodfellow2014generative} as a way to build an implicit generative model
@@ -163,7 +164,6 @@ training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\the
     {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p_\theta} [d(\tilde{\mathbf{x}};\phi)]
 \end{align}
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim p_r$ and $\tilde{\mathbf{x}} \sim p_\theta$.
-\glnote{Mention that we use WGAN-GP in this note, but that the VO procedure can be coupled other vairants of GANs.}
 
 
 \subsection{Variational optimization}
@@ -200,11 +200,43 @@ in order to minimize $U(\psi)$.
 
 \section{Adversarial variational optimization}
 
+\begin{figure*}
+    \begin{minipage}{\linewidth}
+    \begin{algorithm}[H]
+    \caption{Adversarial variational optimization.}
+
+    \begin{flushleft}
+        {\it Inputs:} observed data $\{ \mathbf{x}_i \}_{i=1}^N$, simulator $g$;\\
+        {\it Outputs:} proposal distribution $q_\psi(\theta)$;\\
+        {\it Hyper-parameters:} Number $T$ of training iterations,
+                                Number $K$ of gradient steps to update $d$,
+                                Size $M$ of the minibatches.
+    \end{flushleft}
+
+    \label{alg:avo}
+    \begin{algorithmic}[1]
+        \State{\glnote{todo!}}
+        \For{$t=1$ to $T$}
+            % \For{$k=1$ to $K$} \Comment{Update $r$}
+            %     \State{Sample minibatch $\{x_m, z_m, s_m = f(x_m;\theta_f) \}_{m=1}^M$} of size $M$;
+            %     \State{With $\theta_f$ fixed, update $r$ by ascending its stochastic gradient $\nabla_{\theta_r} E(\theta_f, \theta_r) :=$
+            %     $$\nabla_{\theta_r} \sum_{m=1}^M \log p_{\theta_r}(z_m|s_m)  ;$$}
+            % \EndFor
+            % \State{Sample minibatch $\{x_m, y_m, z_m, s_m = f(x_m;\theta_f)  \}_{m=1}^M$} of size $M$; \Comment{Update $f$}
+            % \State{With $\theta_r$ fixed, update $f$ by descending its stochastic gradient $\nabla_{\theta_f} E(\theta_f, \theta_r) :=$
+            % $$\nabla_{\theta_f}  \sum_{m=1}^M \left[ -\log p_{\theta_f}(y_m|x_m)  +\log p_{\theta_r}(z_m|s_m)  \right],$$
+            % \indent where $p_{\theta_f}(y_m|x_m)$ denotes $\mathbf{1}(y_m=0)(1-s_m) + \mathbf{1}(y_m=1)s_m$;}
+        \EndFor
+    \end{algorithmic}
+    \end{algorithm}
+    \end{minipage}
+\end{figure*}
+
 The alternating stochastic gradient descent on ${\cal L}_d$ and ${\cal L}_g$ in
-GANs inherently assumes that the generator $g$ is a differentiable function. In
+GANs (Section~\ref{sec:gans}) inherently assumes that the generator $g$ is a differentiable function. In
 the setting where we are not interested in learning the implicit model itself but are
 rather interested in the inference of parameters of a fixed
-non-differentiable simulator (as outlined in Section~\ref{sec:problem}),
+non-differentiable simulator (Section~\ref{sec:problem}),
 gradients $\nabla_\theta g$ either do not exist or cannot be accessed. As a
 result, gradients $\nabla_\theta {\cal L}_g$ cannot be constructed and the
 optimization procedure cannot be carried out.
@@ -259,7 +291,10 @@ tightly around one or a few $\theta$ values. On the other hand, for small values
 proposal distributions with larger entropy are not penalized, which may result
 in learning a smeared variation of the original simulator.
 
-\glnote{add algorithm}
+For completeness, Algorithm~\ref{alg:avo} finally outlines the adversarial variational
+optimization procedure when coupled with WGAN-GP.
+
+
 
 
 
