@@ -208,25 +208,24 @@ in order to minimize $U(\psi)$.
     \begin{flushleft}
         {\it Inputs:} observed data $\{ \mathbf{x}_i \}_{i=1}^N$, simulator $g$;\\
         {\it Outputs:} proposal distribution $q_\psi(\theta)$;\\
-        {\it Hyper-parameters:} Number $T$ of training iterations,
-                                Number $K$ of gradient steps to update $d$,
-                                Size $M$ of the minibatches.
+        {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the gradient penalty coefficient $\lambda$; the entropy penalty coefficient $\gamma$. 
     \end{flushleft}
 
     \label{alg:avo}
     \begin{algorithmic}[1]
-        \State{\glnote{todo!}}
-        \For{$t=1$ to $T$}
-            % \For{$k=1$ to $K$} \Comment{Update $r$}
-            %     \State{Sample minibatch $\{x_m, z_m, s_m = f(x_m;\theta_f) \}_{m=1}^M$} of size $M$;
-            %     \State{With $\theta_f$ fixed, update $r$ by ascending its stochastic gradient $\nabla_{\theta_r} E(\theta_f, \theta_r) :=$
-            %     $$\nabla_{\theta_r} \sum_{m=1}^M \log p_{\theta_r}(z_m|s_m)  ;$$}
-            % \EndFor
-            % \State{Sample minibatch $\{x_m, y_m, z_m, s_m = f(x_m;\theta_f)  \}_{m=1}^M$} of size $M$; \Comment{Update $f$}
-            % \State{With $\theta_r$ fixed, update $f$ by descending its stochastic gradient $\nabla_{\theta_f} E(\theta_f, \theta_r) :=$
-            % $$\nabla_{\theta_f}  \sum_{m=1}^M \left[ -\log p_{\theta_f}(y_m|x_m)  +\log p_{\theta_r}(z_m|s_m)  \right],$$
-            % \indent where $p_{\theta_f}(y_m|x_m)$ denotes $\mathbf{1}(y_m=0)(1-s_m) + \mathbf{1}(y_m=1)s_m$;}
-        \EndFor
+        \While{$\psi$ has not converged}
+            \For{$i=1$ to $n_{\text{critic}}$} \Comment{Update $d$}
+                \State{Sample a mini-batch $\{\mathbf{x}_m \}_{m=1}^M \sim p_r$, $\{\mathbf{z}_m \}_{m=1}^M \sim p_z$, $\{\theta_m \}_{m=1}^M \sim q_\psi$, $\{\epsilon_m \}_{m=1}^M \sim U[0,1]$.}
+                \For{$m=1$ to $M$}
+                    \State{$\tilde{\mathbf{x}}_m \leftarrow g(\mathbf{z}_m; \theta_m)$}
+                    \State{$\hat{\mathbf{x}}_m \leftarrow \epsilon_m \mathbf{x}_m + (1 - \epsilon_m) \tilde{\mathbf{x}}_m$}
+                    \State{$L^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \phi) - d(\mathbf{x}_m; \phi) + \lambda (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \phi) ||_2 - 1)^2 $}
+                \EndFor
+                \State{$\phi \leftarrow \text{RMSProp}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M L^{(m)})$}
+            \EndFor
+            \State{Sample a mini-batch $\{\mathbf{z}_m \}_{m=1}^M \sim p_z$, $\{\theta_m \}_{m=1}^M \sim q_\psi$.}  \Comment{Update $q_\psi$}
+            \State{$\psi \leftarrow \text{RMSProp}(\tfrac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m)) \nabla_\psi \log q_\psi(\theta_m) + \nabla_\psi \gamma q_\psi(\theta_m) \log q_\psi(\theta_m))$}
+        \EndWhile
     \end{algorithmic}
     \end{algorithm}
     \end{minipage}
@@ -289,13 +288,13 @@ around the parameters of interest $\theta^*$. For this purpose, we augment Eqn.~
 with a regularization term corresponding to the differential entropy $H$ of
 the proposal distribution. That is,
 \begin{equation}
-    U_g = \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] + \lambda H(q_\psi)
+    U_g = \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] + \gamma H(q_\psi)
 \end{equation}
-where $\lambda \in \mathbb{R}^+$ is a hyperparameter controlling the trade-off
+where $\gamma \in \mathbb{R}^+$ is a hyperparameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
-For large values of $\lambda$, the procedure is constrained to fit a proposal
+For large values of $\gamma$, the procedure is constrained to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
-tightly around one or a few $\theta$ values. On the other hand, for small values of $\lambda$,
+tightly around one or a few $\theta$ values. On the other hand, for small values of $\gamma$,
 proposal distributions with larger entropy are not penalized, which may result
 in learning a smeared variation of the original simulator.
 
