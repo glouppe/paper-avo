@@ -168,7 +168,7 @@ where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}
 
 \subsection{Variational optimization}
 
-Following \citep{2012arXiv1212.4507S}, variational optimization (VO) (also known as the search gradient algorithm~\citep{2011arXiv1106.4487W} related to evolution strategies) is a general
+Following \citep{2012arXiv1212.4507S}, variational optimization (VO) is a general
 optimization technique that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize, VO
 is based on the simple fact that
@@ -193,7 +193,8 @@ is known and that one can evaluate $f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$
 one can construct empirical estimates of Eqn.~\ref{eqn:vo-grad}, which can
 in turn be used to perform stochastic gradient descent (or a variant thereof)
 in order to minimize $U(\psi)$.
-
+\glnote{Consider instead natural evolution strategies, which should be more stable?}
+\glnote{Rewrite in terms of NES!!}
 
 
 % ==============================================================================
