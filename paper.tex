@@ -48,10 +48,10 @@ inference algorithm for fitting a forward non-differentiable generative model to
 observed data. We adapt the adversarial training procedure of generative
 adversarial networks by replacing the implicit generative network with a
 domain-based scientific simulator, and solve the resulting non-differentiable
-minimax problem with variational optimization. Effectively, the adversarial
-variational optimization procedure results in learning an arbitrarily tight
-proposal distribution over simulator parameters, such that the respective
-hierarchical model matches the observed data.
+minimax problem by minimizing variationial upper bounds of the adversarial objectives.
+Effectively, the procedure results in learning an arbitrarily tight
+proposal distribution over simulator parameters, such that the corresponding
+marginal distribution  matches the observed data.
 \glnote{Mention experimental results.}
 \glnote{Add 'so what?' conclusion.}
 
@@ -78,9 +78,9 @@ forward non-differentiable generative model to observed data. We propose to
 adapt the adversarial training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
-non-differentiable minimax problem with variational
-optimization~\citep{2012arXiv1212.4507S}. The adversarial variational
-optimization procedure results in learning a proposal distribution over
+non-differentiable minimax problem by minimizing variational upper bounds of the adversarial objectives
+respectively with stochastic gradient descent and  natural evolution strategies~\citep{2011arXiv1106.4487W}.
+The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an abitrarily tight family of models whose
 joint collection of generated samples matches the observed data.
 
@@ -166,12 +166,12 @@ training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\the
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim p_r$ and $\tilde{\mathbf{x}} \sim p_\theta$.
 
 
-\subsection{Variational optimization}
+\subsection{Natural evolution strategies}
 
-Following \citep{2012arXiv1212.4507S}, variational optimization (VO) is a general
-optimization technique that can be used to form a differentiable bound
-on the optima of a non-differentiable function. Given a function $f$ to minimize, VO
-is based on the simple fact that
+Evolution strategies~\citep{2011arXiv1106.4487W} and variational optimization~\cite{2012arXiv1212.4507S} are general
+optimization techniques that can be used to form a differentiable bound
+on the optima of a non-differentiable function. Given a function $f$ to minimize,
+these techniques are based on the simple fact that
 \begin{equation}
     \min_{\mathbf{c} \in {\cal C}} f(\mathbf{c}) \leq \mathbb{E}_{\mathbf{c} \sim q_\psi(\mathbf{c})} [f(\mathbf{c})] = U(\psi),
 \end{equation}
@@ -181,7 +181,7 @@ to any of their average. Provided that the proposal is flexible enough, the para
 can be updated to place its mass arbitrarily tight around the optimum $\mathbf{c}^* = \min_{\mathbf{c} \in {\cal C}} f(\mathbf{c})$.
 
 Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound $U(\psi)$ is differentiable, and using the log-likelihood trick it comes:
-\begin{align}\label{eqn:vo-grad}
+\begin{align}\label{eqn:approx-grad}
     \nabla_\psi U(\psi) &= \nabla_\psi \mathbb{E}_{\mathbf{c} \sim q_\psi(\mathbf{c})} [f(\mathbf{c})] \nonumber \\
     &= \nabla_\psi \int f(\mathbf{c})  q_\psi(\mathbf{c})  d\mathbf{c} \nonumber \\
     &= \int f(\mathbf{c}) \nabla_\psi q_\psi(\mathbf{c})  d\mathbf{c} \nonumber \\
@@ -190,11 +190,28 @@ Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound $U(\
 \end{align}
 Effectively, this means that provided that the score function $\nabla_\psi \log q_\psi(\mathbf{c})$ of the proposal
 is known and that one can evaluate $f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$, then
-one can construct empirical estimates of Eqn.~\ref{eqn:vo-grad}, which can
+one can construct empirical estimates of Eqn.~\ref{eqn:approx-grad}, which can
 in turn be used to perform stochastic gradient descent (or a variant thereof)
 in order to minimize $U(\psi)$.
-\glnote{Consider instead natural evolution strategies, which should be more stable?}
-\glnote{Rewrite in terms of NES!!}
+
+In this simple form, stochastic gradient descent based on
+Eqn~\ref{eqn:approx-grad} is known to suffer from premature convergence and lack
+of scale invariance. To avoid the dependence on the parameterization of the
+proposal distribution, natural gradients~\citep{amari1998natural} can be used
+instead to point towards the steepest descent in the space of realizable
+proposal distributions, rather than in the space of their parameters. Effectively,
+the natural evolution strategy (NES) algorithm~\citep{2011arXiv1106.4487W}
+corrects the gradient of $U$ according to the local curvature of the KL-divergence
+surface of proposal distributions, which results in forming
+\begin{equation}\label{eqn:approx-grad-nat}
+    \tilde{\nabla}_\psi U(\psi) = \mathbf{F}(\psi)^{-1} \nabla_\psi U(\psi),
+\end{equation}
+where $\mathbf{F}(\psi)$ is the Fisher information matrix
+\begin{equation}
+    \mathbf{F}(\psi) = \mathbb{E}_{\theta \sim q_\phi}[ \nabla_\psi \log q_\psi(\theta) \nabla_\psi \log q_\psi(\theta)^{\top} ]
+\end{equation}
+and can be estimated from samples, in particular by reusing the derivatives $\nabla_\psi \log q_\psi(\theta)$ already
+evaluated to form $\nabla_\psi U(\psi)$.
 
 
 % ==============================================================================
@@ -226,7 +243,10 @@ in order to minimize $U(\psi)$.
                 \State{$\phi \leftarrow \text{RMSProp}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M L^{(m)})$}
             \EndFor
             \State{Sample a mini-batch $\{\mathbf{z}_m \}_{m=1}^M \sim p_z$, $\{\theta_m \}_{m=1}^M \sim q_\psi$.}  \Comment{Update $q_\psi$}
-            \State{$\psi \leftarrow \text{RMSProp}(\tfrac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m)) \nabla_\psi \log q_\psi(\theta_m) + \gamma  \nabla_\psi q_\psi(\theta_m) \log q_\psi(\theta_m))$}
+            \State{$\nabla_\psi U_g \leftarrow \tfrac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m)) \nabla_\psi \log q_\psi(\theta_m)$}
+            \State{$\mathbf{F}(\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi \log q_\psi(\theta_m) \nabla_\psi \log q_\psi(\theta_m)^{\top}$}
+            \State{$\nabla_\psi H(q_\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi q_\psi(\theta_m) \log q_\psi(\theta_m)$)}
+            \State{$\psi \leftarrow \text{SGD}(\mathbf{F}(\psi)^{-1} \nabla_\psi U_g + \gamma \nabla_\psi H(q_\psi)$}
         \EndWhile
     \end{algorithmic}
     \end{algorithm}
@@ -242,39 +262,41 @@ gradients $\nabla_\theta g$ either do not exist or cannot be accessed. As a
 result, gradients $\nabla_\theta {\cal L}_g$ cannot be constructed and the
 optimization procedure cannot be carried out.
 
-In this work, we propose to perform variational optimization
-on ${\cal L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability
-of $g$. More specifically, we consider a proposal distribution $q_\psi(\theta)$
-over the parameters of $g$ and minimize in alternance the variational upper bounds
+In this work, we propose to rely on evolution strategies to minimize ${\cal
+L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
+specifically, we consider a proposal distribution $q_\psi(\theta)$ over the
+parameters of $g$ and minimize in alternance the variational upper bounds
 \begin{align}
     U_d &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_d ] \label{eqn:vo-ud} \\
     U_g &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] \label{eqn:vo-ug}
-\end{align}
-respectively over $\phi$ and $\psi$.
-When updating $d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be
-obtained by evaluating the exact and known gradient of $U_d$ over
-mini-batches of true and generated data, as ordinarily
-done in stochastic gradient descent. When updating $g$, gradient estimates
-of $\nabla_\psi U_g$ can be derived with forward simulations, as described in Eqn.~\ref{eqn:vo-grad}.
-That is,
-\begin{equation}
-    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
-\end{equation}
-which we can approximate with mini-batches of generated data
-\begin{equation}
-    \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
-\end{equation}
-for $\mathbf{z}_m \sim p_z$ and $\theta_m \sim q_\psi$.
-\glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$ is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
-In practice, using
-\begin{equation}
-    \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
-\end{equation}
-works as good it seems, but I am not sure to precisely understand why, nor whether this is correct...
-It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
+\end{align} respectively over $\phi$ and $\psi$.
+When updating
+$d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be obtained by
+evaluating the exact and known gradient of $U_d$ over mini-batches of true and
+generated data, as ordinarily done in stochastic gradient descent. When updating
+$g$, estimates of $\nabla_\psi U_g$ and $\tilde{\nabla}_\psi U_g$ can be derived with forward
+simulations, as described in the previous section.
+% That is,
+% \begin{equation}
+%     \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
+% \end{equation} which we can approximate with mini-batches of
+% generated data
+% \begin{equation}
+%     \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
+% \end{equation}
+% for $\mathbf{z}_m \sim p_z$ and $\theta_m \sim q_\psi$.
+\glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
+is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
+% In practice, using
+% \begin{equation}
+%     \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
+% \end{equation}
+% works as good it seems, but I am not sure to precisely understand why, nor whether this is correct...
+% It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
 }
 
 
+\glnote{Bayesian vs. frequentist view.}
 Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 a distribution parameterized in terms of $\psi$:
@@ -301,19 +323,9 @@ proposal distributions with larger entropy are not penalized, which may result
 in learning a smeared variation of the original simulator.
 
 For completeness, Algorithm~\ref{alg:avo} finally outlines the full adversarial variational
-optimization procedure, as built on top of WGAN-GP.
+optimization procedure, as built on top of WGAN-GP and NES.
 Let us note however that the variational relaxation could similarly be coupled with
-other variants of GANs. \glnote{add note on rmsprop vs. adam}
-
-
-
-
-
-
-
-
-
-
+other variants of GANs and/or of evolution strategies.
 
 
 
