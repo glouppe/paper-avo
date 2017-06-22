@@ -73,13 +73,15 @@ generate data. Because it is usually computationally intractable, most simulator
 do not provide a way to directly evaluate the likelihood function for a
 given observation, thereby making inference difficult.
 
-In this note, we develop a likelihood-free inference algorithm for fitting a
-forward non-differentiable generative model to observed data. We propose to
-adapt the adversarial training procedure of generative adversarial
+In this note, we develop a likelihood-free inference algorithm for the point
+estimation from observed data of the parameters of a forward non-differentiable
+generative model. We propose to adapt the adversarial
+training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
-non-differentiable minimax problem by minimizing variational upper bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the
-adversarial objectives. The procedure results in learning a proposal distribution over
+non-differentiable minimax problem by minimizing variational upper
+bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
+objectives. The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an abitrarily tight family of models whose
 joint collection of generated samples matches the observed data.
 
@@ -95,22 +97,25 @@ where $\mathbf{x} \in \mathbb{R}^d$ is the data and $\theta$ are the
 parameters of interest. The simulation may involve some complicated latent
 process, such that
 \begin{equation}\label{eqn:p_x}
-    p_\theta(\mathbf{x}) = \int p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}
+    p_\theta(\mathbf{x}) = \int p_\theta(\mathbf{x}|\mathbf{z}) p_{z(\theta)}(\mathbf{z}) d\mathbf{z}
 \end{equation}
-where $\mathbf{z} \in \mathbb{R}^m$ is a latent variable providing an external source
-of randomness.
+where $\mathbf{z} \in {\cal Z}$ is a latent variable providing an external
+source of randomness. In particular, $\mathbf{z}$ is not necessarily assumed to
+be a fixed-size vector (e.g., it can be a sequence of variable length) and its
+distribution $p_{z(\theta)}$ may itself depend on $\theta$ in some intricated way.
 
 We assume that we already have an accurate simulation of the stochastic
 generative process that defines $p_\theta(\mathbf{x}|\mathbf{z})$, as
-specified through a deterministic function $g(\cdot; \theta) : \mathbb{R}^m \to
-\mathbb{R}^d$. That is, we consider
+specified through a highly regularized deterministic function $g(\cdot; \theta) : {\cal Z} \to
+\mathbb{R}^d$ with usually few parameters. That is, we consider
 \begin{equation}\label{eqn:p_theta}
-    \mathbf{x} \sim p_\theta \equiv \mathbf{z} \sim p_z, \mathbf{x} = g(\mathbf{z}; \theta)
+    \mathbf{x} \sim p_\theta \equiv \mathbf{z} \sim p_{z(\theta)}, \mathbf{x} = g(\mathbf{z}; \theta)
 \end{equation}
 such that the likelihood $p_\theta(\mathbf{x})$ can be rewritten as
 \begin{equation}\label{eqn:p_x_sim}
-    p_\theta(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p(\mathbf{z}) d\mathbf{z}.
+    p_\theta(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p_{z(\theta)}(\mathbf{z}) d\mathbf{z}.
 \end{equation}
+\glnote{Is it correct to write $d\mathbf{z}$ given the undefined structure of ${\cal Z}$?}
 Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
 used to generate data in forward mode. For this reason, evaluating the integral
 in Eqn.~\ref{eqn:p_x_sim} is intractable. As commonly found
@@ -313,6 +318,7 @@ with randomly sampled parameters $\theta \sim q_\psi$, whose joint collection
 of generated samples is optimized with adversarial training to approach the real data distribution $p_r$.
 More formally, the learned model $p_\psi(\mathbf{x})$ therefore corresponds to the marginal distribution
 $\int q_\psi(\theta) p_\theta(\mathbf{x}) d\theta$ of the generated data.
+\glnote{Connection with variational bayes?}
 
 In consequence, the proposed inference algorithm does not necessarily guarantee that the
 proposal distribution $q_\psi$ will place its mass arbitrarily tight
