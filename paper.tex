@@ -187,10 +187,14 @@ Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound $U(\
     &= \int \left[ f(\mathbf{c}) \nabla_\psi \log q_\psi(\mathbf{c}) \right]  q_\psi(\mathbf{c})  d\mathbf{c} \nonumber \\
     &= \mathbb{E}_{\mathbf{c} \sim q_\psi(\mathbf{c})} [f(\mathbf{c}) \nabla_\psi \log q_\psi(\mathbf{c})]
 \end{align}
-Effectively, this means that provided that the score function $\nabla_\psi \log q_\psi(\mathbf{c})$ of the proposal
-is known and that one can evaluate $f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$, then
-one can construct empirical estimates of Eqn.~\ref{eqn:approx-grad}, which can
-in turn be used to minimize $U(\psi)$ with stochastic gradient descent (or a variant thereof, like Adam~\cite{2014arXiv1412.6980K} to account for scaling invariance and robustness to noisy gradients).
+Effectively, this means that provided that the score function $\nabla_\psi \log
+q_\psi(\mathbf{c})$ of the proposal is known and that one can evaluate
+$f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$, then one can construct empirical
+estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
+$U(\psi)$ with stochastic gradient descent (or a variant thereof, like
+Adam~\cite{2014arXiv1412.6980K} or the Natural Evolution Strategy
+algorithm~\citep{2011arXiv1106.4487W}, to account for scaling invariance and
+robustness to noisy gradients).
 
 % In this simple form, stochastic gradient descent based on
 % Eqn~\ref{eqn:approx-grad} is known to suffer from premature convergence and lack
@@ -272,7 +276,7 @@ When updating
 $d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be obtained by
 evaluating the exact and known gradient of $U_d$ over mini-batches of true and
 generated data, as ordinarily done in stochastic gradient descent. When updating
-$g$, estimates of $\nabla_\psi U_g$ and $\tilde{\nabla}_\psi U_g$ can be derived with forward
+$g$, estimates of $\nabla_\psi U_g$ can be derived with forward
 simulations, as described in the previous section.
 % That is,
 % \begin{equation}
@@ -322,7 +326,7 @@ in learning a smeared variation of the original simulator.
 
 For completeness, Algorithm~\ref{alg:avo} finally outlines the full adversarial variational
 optimization procedure, as built on top of WGAN-GP.
-Let us note however that the variational relaxation could similarly be coupled with
+Let us note that the variational relaxation could similarly be coupled with
 other variants of GANs and/or of evolution strategies.
 
 
