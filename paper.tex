@@ -193,7 +193,7 @@ $f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
 $U(\psi)$ with stochastic gradient descent (or a variant thereof, like
 Adam~\cite{2014arXiv1412.6980K} or the Natural Evolution Strategy
-algorithm~\citep{2011arXiv1106.4487W}, to account for scaling invariance and
+algorithm~\citep{2011arXiv1106.4487W}, for scaling invariance and
 robustness to noisy gradients).
 
 % In this simple form, stochastic gradient descent based on
@@ -278,15 +278,15 @@ evaluating the exact and known gradient of $U_d$ over mini-batches of true and
 generated data, as ordinarily done in stochastic gradient descent. When updating
 $g$, estimates of $\nabla_\psi U_g$ can be derived with forward
 simulations, as described in the previous section.
-% That is,
-% \begin{equation}
-%     \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
-% \end{equation} which we can approximate with mini-batches of
-% generated data
-% \begin{equation}
-%     \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
-% \end{equation}
-% for $\mathbf{z}_m \sim p_z$ and $\theta_m \sim q_\psi$.
+That is,
+\begin{equation}
+    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
+\end{equation} which we can approximate with mini-batches of
+generated data
+\begin{equation}
+    \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
+\end{equation}
+for $\mathbf{z}_m \sim p_z$ and $\theta_m \sim q_\psi$.
 \glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
 is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
 % In practice, using
@@ -296,9 +296,13 @@ is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
 % works as good it seems, but I am not sure to precisely understand why, nor whether this is correct...
 % It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
 }
+For completeness, Algorithm~\ref{alg:avo} outlines the proposed adversarial variational
+optimization procedure, as built on top of WGAN-GP.
+Obviously, the variational relaxation could similarly be coupled with
+other variants of GANs and/or of evolution strategies.
 
 
-\glnote{Bayesian vs. frequentist view.}
+\glnote{Discuss Bayesian vs. frequentist view; See Kyle comments on Slack.}
 Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 a distribution parameterized in terms of $\psi$:
@@ -323,11 +327,6 @@ distribution with low entropy, which has the effect of concentrating its density
 tightly around one or a few $\theta$ values. On the other hand, for small values of $\gamma$,
 proposal distributions with larger entropy are not penalized, which may result
 in learning a smeared variation of the original simulator.
-
-For completeness, Algorithm~\ref{alg:avo} finally outlines the full adversarial variational
-optimization procedure, as built on top of WGAN-GP.
-Let us note that the variational relaxation could similarly be coupled with
-other variants of GANs and/or of evolution strategies.
 
 
 
