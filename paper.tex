@@ -51,7 +51,7 @@ domain-based scientific simulator, and solve the resulting non-differentiable
 minimax problem by minimizing variationial upper bounds of the adversarial objectives.
 Effectively, the procedure results in learning an arbitrarily tight
 proposal distribution over simulator parameters, such that the corresponding
-marginal distribution  matches the observed data.
+marginal distribution of the generated data matches the observations.
 \glnote{Mention experimental results.}
 \glnote{Add 'so what?' conclusion.}
 
@@ -78,9 +78,8 @@ forward non-differentiable generative model to observed data. We propose to
 adapt the adversarial training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
-non-differentiable minimax problem by minimizing variational upper bounds of the adversarial objectives
-respectively with stochastic gradient descent and  natural evolution strategies~\citep{2011arXiv1106.4487W}.
-The procedure results in learning a proposal distribution over
+non-differentiable minimax problem by minimizing variational upper bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the
+adversarial objectives. The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an abitrarily tight family of models whose
 joint collection of generated samples matches the observed data.
 
@@ -166,7 +165,7 @@ training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\the
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim p_r$ and $\tilde{\mathbf{x}} \sim p_\theta$.
 
 
-\subsection{Natural evolution strategies}
+\subsection{Variational optimization}
 
 Evolution strategies~\citep{2011arXiv1106.4487W} and variational optimization~\cite{2012arXiv1212.4507S} are general
 optimization techniques that can be used to form a differentiable bound
@@ -191,27 +190,26 @@ Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound $U(\
 Effectively, this means that provided that the score function $\nabla_\psi \log q_\psi(\mathbf{c})$ of the proposal
 is known and that one can evaluate $f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$, then
 one can construct empirical estimates of Eqn.~\ref{eqn:approx-grad}, which can
-in turn be used to perform stochastic gradient descent (or a variant thereof)
-in order to minimize $U(\psi)$.
+in turn be used to minimize $U(\psi)$ with stochastic gradient descent (or a variant thereof, like Adam~\cite{2014arXiv1412.6980K} to account for scaling invariance and robustness to noisy gradients).
 
-In this simple form, stochastic gradient descent based on
-Eqn~\ref{eqn:approx-grad} is known to suffer from premature convergence and lack
-of scale invariance. To avoid the dependence on the parameterization of the
-proposal distribution, natural gradients~\citep{amari1998natural} can be used
-instead to point towards the steepest descent in the space of realizable
-proposal distributions, rather than in the space of their parameters. Effectively,
-the natural evolution strategy (NES) algorithm~\citep{2011arXiv1106.4487W}
-corrects the gradient of $U$ according to the local curvature of the KL-divergence
-surface of proposal distributions, which results in forming
-\begin{equation}\label{eqn:approx-grad-nat}
-    \tilde{\nabla}_\psi U(\psi) = \mathbf{F}(\psi)^{-1} \nabla_\psi U(\psi),
-\end{equation}
-where $\mathbf{F}(\psi)$ is the Fisher information matrix
-\begin{equation}
-    \mathbf{F}(\psi) = \mathbb{E}_{\theta \sim q_\phi}[ \nabla_\psi \log q_\psi(\theta) \nabla_\psi \log q_\psi(\theta)^{\top} ]
-\end{equation}
-and can be estimated from samples, in particular by reusing the derivatives $\nabla_\psi \log q_\psi(\theta)$ already
-evaluated to form $\nabla_\psi U(\psi)$.
+% In this simple form, stochastic gradient descent based on
+% Eqn~\ref{eqn:approx-grad} is known to suffer from premature convergence and lack
+% of scale invariance. To avoid the dependence on the parameterization of the
+% proposal distribution, natural gradients~\citep{amari1998natural} can be used
+% instead to point towards the steepest descent in the space of realizable
+% proposal distributions, rather than in the space of their parameters. Effectively,
+% the natural evolution strategy (NES) algorithm~\citep{2011arXiv1106.4487W}
+% corrects the gradient of $U$ according to the local curvature of the KL-divergence
+% surface of proposal distributions, which results in forming
+% \begin{equation}\label{eqn:approx-grad-nat}
+%     \tilde{\nabla}_\psi U(\psi) = \mathbf{F}(\psi)^{-1} \nabla_\psi U(\psi),
+% \end{equation}
+% where $\mathbf{F}(\psi)$ is the Fisher information matrix
+% \begin{equation}
+%     \mathbf{F}(\psi) = \mathbb{E}_{\theta \sim q_\phi}[ \nabla_\psi \log q_\psi(\theta) \nabla_\psi \log q_\psi(\theta)^{\top} ]
+% \end{equation}
+% and can be estimated from samples, in particular by reusing the derivatives $\nabla_\psi \log q_\psi(\theta)$ already
+% evaluated to form $\nabla_\psi U(\psi)$.
 
 
 % ==============================================================================
@@ -238,15 +236,15 @@ evaluated to form $\nabla_\psi U(\psi)$.
                 \For{$m=1$ to $M$}
                     \State{$\tilde{\mathbf{x}}_m \leftarrow g(\mathbf{z}_m; \theta_m)$}
                     \State{$\hat{\mathbf{x}}_m \leftarrow \epsilon_m \mathbf{x}_m + (1 - \epsilon_m) \tilde{\mathbf{x}}_m$}
-                    \State{$L^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \phi) - d(\mathbf{x}_m; \phi) + \lambda (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \phi) ||_2 - 1)^2 $}
+                    \State{$U_d^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \phi) - d(\mathbf{x}_m; \phi) + \lambda (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \phi) ||_2 - 1)^2 $}
                 \EndFor
-                \State{$\phi \leftarrow \text{RMSProp}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M L^{(m)})$}
+                \State{$\phi \leftarrow \text{Adam}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M U_d^{(m)})$}
             \EndFor
             \State{Sample a mini-batch $\{\mathbf{z}_m \}_{m=1}^M \sim p_z$, $\{\theta_m \}_{m=1}^M \sim q_\psi$.}  \Comment{Update $q_\psi$}
             \State{$\nabla_\psi U_g \leftarrow \tfrac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m)) \nabla_\psi \log q_\psi(\theta_m)$}
-            \State{$\mathbf{F}(\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi \log q_\psi(\theta_m) \nabla_\psi \log q_\psi(\theta_m)^{\top}$}
-            \State{$\nabla_\psi H(q_\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi q_\psi(\theta_m) \log q_\psi(\theta_m)$)}
-            \State{$\psi \leftarrow \text{SGD}(\mathbf{F}(\psi)^{-1} \nabla_\psi U_g + \gamma \nabla_\psi H(q_\psi)$}
+            % \State{$\mathbf{F}(\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi \log q_\psi(\theta_m) \nabla_\psi \log q_\psi(\theta_m)^{\top}$}
+            \State{$\nabla_\psi H(q_\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi q_\psi(\theta_m) \log q_\psi(\theta_m)$}
+            \State{$\psi \leftarrow \text{Adam}(\nabla_\psi U_g + \gamma \nabla_\psi H(q_\psi))$}
         \EndWhile
     \end{algorithmic}
     \end{algorithm}
@@ -262,7 +260,7 @@ gradients $\nabla_\theta g$ either do not exist or cannot be accessed. As a
 result, gradients $\nabla_\theta {\cal L}_g$ cannot be constructed and the
 optimization procedure cannot be carried out.
 
-In this work, we propose to rely on evolution strategies to minimize ${\cal
+In this work, we propose to rely on variational optimization to minimize ${\cal
 L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
 specifically, we consider a proposal distribution $q_\psi(\theta)$ over the
 parameters of $g$ and minimize in alternance the variational upper bounds
@@ -323,7 +321,7 @@ proposal distributions with larger entropy are not penalized, which may result
 in learning a smeared variation of the original simulator.
 
 For completeness, Algorithm~\ref{alg:avo} finally outlines the full adversarial variational
-optimization procedure, as built on top of WGAN-GP and NES.
+optimization procedure, as built on top of WGAN-GP.
 Let us note however that the variational relaxation could similarly be coupled with
 other variants of GANs and/or of evolution strategies.
 
