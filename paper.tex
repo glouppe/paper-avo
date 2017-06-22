@@ -302,7 +302,6 @@ Obviously, the variational relaxation could similarly be coupled with
 other variants of GANs and/or of evolution strategies.
 
 
-\glnote{Discuss Bayesian vs. frequentist view; See Kyle comments on Slack.}
 Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 a distribution parameterized in terms of $\psi$:
@@ -312,9 +311,13 @@ a distribution parameterized in terms of $\psi$:
 Intuitively, this corresponds to a family of simulators, each configured
 with randomly sampled parameters $\theta \sim q_\psi$, whose joint collection
 of generated samples is optimized with adversarial training to approach the real data distribution $p_r$.
-However, this formulation does not necessarily guarantee that the
+More formally, the learned model $p_\psi(\mathbf{x})$ therefore corresponds to the marginal distribution
+$\int q_\psi(\theta) p_\theta(\mathbf{x}) d\theta$ of the generated data.
+
+In consequence, the proposed inference algorithm does not necessarily guarantee that the
 proposal distribution $q_\psi$ will place its mass arbitrarily tight
-around the parameters of interest $\theta^*$. For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
+around the parameters of interest, which might be an issue when one is rather interested in point estimates $\theta^*$.
+For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
 the proposal distribution. That is,
 \begin{equation}
