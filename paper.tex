@@ -348,12 +348,18 @@ in learning a smeared variation of the original simulator.
 
 \section{Related works}
 
+As reviewed in \cite{2016arXiv161003483M}, likelihood-free inference is
+intimately tied to a class of algorithms that can be framed as density
+estimation-by-comparison. In most cases, these algorithms are formulated as an
+iterative two-step process where the model distribution is first compared to the
+true data distribution and then updated to make it more comparable to the
+latter. Closest to our work are inference
+algorithms~\citep{Neal:2007zz,gutmann2012noise,goodfellow2014generative,cranmer2015approximating,2016arXiv161110242D}
+that rely on a classifier between generated and true data to estimate the
+density ratio between the two distributions and make parameter updates.
+\glnote{ABC + Classifier ABC.}
+\glnote{Explain how this work is different.}
 
-\glnote{Implicit generative models.}
-\glnote{gan + classifier ABC.}
-
-\glnote{likelihood free inference, density ratio by classification}
-\glnote{carl~\citep{cranmer2015approximating}.}
 
 
 
