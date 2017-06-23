@@ -76,7 +76,9 @@ n_features = X_obs.shape[1]
 
 # Proposal distribution
 
-params_proposal = make_beta_proposal(n_params)
+params_proposal = make_beta_proposal(n_params,
+                                     log_alpha=np.log(2.0),
+                                     log_beta=np.log(2.0))
 
 
 # Critic
@@ -85,8 +87,10 @@ def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
     params = {"W": [glorot_uniform(n_hidden, 1, rng),
                     glorot_uniform(n_hidden, n_hidden, rng),
+                    glorot_uniform(n_hidden, n_hidden, rng),
                     glorot_uniform(n_hidden, 0, rng)],
               "b": [np.zeros(n_hidden),
+                    np.zeros(n_hidden),
                     np.zeros(n_hidden),
                     np.zeros(1)]}
     return params
@@ -98,7 +102,8 @@ def predict(X, params):
     h = X
     h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.1)
     h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.1)
-    h = np.dot(params["W"][2], h.T).T + params["b"][2]
+    h = relu(np.dot(params["W"][2], h.T).T + params["b"][2], alpha=0.1)
+    h = np.dot(params["W"][3], h.T).T + params["b"][3]
     return h
 
 grad_predict_critic = ag.elementwise_grad(predict)
@@ -131,14 +136,14 @@ def loss_critic(params_critic, i):
     norms = np.sum(grad_Dx ** 2, axis=1) ** 0.5
     l_gp = np.mean((norms - 1.0) ** 2.0)
 
-    return l_wgan + 0.025 * l_gp
+    return l_wgan + 0.01 * l_gp
 
 grad_loss_critic = ag.grad(loss_critic)
 
 
 # grad_psi E_theta~q_psi, z~p_z(theta) [ d(g(z, theta) ]
 
-def approx_grad_u(params_proposal, i, gamma=0.1):
+def approx_grad_u(params_proposal, i, gamma=0.05):
     rng = check_random_state(i)
     grad_u = make_beta_proposal(n_params)
     grad_ent = make_beta_proposal(n_params)
@@ -169,7 +174,7 @@ def approx_grad_u(params_proposal, i, gamma=0.1):
 opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
                            step_size=0.01, b1=0.5, b2=0.5)
 opt_proposal = AdamOptimizer(approx_grad_u, params_proposal,
-                             step_size=0.01, b1=0.25, b2=0.25)
+                             step_size=0.005, b1=0.1, b2=0.1)
 
 opt_critic.step(100)
 opt_critic.move_to(params_critic)
@@ -183,7 +188,7 @@ for i in range(201):
 
     # fit critic
     opt_critic.reset()   # reset moments
-    opt_critic.step(100)
+    opt_critic.step(50)
     opt_critic.move_to(params_critic)
 
     # plot
