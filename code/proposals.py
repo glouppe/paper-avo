@@ -1,33 +1,37 @@
 import autograd as ag
 import autograd.numpy as np
-from scipy.stats import norm
+from autograd.scipy.special import gammaln
+
+from scipy.stats import norm as sp_norm
+from scipy.stats import beta as sp_beta
 
 
-def make_proposal(n_parameters):
-    mu = np.zeros(n_parameters)
-    beta = np.zeros(n_parameters)
-    return {"mu": mu, "beta": beta}
+# Gaussian proposal (for unbounded supports)
+
+def make_gaussian_proposal(n_parameters, mu=0.0, log_sigma=0.0):
+    return {"mu":  mu * np.ones(n_parameters),
+            "log_sigma": log_sigma * np.ones(n_parameters)}
 
 
-def proposal_draw(params, n_samples, random_state=None):
+def gaussian_draw(params, n_samples, random_state=None):
     n_parameters = len(params["mu"])
     mu = params["mu"]
-    sigma = np.exp(params["beta"])
+    sigma = np.exp(params["log_sigma"])
 
     thetas = np.zeros((n_samples, n_parameters))
 
     for i in range(n_parameters):
-        thetas[:, i] = norm.rvs(size=n_samples,
-                                loc=mu[i],
-                                scale=sigma[i],
-                                random_state=random_state)
+        thetas[:, i] = sp_norm.rvs(size=n_samples,
+                                   loc=mu[i],
+                                   scale=sigma[i],
+                                   random_state=random_state)
 
     return thetas
 
 
-def proposal_logpdf(params, theta, eps=10e-8):
+def gaussian_logpdf(params, theta):
     mu = params["mu"]
-    sigma = np.exp(params["beta"])
+    sigma = np.exp(params["log_sigma"])
 
     logp = -(np.log(sigma) +
              np.log((2. * np.pi) ** 0.5) +
@@ -36,10 +40,52 @@ def proposal_logpdf(params, theta, eps=10e-8):
     return np.sum(logp)
 
 
-def proposal_entropy(params, theta):
-    logp = proposal_logpdf(params, theta)
+def gaussian_entropy(params, theta):
+    logp = gaussian_logpdf(params, theta)
     return -np.exp(logp) * logp
 
 
-grad_proposal_logpdf = ag.grad(proposal_logpdf)
-grad_proposal_entropy = ag.grad(proposal_entropy)
+grad_gaussian_logpdf = ag.grad(gaussian_logpdf)
+grad_gaussian_entropy = ag.grad(gaussian_entropy)
+
+
+# Beta proposal (for continuous in [0,1])
+
+def make_beta_proposal(n_parameters, log_alpha=0.0, log_beta=0.0):
+    return {"log_alpha":  log_alpha * np.ones(n_parameters),
+            "log_beta": log_beta * np.ones(n_parameters)}
+
+
+def beta_draw(params, n_samples, random_state=None):
+    n_parameters = len(params["log_alpha"])
+    alpha = np.exp(params["log_alpha"])
+    beta = np.exp(params["log_beta"])
+
+    thetas = np.zeros((n_samples, n_parameters))
+
+    for i in range(n_parameters):
+        thetas[:, i] = sp_beta.rvs(size=n_samples,
+                                   a=alpha[i], b=beta[i],
+                                   random_state=random_state)
+
+    return thetas
+
+
+def beta_logpdf(params, theta):
+    alpha = np.exp(params["log_alpha"])
+    beta = np.exp(params["log_beta"])
+
+    logp = (gammaln(alpha + beta) - gammaln(alpha) - gammaln(beta) +
+            (alpha - 1) * np.log(theta) +
+            (beta - 1) * np.log(1 - theta))
+
+    return np.sum(logp)
+
+
+def beta_entropy(params, theta):
+    logp = beta_logpdf(params, theta)
+    return -np.exp(logp) * logp
+
+
+grad_beta_logpdf = ag.grad(beta_logpdf)
+grad_beta_entropy = ag.grad(beta_entropy)

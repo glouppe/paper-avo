@@ -1,34 +1,73 @@
+import copy
 import autograd as ag
 import autograd.numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import norm
 
 from nn import glorot_uniform
 from nn import relu
 from nn import AdamOptimizer
 
-from proposals import make_gaussian_proposal
-from proposals import gaussian_draw
-from proposals import gaussian_logpdf
-from proposals import grad_gaussian_logpdf
-from proposals import grad_gaussian_entropy
+from proposals import make_beta_proposal
+from proposals import beta_draw
+from proposals import beta_logpdf
+from proposals import grad_beta_logpdf
+from proposals import grad_beta_entropy
 
 from sklearn.utils import check_random_state
 
 # Global params
 
 batch_size = 64 * 8
-true_theta = np.array([0.5])
+true_theta = np.array([(42 - 40) / (50 - 40),
+                       (0.9 - 0.5) / (1.5 - 0.5)])
 make_plots = True
 
 
 # Simulator
 
+def a_fb(sqrtshalf, gf):
+    MZ = 90
+    GFNom = 1.0
+    sqrts = sqrtshalf * 2.
+    A_FB_EN = np.tanh((sqrts - MZ) / MZ * 10)
+    A_FB_GF = gf / GFNom
+
+    return 2 * A_FB_EN*A_FB_GF
+
+
+def diffxsec(costheta, sqrtshalf, gf):
+    norm = 2. * (1. + 1. / 3.)
+    return ((1 + costheta ** 2) + a_fb(sqrtshalf, gf) * costheta) / norm
+
+def rej_sample_costheta(n_samples, theta, rng):
+    sqrtshalf = theta[0]
+    gf = theta[1]
+
+    ntrials = 0
+    samples = []
+    x = np.linspace(-1, 1, num=1000)
+    maxval = np.max(diffxsec(x, sqrtshalf, gf))
+
+    while len(samples) < n_samples:
+        ntrials = ntrials+1
+        xprop = rng.uniform(-1, 1)
+        ycut = rng.rand()
+        yprop = diffxsec(xprop, sqrtshalf, gf)/maxval
+        if yprop/maxval < ycut:
+            continue
+        samples.append(xprop)
+
+    return np.array(samples)
+
 def simulator(theta, n_samples, random_state=None):
-    return norm.rvs(size=n_samples,
-                    loc=theta[0],
-                    scale=0.5,
-                    random_state=random_state).reshape(-1, 1)
+    theta = copy.copy(theta)
+    theta[0] = theta[0] * (50 - 40) + 40     # sqrtshalf
+    theta[1] = theta[1] * (1.5 - 0.5) + 0.5  # gf
+
+    rng = check_random_state(random_state)
+    samples = rej_sample_costheta(n_samples, theta, rng)
+
+    return samples.reshape(-1, 1)
 
 X_obs = simulator(true_theta, 10000, random_state=123)
 n_params = len(true_theta)
@@ -37,7 +76,7 @@ n_features = X_obs.shape[1]
 
 # Proposal distribution
 
-params_proposal = make_gaussian_proposal(n_params, mu=0.8, log_sigma=0.0)
+params_proposal = make_beta_proposal(n_params)
 
 
 # Critic
@@ -73,7 +112,7 @@ def loss_critic(params_critic, i):
     rng = check_random_state(i)
 
     # WGAN loss
-    thetas = gaussian_draw(params_proposal, batch_size // 2)
+    thetas = beta_draw(params_proposal, batch_size // 2)
     _X_gen = np.zeros((batch_size // 2, n_features))
     for j, theta in enumerate(thetas):
         _X_gen[j, :] = simulator(theta, 1, random_state=rng).ravel()
@@ -101,19 +140,19 @@ grad_loss_critic = ag.grad(loss_critic)
 
 def approx_grad_u(params_proposal, i, gamma=0.1):
     rng = check_random_state(i)
-    grad_u = make_gaussian_proposal(n_params)
-    grad_ent = make_gaussian_proposal(n_params)
-    thetas = gaussian_draw(params_proposal, batch_size, random_state=rng)
+    grad_u = make_beta_proposal(n_params)
+    grad_ent = make_beta_proposal(n_params)
+    thetas = beta_draw(params_proposal, batch_size, random_state=rng)
 
     for theta in thetas:
         x = simulator(theta, 1)
         dx = predict(x, params_critic).ravel()
 
-        grad_q = grad_gaussian_logpdf(params_proposal, theta)
+        grad_q = grad_beta_logpdf(params_proposal, theta)
         for k, v in grad_q.items():
             grad_u[k] += -dx * v
 
-        grad_entropy = grad_gaussian_entropy(params_proposal, theta)
+        grad_entropy = grad_beta_entropy(params_proposal, theta)
         for k, v in grad_entropy.items():
             grad_ent[k] += v
 
@@ -144,7 +183,7 @@ for i in range(201):
 
     # fit critic
     opt_critic.reset()   # reset moments
-    opt_critic.step(50)
+    opt_critic.step(100)
     opt_critic.move_to(params_critic)
 
     # plot
@@ -152,29 +191,23 @@ for i in range(201):
         fig = plt.figure()
 
         ax1 = fig.add_subplot(211)
-        plt.xlim(-3, 3)
-        plt.ylim(0, 1)
+        plt.xlim(-1, 1)
+        plt.ylim(0, 1.5)
         plt.hist(X_obs, histtype="step", label=r"$x \sim p_r$",
-                 range=(-3, 3), bins=50, normed=1)
+                 range=(-1, 1), bins=20, normed=1)
 
-        thetas = gaussian_draw(params_proposal, 10000)
+        thetas = beta_draw(params_proposal, 10000)
         X_gen = np.zeros((len(thetas), 1))
         for j, theta in enumerate(thetas):
             X_gen[j, :] = simulator(theta, 1).ravel()
 
-        thetas = np.linspace(-3, 3, num=300)
-        logp = np.array([gaussian_logpdf(params_proposal, theta)
-                         for theta in thetas])
-        plt.plot(thetas, np.exp(logp), label=r"$q_\psi$")
-
         plt.hist(X_gen, histtype="step", label=r"$x \sim p_\psi$",
-                 range=(-3, 3), bins=50, normed=1)
-        plt.title(r"$i = %d, \mu=%.3f, \sigma=%.3f$" %
-                  (i, np.mean(X_gen[:, 0]), np.std(X_gen[:, 0])))
+                 range=(-1, 1), bins=20, normed=1)
+        plt.title(r"$i = %d$" % i)
         plt.legend()
 
         ax2 = fig.add_subplot(212)
-        plt.xlim(-3, 3)
+        plt.xlim(-1, 1)
         plt.ylim(-30, 30)
         xs = np.linspace(-3, 3).reshape(-1, 1)
         y_pred = predict(xs, params_critic)
