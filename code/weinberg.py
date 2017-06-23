@@ -17,7 +17,7 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-batch_size = 64 * 8
+batch_size = 64
 true_theta = np.array([(42 - 40) / (50 - 40),
                        (0.9 - 0.5) / (1.5 - 0.5)])
 make_plots = True

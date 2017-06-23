@@ -113,9 +113,9 @@ specified through a highly regularized deterministic function $g(\cdot; \theta) 
 \end{equation}
 such that the likelihood $p_\theta(\mathbf{x})$ can be rewritten as
 \begin{equation}\label{eqn:p_x_sim}
-    p_\theta(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p_{z(\theta)}(\mathbf{z}) d\mathbf{z}.
+    p_\theta(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p_{z(\theta)}(\mathbf{z}) \mu(d\mathbf{z}),
 \end{equation}
-\glnote{Is it correct to write $d\mathbf{z}$ given the undefined structure of ${\cal Z}$?}
+where $\mu$ is a probability measure.
 Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
 used to generate data in forward mode. For this reason, evaluating the integral
 in Eqn.~\ref{eqn:p_x_sim} is intractable. As commonly found
