@@ -128,7 +128,7 @@ of interest $\theta^*$ that minimize the divergence between $p_r$ and
 the modeled data distribution $p_\theta$ induced by $g(\cdot;
 \theta)$ over $\mathbf{z}$. That is,
 \begin{equation}
-    \theta^* = \arg \min_\theta \rho(p_r, p_\theta),
+    \theta^* = \arg \min_{\theta \in \Theta} \rho(p_r, p_\theta),
 \end{equation}
 where $\rho$ is some distance or divergence.
 
@@ -146,7 +146,7 @@ capable of producing samples from random noise $\mathbf{z}$. More specifically,
 a generative model $g(\cdot; \theta)$ is pit against an adversarial
 classifier $d(\cdot; \phi):\mathbb{R}^d \to [0,1]$ with parameters $\phi$ and whose antagonistic objective is to recognize real data $\mathbf{x}$
 from generated data $\tilde{\mathbf{x}} = g(\mathbf{z}; \theta)$. Both models $g$ and $d$
-are trained simultaneously, in such a way that $g$ learns to maximally confuse
+are trained simultaneously, in such a way that $g$ learns to fool
 its adversary $d$ (which happens when $g$ produces samples comparable to the
 observed data), while $d$ continuously adapts to changes in $g$. When $d$ is
 trained to optimality before each parameter update of the generator, it can
@@ -177,24 +177,26 @@ optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
 \begin{equation}
-    \min_{\mathbf{c} \in {\cal C}} f(\mathbf{c}) \leq \mathbb{E}_{\mathbf{c} \sim q_\psi(\mathbf{c})} [f(\mathbf{c})] = U(\psi),
+    \min_{\theta \in \Theta} f(\theta) \leq \mathbb{E}_{\theta \sim q_\psi(\theta)} [f(\theta)] = U(\psi),
 \end{equation}
-where $q_\psi$ is a proposal distribution with parameters $\psi$ over input values $\mathbf{c}$.
+where $q_\psi$ is a proposal distribution with parameters $\psi$ over input values $\theta$.
 That is, the minimum of a set of function values is always less than or equal
 to any of their average. Provided that the proposal is flexible enough, the parameters $\psi$
-can be updated to place its mass arbitrarily tight around the optimum $\mathbf{c}^* = \min_{\mathbf{c} \in {\cal C}} f(\mathbf{c})$.
+can be updated to place its mass arbitrarily tight around the optimum $\theta^* = \min_{\theta \in \Theta} f(\theta)$.
 
-Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound $U(\psi)$ is differentiable, and using the log-likelihood trick it comes:
+Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound
+$U(\psi)$ is differentiable with respect to $\psi$, and using the log-likelihood
+trick it comes:
 \begin{align}\label{eqn:approx-grad}
-    \nabla_\psi U(\psi) &= \nabla_\psi \mathbb{E}_{\mathbf{c} \sim q_\psi(\mathbf{c})} [f(\mathbf{c})] \nonumber \\
-    &= \nabla_\psi \int f(\mathbf{c})  q_\psi(\mathbf{c})  d\mathbf{c} \nonumber \\
-    &= \int f(\mathbf{c}) \nabla_\psi q_\psi(\mathbf{c})  d\mathbf{c} \nonumber \\
-    &= \int \left[ f(\mathbf{c}) \nabla_\psi \log q_\psi(\mathbf{c}) \right]  q_\psi(\mathbf{c})  d\mathbf{c} \nonumber \\
-    &= \mathbb{E}_{\mathbf{c} \sim q_\psi(\mathbf{c})} [f(\mathbf{c}) \nabla_\psi \log q_\psi(\mathbf{c})]
+    \nabla_\psi U(\psi) &= \nabla_\psi \mathbb{E}_{\theta \sim q_\psi(\theta)} [f(\theta)] \nonumber \\
+    &= \nabla_\psi \int f(\theta)  q_\psi(\theta)  d\theta \nonumber \\
+    &= \int f(\theta) \nabla_\psi q_\psi(\theta)  d\theta \nonumber \\
+    &= \int \left[ f(\theta) \nabla_\psi \log q_\psi(\theta) \right]  q_\psi(\theta)  d\theta \nonumber \\
+    &= \mathbb{E}_{\theta \sim q_\psi(\theta)} [f(\theta) \nabla_\psi \log q_\psi(\theta)]
 \end{align}
 Effectively, this means that provided that the score function $\nabla_\psi \log
-q_\psi(\mathbf{c})$ of the proposal is known and that one can evaluate
-$f(\mathbf{\mathbf{c}})$ for any $\mathbf{c}$, then one can construct empirical
+q_\psi(\theta)$ of the proposal is known and that one can evaluate
+$f(\mathbf{\theta})$ for any $\theta$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
 $U(\psi)$ with stochastic gradient descent (or a variant thereof, like
 Adam~\cite{2014arXiv1412.6980K} or the Natural Evolution Strategy
@@ -233,15 +235,15 @@ robustness to noisy gradients).
     \begin{flushleft}
         {\it Inputs:} observed data $\{ \mathbf{x}_i \}_{i=1}^N \sim p_r$, simulator $g$.\\
         {\it Outputs:} proposal distribution $q_\psi(\theta)$, such that $p_r \approx p_\psi$.\\
-        {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the gradient penalty coefficient $\lambda$; the entropy penalty coefficient $\gamma$.
+        {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the size $M$ of a mini-batch; the gradient penalty coefficient $\lambda$; the entropy penalty coefficient $\gamma$.
     \end{flushleft}
 
     \label{alg:avo}
     \begin{algorithmic}[1]
-        \State{$q_\psi \leftarrow \text{prior on $\theta$ (with differentiable and known likelihood)}$}
+        \State{$q_\psi \leftarrow \text{prior on $\theta$ (with differentiable and known density)}$}
         \While{$\psi$ has not converged}
             \For{$i=1$ to $n_{\text{critic}}$} \Comment{Update $d$}
-                \State{Sample a mini-batch $\{\mathbf{x}_m \}_{m=1}^M \sim p_r$, $\{\mathbf{z}_m \}_{m=1}^M \sim p_z$, $\{\theta_m \}_{m=1}^M \sim q_\psi$, $\{\epsilon_m \}_{m=1}^M \sim U[0,1]$.}
+                \State{Sample a mini-batch $\{\mathbf{x}_m \sim p_r, \theta_m \sim q_\psi, \mathbf{z}_m \sim p_{z(\theta_m)}, \epsilon_m \sim U[0,1] \}_{m=1}^M$.}
                 \For{$m=1$ to $M$}
                     \State{$\tilde{\mathbf{x}}_m \leftarrow g(\mathbf{z}_m; \theta_m)$}
                     \State{$\hat{\mathbf{x}}_m \leftarrow \epsilon_m \mathbf{x}_m + (1 - \epsilon_m) \tilde{\mathbf{x}}_m$}
@@ -249,7 +251,7 @@ robustness to noisy gradients).
                 \EndFor
                 \State{$\phi \leftarrow \text{Adam}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M U_d^{(m)})$}
             \EndFor
-            \State{Sample a mini-batch $\{\mathbf{z}_m \}_{m=1}^M \sim p_z$, $\{\theta_m \}_{m=1}^M \sim q_\psi$.}  \Comment{Update $q_\psi$}
+            \State{Sample a mini-batch $\{ \theta_m \sim q_\psi,  \mathbf{z}_m \sim p_{z(\theta_m)} \}_{m=1}^M$.}  \Comment{Update $q_\psi$}
             \State{$\nabla_\psi U_g \leftarrow \tfrac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m)) \nabla_\psi \log q_\psi(\theta_m)$}
             % \State{$\mathbf{F}(\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi \log q_\psi(\theta_m) \nabla_\psi \log q_\psi(\theta_m)^{\top}$}
             \State{$\nabla_\psi H(q_\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi q_\psi(\theta_m) \log q_\psi(\theta_m)$}
@@ -272,7 +274,7 @@ optimization procedure cannot be carried out.
 In this work, we propose to rely on variational optimization to minimize ${\cal
 L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
 specifically, we consider a proposal distribution $q_\psi(\theta)$ over the
-parameters of $g$ and minimize in alternance the variational upper bounds
+parameters of $g$ and $p_\theta$ and minimize in alternation the variational upper bounds
 \begin{align}
     U_d &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_d ] \label{eqn:vo-ud} \\
     U_g &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] \label{eqn:vo-ug}
@@ -285,13 +287,13 @@ $g$, estimates of $\nabla_\psi U_g$ can be derived with forward
 simulations, as described in the previous section.
 That is,
 \begin{equation}
-    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_z}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
+    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_{z(\theta)}}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
 \end{equation} which we can approximate with mini-batches of
 generated data
 \begin{equation}
     \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
 \end{equation}
-for $\mathbf{z}_m \sim p_z$ and $\theta_m \sim q_\psi$.
+for $\theta_m \sim q_\psi$ and $\mathbf{z}_m \sim p_{z(\theta_m)}$ and .
 \glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
 is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
 % In practice, using
@@ -311,7 +313,7 @@ Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 a distribution parameterized in terms of $\psi$:
 \begin{equation}\label{eqn:p_psi}
-    \mathbf{x} \sim p_\psi \equiv \mathbf{z} \sim p_z, \theta \sim q_\psi, \mathbf{x} = g(\mathbf{z}; \theta).
+    \mathbf{x} \sim p_\psi \equiv \theta \sim q_\psi, \mathbf{z} \sim p_{z(\theta)}, \mathbf{x} = g(\mathbf{z}; \theta).
 \end{equation}
 Intuitively, this corresponds to a family of simulators, each configured
 with randomly sampled parameters $\theta \sim q_\psi$, whose joint collection
