@@ -91,29 +91,29 @@ joint collection of generated samples matches the observed data.
 \section{Problem statement}
 \label{sec:problem}
 
-We consider a family of parameterized densities $p_\theta(\mathbf{x})$
+We consider a family of parameterized densities $p(\mathbf{x}|\theta)$
 defined implicitly through the simulation of a stochastic generative process,
 where $\mathbf{x} \in \mathbb{R}^d$ is the data and $\theta$ are the
 parameters of interest. The simulation may involve some complicated latent
 process, such that
 \begin{equation}\label{eqn:p_x}
-    p_\theta(\mathbf{x}) = \int p_\theta(\mathbf{x}|\mathbf{z}) p_{z(\theta)}(\mathbf{z}) d\mathbf{z}
+    p(\mathbf{x}|\theta) = \int p(\mathbf{x}|\mathbf{z},\theta) p(\mathbf{z}|\theta) d\mathbf{z}
 \end{equation}
 where $\mathbf{z} \in {\cal Z}$ is a latent variable providing an external
 source of randomness. In particular, $\mathbf{z}$ is not necessarily assumed to
 be a fixed-size vector (e.g., it can be a sequence of variable length) and its
-distribution $p_{z(\theta)}$ may itself depend on $\theta$ in some intricated way.
+distribution $p(\mathbf{z}|\theta)$ may itself depend on $\theta$ in some intricated way.
 
 We assume that we already have an accurate simulation of the stochastic
-generative process that defines $p_\theta(\mathbf{x}|\mathbf{z})$, as
+generative process that defines $p(\mathbf{x}|\mathbf{z},\theta)$, as
 specified through a highly regularized deterministic function $g(\cdot; \theta) : {\cal Z} \to
 \mathbb{R}^d$ with usually few parameters. That is, we consider
 \begin{equation}\label{eqn:p_theta}
-    \mathbf{x} \sim p_\theta \equiv \mathbf{z} \sim p_{z(\theta)}, \mathbf{x} = g(\mathbf{z}; \theta)
+    \mathbf{x} \sim p(\mathbf{x}|\theta) \equiv \mathbf{z} \sim p(\mathbf{z}|\theta), \mathbf{x} = g(\mathbf{z}; \theta)
 \end{equation}
-such that the likelihood $p_\theta(\mathbf{x})$ can be rewritten as
+such that the likelihood $p(\mathbf{x}|\theta)$ can be rewritten as
 \begin{equation}\label{eqn:p_x_sim}
-    p_\theta(\mathbf{x}) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p_{z(\theta)}(\mathbf{z}) \mu(d\mathbf{z}),
+    p(\mathbf{x}|\theta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\mathbf{z}:g(\mathbf{z};\theta) \leq \mathbf{x}\}} p(\mathbf{z}|\theta) \mu(d\mathbf{z}),
 \end{equation}
 where $\mu$ is a probability measure.
 Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
@@ -123,12 +123,12 @@ in science, we finally assume the lack of access to or existence of derivatives 
 e.g. as when $g$ is specified as a computer program.
 
 Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the
-(unknown) true distribution $p_r$, our goal is the inference of the parameters
-of interest $\theta^*$ that minimize the divergence between $p_r$ and
-the modeled data distribution $p_\theta$ induced by $g(\cdot;
+(unknown) true distribution $p_r(\mathbf{x})$, our goal is the inference of the parameters
+of interest $\theta^*$ that minimize the divergence between $p_r(\mathbf{x})$ and
+the modeled data distribution $p(\mathbf{x}|\theta)$ induced by $g(\cdot;
 \theta)$ over $\mathbf{z}$. That is,
 \begin{equation}
-    \theta^* = \arg \min_{\theta \in \Theta} \rho(p_r, p_\theta),
+    \theta^* = \arg \min_{\theta \in \Theta} \rho(p_r(\mathbf{x}), p(\mathbf{x}|\theta)),
 \end{equation}
 where $\rho$ is some distance or divergence.
 
@@ -151,23 +151,25 @@ its adversary $d$ (which happens when $g$ produces samples comparable to the
 observed data), while $d$ continuously adapts to changes in $g$. When $d$ is
 trained to optimality before each parameter update of the generator, it can
 be shown that the original adversarial learning procedure amounts to minimizing
-the Jensen-Shannon divergence $\text{JSD}(p_r \parallel p_\theta)$ between $p_r$ and $p_\theta$.
+the Jensen-Shannon divergence $\text{JSD}(p_r(\mathbf{x}) \parallel p(\mathbf{x}|\theta))$ between $p_r(\mathbf{x})$ and $p(\mathbf{x}|\theta)$.
 
 As thoroughly explored in \citep{2017arXiv170104862A}, GANs remain remarkably
 difficult to train because of vanishing gradients as $d$ saturates, or because of
 unreliable updates when the training procedure is relaxed. As a remedy,
 Wasserstein GANs~\citep{2017arXiv170107875A} reformulate the adversarial
-setup in order to minimize the Wasserstein-1 distance $W(p_r, p_\theta)$ by
+setup in order to minimize the Wasserstein-1 distance $W(p_r(\mathbf{x}), p(\mathbf{x}|\theta))$ by
 replacing the adversarial classifier with a 1-Lipschitz adversarial critic
 $d(\cdot; \phi) : \mathbb{R}^d \to \mathbb{R}$. Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
 for stabilizing the optimization procedure,
 training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\theta$ in order to respectively minimize
 \begin{align}
-    {\cal L}_d =\,& \mathbb{E}_{\tilde{\mathbf{x}} \sim p_\theta} [d(\tilde{\mathbf{x}};\phi)] - \mathbb{E}_{\mathbf{x} \sim p_r} [d(\mathbf{x};\phi)]  \nonumber \\
-                  & + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
-    {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p_\theta} [d(\tilde{\mathbf{x}};\phi)]
+    {\cal L}_d =\,& \mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\phi)]  \nonumber \\
+                  & + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
+    {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)]
 \end{align}
-where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} + (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim p_r$ and $\tilde{\mathbf{x}} \sim p_\theta$.
+where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} +
+(1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim
+p_r(\mathbf{x})$ and $\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)$.
 
 
 \subsection{Variational optimization}
@@ -177,9 +179,9 @@ optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
 \begin{equation}
-    \min_{\theta \in \Theta} f(\theta) \leq \mathbb{E}_{\theta \sim q_\psi(\theta)} [f(\theta)] = U(\psi),
+    \min_{\theta \in \Theta} f(\theta) \leq \mathbb{E}_{\theta \sim q(\theta|\psi)} [f(\theta)] = U(\psi),
 \end{equation}
-where $q_\psi$ is a proposal distribution with parameters $\psi$ over input values $\theta$.
+where $q(\theta|\psi)$ is a proposal distribution with parameters $\psi$ over input values $\theta$.
 That is, the minimum of a set of function values is always less than or equal
 to any of their average. Provided that the proposal is flexible enough, the parameters $\psi$
 can be updated to place its mass arbitrarily tight around the optimum $\theta^* = \min_{\theta \in \Theta} f(\theta)$.
@@ -188,14 +190,14 @@ Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound
 $U(\psi)$ is differentiable with respect to $\psi$, and using the log-likelihood
 trick it comes:
 \begin{align}\label{eqn:approx-grad}
-    \nabla_\psi U(\psi) &= \nabla_\psi \mathbb{E}_{\theta \sim q_\psi(\theta)} [f(\theta)] \nonumber \\
-    &= \nabla_\psi \int f(\theta)  q_\psi(\theta)  d\theta \nonumber \\
-    &= \int f(\theta) \nabla_\psi q_\psi(\theta)  d\theta \nonumber \\
-    &= \int \left[ f(\theta) \nabla_\psi \log q_\psi(\theta) \right]  q_\psi(\theta)  d\theta \nonumber \\
-    &= \mathbb{E}_{\theta \sim q_\psi(\theta)} [f(\theta) \nabla_\psi \log q_\psi(\theta)]
+    \nabla_\psi U(\psi) &= \nabla_\psi \mathbb{E}_{\theta \sim q(\theta|\psi)} [f(\theta)] \nonumber \\
+    &= \nabla_\psi \int f(\theta)  q(\theta|\psi)  d\theta \nonumber \\
+    &= \int f(\theta) \nabla_\psi q(\theta|\psi)  d\theta \nonumber \\
+    &= \int \left[ f(\theta) \nabla_\psi \log q(\theta|\psi) \right]  q(\theta|\psi) d\theta \nonumber \\
+    &= \mathbb{E}_{\theta \sim q(\theta|\psi)} [f(\theta) \nabla_\psi \log q(\theta|\psi)]
 \end{align}
 Effectively, this means that provided that the score function $\nabla_\psi \log
-q_\psi(\theta)$ of the proposal is known and that one can evaluate
+q(\theta|\psi)$ of the proposal is known and that one can evaluate
 $f(\mathbf{\theta})$ for any $\theta$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
 $U(\psi)$ with stochastic gradient descent (or a variant thereof, like
@@ -233,17 +235,17 @@ robustness to noisy gradients).
     \caption{Adversarial variational optimization.}
 
     \begin{flushleft}
-        {\it Inputs:} observed data $\{ \mathbf{x}_i \}_{i=1}^N \sim p_r$, simulator $g$.\\
-        {\it Outputs:} proposal distribution $q_\psi(\theta)$, such that $p_r \approx p_\psi$.\\
+        {\it Inputs:} observed data $\{ \mathbf{x}_i \}_{i=1}^N \sim p_r(\mathbf{x})$, simulator $g$.\\
+        {\it Outputs:} proposal distribution $q(\theta|\psi)$, such that $p_r(\mathbf{x}) \approx p(\mathbf{x}|\psi)$.\\
         {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the size $M$ of a mini-batch; the gradient penalty coefficient $\lambda$; the entropy penalty coefficient $\gamma$.
     \end{flushleft}
 
     \label{alg:avo}
     \begin{algorithmic}[1]
-        \State{$q_\psi \leftarrow \text{prior on $\theta$ (with differentiable and known density)}$}
+        \State{$q(\theta|\psi) \leftarrow \text{prior on $\theta$ (with differentiable and known density)}$}
         \While{$\psi$ has not converged}
             \For{$i=1$ to $n_{\text{critic}}$} \Comment{Update $d$}
-                \State{Sample a mini-batch $\{\mathbf{x}_m \sim p_r, \theta_m \sim q_\psi, \mathbf{z}_m \sim p_{z(\theta_m)}, \epsilon_m \sim U[0,1] \}_{m=1}^M$.}
+                \State{Sample a mini-batch $\{\mathbf{x}_m \sim p_r(\mathbf{x}), \theta_m \sim q(\theta|\psi), \mathbf{z}_m \sim p(\mathbf{z}|\theta_m), \epsilon_m \sim U[0,1] \}_{m=1}^M$.}
                 \For{$m=1$ to $M$}
                     \State{$\tilde{\mathbf{x}}_m \leftarrow g(\mathbf{z}_m; \theta_m)$}
                     \State{$\hat{\mathbf{x}}_m \leftarrow \epsilon_m \mathbf{x}_m + (1 - \epsilon_m) \tilde{\mathbf{x}}_m$}
@@ -251,7 +253,7 @@ robustness to noisy gradients).
                 \EndFor
                 \State{$\phi \leftarrow \text{Adam}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M U_d^{(m)})$}
             \EndFor
-            \State{Sample a mini-batch $\{ \theta_m \sim q_\psi,  \mathbf{z}_m \sim p_{z(\theta_m)} \}_{m=1}^M$.}  \Comment{Update $q_\psi$}
+            \State{Sample a mini-batch $\{ \theta_m \sim q(\theta|\psi),  \mathbf{z}_m \sim p(\mathbf{z}|\theta_m) \}_{m=1}^M$.}  \Comment{Update $q_\psi$}
             \State{$\nabla_\psi U_g \leftarrow \tfrac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m)) \nabla_\psi \log q_\psi(\theta_m)$}
             % \State{$\mathbf{F}(\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi \log q_\psi(\theta_m) \nabla_\psi \log q_\psi(\theta_m)^{\top}$}
             \State{$\nabla_\psi H(q_\psi) \leftarrow \tfrac{1}{M} \sum_{m=1}^M  \nabla_\psi q_\psi(\theta_m) \log q_\psi(\theta_m)$}
@@ -273,11 +275,11 @@ optimization procedure cannot be carried out.
 
 In this work, we propose to rely on variational optimization to minimize ${\cal
 L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
-specifically, we consider a proposal distribution $q_\psi(\theta)$ over the
-parameters of $g$ and $p_\theta$ and minimize in alternation the variational upper bounds
+specifically, we consider a proposal distribution $q(\theta|\psi)$ over the
+parameters of $g$ and $p(\mathbf{x}|\theta)$ and minimize in alternation the variational upper bounds
 \begin{align}
-    U_d &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_d ] \label{eqn:vo-ud} \\
-    U_g &= \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] \label{eqn:vo-ug}
+    U_d &= \mathbb{E}_{\theta \sim q(\theta|\psi)} [ {\cal L}_d ] \label{eqn:vo-ud} \\
+    U_g &= \mathbb{E}_{\theta \sim q(\theta|\psi)} [ {\cal L}_g ] \label{eqn:vo-ug}
 \end{align} respectively over $\phi$ and $\psi$.
 When updating
 $d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be obtained by
@@ -287,13 +289,13 @@ $g$, estimates of $\nabla_\psi U_g$ can be derived with forward
 simulations, as described in the previous section.
 That is,
 \begin{equation}
-    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q_\psi(\theta), \mathbf{z} \sim p_{z(\theta)}}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q_\psi(\theta)],
+    \nabla_\psi U_g = \mathbb{E}_{\theta \sim q(\theta|\psi), \mathbf{z} \sim p(\mathbf{z}|\theta)}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q(\theta|\psi)],
 \end{equation} which we can approximate with mini-batches of
 generated data
 \begin{equation}
-    \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q_\psi(\theta_m)
+    \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q(\theta_m|\psi)
 \end{equation}
-for $\theta_m \sim q_\psi$ and $\mathbf{z}_m \sim p_{z(\theta_m)}$ and .
+for $\theta_m \sim q(\theta|\psi)$ and $\mathbf{z}_m \sim p(\mathbf{z}|\theta_m)$ and .
 \glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
 is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
 % In practice, using
@@ -313,23 +315,23 @@ Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 a distribution parameterized in terms of $\psi$:
 \begin{equation}\label{eqn:p_psi}
-    \mathbf{x} \sim p_\psi \equiv \theta \sim q_\psi, \mathbf{z} \sim p_{z(\theta)}, \mathbf{x} = g(\mathbf{z}; \theta).
+    \mathbf{x} \sim p(\mathbf{x}|\psi) \equiv \theta \sim q(\theta|\psi), \mathbf{z} \sim p(\mathbf{z}|\theta), \mathbf{x} = g(\mathbf{z}; \theta).
 \end{equation}
 Intuitively, this corresponds to a family of simulators, each configured
-with randomly sampled parameters $\theta \sim q_\psi$, whose joint collection
-of generated samples is optimized with adversarial training to approach the real data distribution $p_r$.
-More formally, the learned model $p_\psi(\mathbf{x})$ therefore corresponds to the marginal distribution
-$\int q_\psi(\theta) p_\theta(\mathbf{x}) d\theta$ of the generated data.
+with randomly sampled parameters $\theta \sim q(\theta|\psi)$, whose joint collection
+of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
+More formally, the learned model $p(\mathbf{x}|\psi)$ therefore corresponds to the marginal distribution
+$\int q(\theta|\psi) p(\mathbf{x}|\theta) d\theta$ of the generated data.
 \glnote{Connection with variational bayes?}
 
 In consequence, the proposed inference algorithm does not necessarily guarantee that the
-proposal distribution $q_\psi$ will place its mass arbitrarily tight
+proposal distribution $q(\theta|\psi)i$ will place its mass arbitrarily tight
 around the parameters of interest, which might be an issue when one is rather interested in point estimates $\theta^*$.
 For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
 the proposal distribution. That is,
 \begin{equation}
-    U_g = \mathbb{E}_{\theta \sim q_\psi} [ {\cal L}_g ] + \gamma H(q_\psi)
+    U_g = \mathbb{E}_{\theta \sim q(\theta|\psi)} [ {\cal L}_g ] + \gamma H(q(\theta|\psi))
 \end{equation}
 where $\gamma \in \mathbb{R}^+$ is a hyperparameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
