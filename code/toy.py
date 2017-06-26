@@ -17,7 +17,7 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-batch_size = 64 * 8
+batch_size = 64
 true_theta = np.array([0.5])
 make_plots = True
 
@@ -99,7 +99,7 @@ grad_loss_critic = ag.grad(loss_critic)
 
 # grad_psi E_theta~q_psi, z~p_z(theta) [ d(g(z, theta) ]
 
-def approx_grad_u(params_proposal, i, gamma=0.1):
+def approx_grad_u(params_proposal, i, gamma=0.5):
     rng = check_random_state(i)
     grad_u = make_gaussian_proposal(n_params)
     grad_ent = make_gaussian_proposal(n_params)
@@ -113,14 +113,14 @@ def approx_grad_u(params_proposal, i, gamma=0.1):
         for k, v in grad_q.items():
             grad_u[k] += -dx * v
 
-        grad_entropy = grad_gaussian_entropy(params_proposal, theta)
-        for k, v in grad_entropy.items():
-            grad_ent[k] += v
+    grad_entropy = grad_gaussian_entropy(params_proposal)
+    for k, v in grad_entropy.items():
+        grad_ent[k] += v
 
     M = len(thetas)
 
     for k in grad_u:
-        grad_u[k] = 1. / M * (grad_u[k] + gamma * grad_ent[k])
+        grad_u[k] = 1. / M * grad_u[k] + gamma * grad_ent[k]
 
     return grad_u
 

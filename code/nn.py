@@ -71,6 +71,7 @@ class AdamOptimizer:
     def step(self,  num_iters=1):
         for i in range(num_iters):
             g = self.flattened_grad(self.x, self.counter)
+            # XXX add clipping
 
             if self.callback:
                 self.callback(self.unflatten(self.x),

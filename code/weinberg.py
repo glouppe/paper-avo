@@ -143,7 +143,7 @@ grad_loss_critic = ag.grad(loss_critic)
 
 # grad_psi E_theta~q_psi, z~p_z(theta) [ d(g(z, theta) ]
 
-def approx_grad_u(params_proposal, i, gamma=0.05):
+def approx_grad_u(params_proposal, i, gamma=0.5):
     rng = check_random_state(i)
     grad_u = make_beta_proposal(n_params)
     grad_ent = make_beta_proposal(n_params)
@@ -157,14 +157,14 @@ def approx_grad_u(params_proposal, i, gamma=0.05):
         for k, v in grad_q.items():
             grad_u[k] += -dx * v
 
-        grad_entropy = grad_beta_entropy(params_proposal, theta)
-        for k, v in grad_entropy.items():
-            grad_ent[k] += v
+    grad_entropy = grad_beta_entropy(params_proposal)
+    for k, v in grad_entropy.items():
+        grad_ent[k] += v
 
     M = len(thetas)
 
     for k in grad_u:
-        grad_u[k] = 1. / M * (grad_u[k] + gamma * grad_ent[k])
+        grad_u[k] = 1. / M * grad_u[k] + gamma * grad_ent[k]
 
     return grad_u
 
@@ -174,12 +174,12 @@ def approx_grad_u(params_proposal, i, gamma=0.05):
 opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
                            step_size=0.01, b1=0.5, b2=0.5)
 opt_proposal = AdamOptimizer(approx_grad_u, params_proposal,
-                             step_size=0.005, b1=0.1, b2=0.1)
+                             step_size=0.01, b1=0.1, b2=0.1) # was 0.005
 
 opt_critic.step(100)
 opt_critic.move_to(params_critic)
 
-for i in range(201):
+for i in range(501):
     print(params_proposal)
 
     # fit simulator

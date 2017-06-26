@@ -68,10 +68,14 @@ In many fields of science such as particle physics, climatology or population
 genetics, computer simulators are used to describe complex processes that tie
 parameters of an underlying theory to high dimensional observations. In most
 cases, these implicit generative models~\citep{2016arXiv161003483M} are
-specified as imperative implementations of forward stochastic processes that
+specified as procedural implementations of forward stochastic processes that
 generate data. Because it is usually computationally intractable, most simulators
 do not provide a way to directly evaluate the likelihood function for a
 given observation, thereby making inference difficult.
+In addition, most scientific simulators are written using opaque low-level programming
+languages, hence raising raising the bar for likelihood-free inference
+algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
+or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
 In this note, we develop a likelihood-free inference algorithm for the point
 estimation from observed data of the parameters of a forward non-differentiable
@@ -235,7 +239,7 @@ robustness to noisy gradients).
     \caption{Adversarial variational optimization.}
 
     \begin{flushleft}
-        {\it Inputs:} observed data $\{ \mathbf{x}_i \}_{i=1}^N \sim p_r(\mathbf{x})$, simulator $g$.\\
+        {\it Inputs:} observed data $\{ \mathbf{x}_i \sim p_r(\mathbf{x}) \}_{i=1}^N$, simulator $g$.\\
         {\it Outputs:} proposal distribution $q(\theta|\psi)$, such that $p_r(\mathbf{x}) \approx p(\mathbf{x}|\psi)$.\\
         {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the size $M$ of a mini-batch; the gradient penalty coefficient $\lambda$; the entropy penalty coefficient $\gamma$.
     \end{flushleft}
@@ -371,8 +375,10 @@ density ratio between the two distributions and make parameter updates.
 \glnote{ABC + Classifier ABC.}
 \glnote{Explain how this work is different.}
 
+\glnote{Compare with gradient-free optimization.}
 
-
+\glnote{Wood -> assume that the simulator is probabilistic program.}
+\glnote{Storkey -> assume access to derivatives.}
 
 
 % ==============================================================================

@@ -1,12 +1,13 @@
 import autograd as ag
 import autograd.numpy as np
+from autograd.scipy.special import digamma
 from autograd.scipy.special import gammaln
 
 from scipy.stats import norm as sp_norm
 from scipy.stats import beta as sp_beta
 
 
-# Gaussian proposal (for unbounded supports)
+# Gaussian proposal (for unbounded support)
 
 def make_gaussian_proposal(n_parameters, mu=0.0, log_sigma=0.0):
     return {"mu":  mu * np.ones(n_parameters),
@@ -40,13 +41,18 @@ def gaussian_logpdf(params, theta):
     return np.sum(logp)
 
 
-def gaussian_entropy(params, theta):
-    logp = gaussian_logpdf(params, theta)
-    return -np.exp(logp) * logp
+def gaussian_entropy(params):
+    sigma = np.exp(params["log_sigma"])
+    return np.sum(np.log(sigma * (2. * np.pi * np.e) ** 0.5))
 
 
 grad_gaussian_logpdf = ag.grad(gaussian_logpdf)
 grad_gaussian_entropy = ag.grad(gaussian_entropy)
+
+
+# Truncated gaussian  (for continuous in [0,1])
+
+# XXX
 
 
 # Beta proposal (for continuous in [0,1])
@@ -82,9 +88,17 @@ def beta_logpdf(params, theta):
     return np.sum(logp)
 
 
-def beta_entropy(params, theta):
-    logp = beta_logpdf(params, theta)
-    return -np.exp(logp) * logp
+def betaln(alpha, beta):
+    return gammaln(alpha) + gammaln(beta) - gammaln(alpha + beta)
+
+
+def beta_entropy(params):
+    alpha = np.exp(params["log_alpha"])
+    beta = np.exp(params["log_beta"])
+
+    return np.sum(betaln(alpha, beta) -
+                  (alpha - 1.0) * (digamma(alpha) - digamma(alpha + beta)) -
+                  (beta - 1.0) * (digamma(beta) - digamma(alpha + beta)))
 
 
 grad_beta_logpdf = ag.grad(beta_logpdf)
