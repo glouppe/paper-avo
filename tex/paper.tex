@@ -73,7 +73,7 @@ generate data. Because it is usually computationally intractable, most simulator
 do not provide a way to directly evaluate the likelihood function for a
 given observation, thereby making inference difficult.
 In addition, most scientific simulators are written using opaque low-level programming
-languages, hence raising raising the bar for likelihood-free inference
+languages, hence raising the bar for likelihood-free inference
 algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
 or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
@@ -354,7 +354,9 @@ in learning a smeared variation of the original simulator.
 
 \section{Experiments}
 
-\subsection{Toy problem}
+\subsection{Gaussian mixture model}
+
+\subsection{Plinko}
 
 \subsection{Physics example}
 
@@ -365,20 +367,23 @@ in learning a smeared variation of the original simulator.
 
 As reviewed in \cite{2016arXiv161003483M}, likelihood-free inference is
 intimately tied to a class of algorithms that can be framed as density
-estimation-by-comparison. In most cases, these algorithms are formulated as an
-iterative two-step process where the model distribution is first compared to the
-true data distribution and then updated to make it more comparable to the
-latter. Closest to our work are inference
-algorithms~\citep{Neal:2007zz,gutmann2012noise,goodfellow2014generative,cranmer2015approximating,2016arXiv161110242D}
-that rely on a classifier between generated and true data to estimate the
-density ratio between the two distributions and make parameter updates.
-\glnote{ABC + Classifier ABC.}
-\glnote{Explain how this work is different.}
+estimation-by-comparison. In most cases, these inference algorithms are
+formulated as an iterative two-step process where the model distribution is
+first compared to the true data distribution and then updated to make it more
+comparable to the latter. Closest to our work are procedures that rely on a
+classifier to estimate the discrepancy between the true and the generated data
+distributions. For example, \citep{gutmann2012noise} uses non linear logistic
+regression for fitting unnormalized differentiable statistical models, while
+\citep{goodfellow2014generative} exploits an adversarial neural network for
+learning a differentiable implicit generative model. In the likelihood-free
+setup, \citep{cranmer2015approximating,2016arXiv161110242D} estimate likelihood
+ratios through supervised classification, which can in turn be used for
+parameter inference in combination with a gradient-free optimization algorithm.
+Similarly, \citep{gutmann2017likelihood} makes use of classification accuracy as
+a summary statistics for approximate Bayesian computation.
+\glnote{Explain what's new about the proposed work.}
 
-\glnote{Compare with gradient-free optimization.}
 
-\glnote{Wood -> assume that the simulator is probabilistic program.}
-\glnote{Storkey -> assume access to derivatives.}
 
 
 % ==============================================================================
