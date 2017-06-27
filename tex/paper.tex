@@ -370,7 +370,7 @@ activations. At each epoch, Adam is run for $n_\text{critic}=100$ iterations
 with a step size $\alpha=0.01$, decay rates $\beta_1=\beta_2=0.5$ and its inner
 first and second moment vectors reset at each epoch in order to avoid building
 momentum in staled directions.  For modeling $\mu$ and $\sigma^2$, we use
-univariate Gaussian proposal distributions $q(\mu|\psi)$ and $q(\log
+factored univariate Gaussian proposal distributions $q(\mu|\psi)$ and $q(\log
 \sigma|\psi)$ initialized with zero mean and unit variance. At each epoch,
 parameters $\psi$ are updated by making one Adam step, with $\alpha=0.01$ and
 $\beta_1=\beta_2=0.1$. Penalty coefficients are set to $\lambda=0.025$ and
@@ -385,14 +385,14 @@ $\gamma=5$.
 \end{figure}
 \begin{figure}
     \centering
-    \vspace{-0.8cm}
+    \vspace{-0.5cm}
     \includegraphics[width=0.48\textwidth]{figures/poisson-gamma=5.pdf}
     \vspace{-1cm}
     \caption{Toy problem on discrete data: Poisson with unknown scale.}\label{fig:poisson}
 \end{figure}
 
 The upper plot of Figure~\ref{fig:gaussian} illustrates the resulting model
-after the optimization procedure. As expected from adversarial training, the
+after the optimization procedure. As theoretically expected from adversarial training, the
 model density $p(\mathbf{x}|\psi)$ closely matches the true density
 $p_r(\mathbf{x})$, as shown by the aligned histograms in blue and orange. Under
 the effect of the entropy penalty $\gamma H(q(\theta|\psi))$, we also observe
