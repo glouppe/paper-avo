@@ -355,9 +355,9 @@ in learning a smeared variation of the original simulator.
 
 \subsection{Toy problems}
 
-As illustrative experiments, we evaluate adversarial variational
-optimization on well-known distributions for continuous and discrete data.
-We consider these distributions as parameterized simulators, from which
+As illustrative experiments, we evaluate adversarial variational optimization on
+well-known distributions for continuous and discrete data. We artificially
+consider these distributions as parameterized black box simulators, from which
 we can only generate data.
 
 For continuous data, we first consider inference for
@@ -413,7 +413,7 @@ and the non-differentiability of the underlying generator, Figure~\ref{fig:poiss
 shows that inference with adversarial variational optimization works.
 The upper plot in the figure shows that $p(\mathbf{x}|\psi)$ closely
 matches $p_r(\mathbf{x})$, with the mass of the proposal distribution
-concentrated at $\log 7 = 1.94$. 
+concentrated at $\log 7 = 1.94$.
 
 
 \subsection{Plinko}
