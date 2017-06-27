@@ -355,10 +355,13 @@ in learning a smeared variation of the original simulator.
 
 \subsection{Toy problems}
 
-As illustrative experiments, we evaluate in this section adversarial variational
+As illustrative experiments, we evaluate adversarial variational
 optimization on well-known distributions for continuous and discrete data.
+We consider these distributions as parameterized simulators, from which
+we can only generate data.
 
-We first consider inference for a univariate Gaussian with unknown mean and
+For continuous data, we first consider inference for
+a univariate Gaussian with unknown mean and
 unknown variance. The observed data is sampled from a univariate Gaussian with
 mean $\mu = 1$ and variance $\sigma^2 = 0.5^2$. Algorithm~\ref{alg:avo} is run
 for 300 epochs with mini-batches of size $M=64$ and the following configuration.
@@ -375,8 +378,17 @@ $\gamma=5$.
 
 \begin{figure}
     \centering
+    \vspace{-0.8cm}
     \includegraphics[width=0.48\textwidth]{figures/gaussian-gamma=5.pdf}
-    \caption{\glnote{todo}}\label{fig:gaussian}
+    \vspace{-1cm}
+    \caption{Toy problem on continuous data: Gaussian with unknown mean and unknown variance.}\label{fig:gaussian}
+\end{figure}
+\begin{figure}
+    \centering
+    \vspace{-0.8cm}
+    \includegraphics[width=0.48\textwidth]{figures/poisson-gamma=5.pdf}
+    \vspace{-1cm}
+    \caption{Toy problem on discrete data: Poisson with unknown scale.}\label{fig:poisson}
 \end{figure}
 
 The upper plot of Figure~\ref{fig:gaussian} illustrates the resulting model
@@ -391,7 +403,17 @@ that it quickly falls towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)] \approx \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$
 and that the critic cannot distinguish between true and model data.
 
-Similarly, ... \glnote{discrete case with a Poisson distribution.}
+Similarly, we evaluate adversarial variational optimization on discrete data,
+for the inference of the scale parameter $\lambda$ of a Poisson distribution.
+The observed data is sampled from a univariate Poisson with scale $\lambda=7$.
+We use a univariate Gaussian proposal distribution $q(\log \lambda|\psi)$
+initialized with a mean at $5$ and unit variance. Hyper-parameters are otherwise
+left unchanged with respect to the previous setup. Despite the discreteness
+and the non-differentiability of the underlying generator, Figure~\ref{fig:poisson}
+shows that inference with adversarial variational optimization works.
+The upper plot in the figure shows that $p(\mathbf{x}|\psi)$ closely
+matches $p_r(\mathbf{x})$, with the mass of the proposal distribution
+concentrated at $\log 7 = 1.94$. 
 
 
 \subsection{Plinko}

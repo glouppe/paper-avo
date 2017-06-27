@@ -6,6 +6,8 @@ from autograd.scipy.special import gammaln
 from scipy.stats import norm as sp_norm
 from scipy.stats import beta as sp_beta
 
+from sklearn.utils import check_random_state
+
 
 # Gaussian proposal (for unbounded support)
 
@@ -30,7 +32,7 @@ def gaussian_draw(params, n_samples, random_state=None):
     return thetas
 
 
-def gaussian_logpdf(params, theta):
+def gaussian_logpdf(params, theta, to_scalar=True):
     mu = params["mu"]
     sigma = np.exp(params["log_sigma"])
 
@@ -38,7 +40,10 @@ def gaussian_logpdf(params, theta):
              np.log((2. * np.pi) ** 0.5) +
              (theta - mu) ** 2 / (2. * sigma ** 2))
 
-    return np.sum(logp)
+    if to_scalar:
+        return np.sum(logp)
+    else:
+        return logp
 
 
 def gaussian_entropy(params):

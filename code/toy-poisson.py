@@ -1,7 +1,7 @@
 import autograd as ag
 import autograd.numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import norm
+from scipy.stats import poisson
 
 from nn import glorot_uniform
 from nn import relu
@@ -18,26 +18,29 @@ from sklearn.utils import check_random_state
 # Global params
 
 batch_size = 64
-true_theta = np.array([0.5])
+n_epochs = 300+1
+lambda_gp = 0.025
+gamma = 5.0
+
+true_theta = np.array([np.log(7)])
 make_plots = True
 
 
 # Simulator
 
 def simulator(theta, n_samples, random_state=None):
-    return norm.rvs(size=n_samples,
-                    loc=theta[0],
-                    scale=0.5,
-                    random_state=random_state).reshape(-1, 1)
+    return poisson.rvs(np.exp(theta[0]),
+                       size=n_samples,
+                       random_state=random_state).reshape(-1, 1)
 
-X_obs = simulator(true_theta, 10000, random_state=123)
+X_obs = simulator(true_theta, 20000, random_state=123)
 n_params = len(true_theta)
 n_features = X_obs.shape[1]
 
 
 # Proposal distribution
 
-params_proposal = make_gaussian_proposal(n_params, mu=0.8, log_sigma=0.0)
+params_proposal = make_gaussian_proposal(n_params, mu=np.log(5.0))
 
 
 # Critic
@@ -65,11 +68,11 @@ def predict(X, params):
 grad_predict_critic = ag.elementwise_grad(predict)
 
 
-y_critic = np.zeros(batch_size)
-y_critic[:batch_size // 2] = 0.0  # 0 == fake
-y_critic[batch_size // 2:] = 1.0
+def loss_critic(params_critic, i, lambda_gp=lambda_gp, batch_size=batch_size):
+    y_critic = np.zeros(batch_size)
+    # y_critic[:batch_size // 2] = 0.0  # 0 == fake
+    y_critic[batch_size // 2:] = 1.0
 
-def loss_critic(params_critic, i):
     rng = check_random_state(i)
 
     # WGAN loss
@@ -92,17 +95,17 @@ def loss_critic(params_critic, i):
     norms = np.sum(grad_Dx ** 2, axis=1) ** 0.5
     l_gp = np.mean((norms - 1.0) ** 2.0)
 
-    return l_wgan + 0.025 * l_gp
+    return l_wgan + lambda_gp * l_gp
 
 grad_loss_critic = ag.grad(loss_critic)
 
 
 # grad_psi E_theta~q_psi, z~p_z(theta) [ d(g(z, theta) ]
 
-def approx_grad_u(params_proposal, i, gamma=0.5):
+def approx_grad_u(params_proposal, i, gamma=gamma):
     rng = check_random_state(i)
-    grad_u = make_gaussian_proposal(n_params)
-    grad_ent = make_gaussian_proposal(n_params)
+    grad_u = {k: np.zeros(len(params_proposal[k])) for k in params_proposal}
+    grad_ent = {k: np.zeros(len(params_proposal[k])) for k in params_proposal}
     thetas = gaussian_draw(params_proposal, batch_size, random_state=rng)
 
     for theta in thetas:
@@ -130,13 +133,15 @@ def approx_grad_u(params_proposal, i, gamma=0.5):
 opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
                            step_size=0.01, b1=0.5, b2=0.5)
 opt_proposal = AdamOptimizer(approx_grad_u, params_proposal,
-                             step_size=0.01, b1=0.25, b2=0.25)
+                             step_size=0.01, b1=0.1, b2=0.1)
 
 opt_critic.step(100)
 opt_critic.move_to(params_critic)
 
-for i in range(201):
-    print(params_proposal)
+loss_d = []
+
+for i in range(n_epochs):
+    print(i, params_proposal)
 
     # fit simulator
     opt_proposal.step(1)
@@ -144,42 +149,46 @@ for i in range(201):
 
     # fit critic
     opt_critic.reset()   # reset moments
-    opt_critic.step(50)
+    opt_critic.step(100)
     opt_critic.move_to(params_critic)
+
+    loss_d.append(-loss_critic(params_critic, i, batch_size=5000))
 
     # plot
     if make_plots:
-        fig = plt.figure()
+        fig = plt.figure(figsize=(6, 6))
 
         ax1 = fig.add_subplot(211)
-        plt.xlim(-3, 3)
-        plt.ylim(0, 1)
-        plt.hist(X_obs, histtype="step", label=r"$x \sim p_r$",
-                 range=(-3, 3), bins=50, normed=1)
+        plt.xlim(0, 15)
+        plt.ylim(0, 1.0)
+        plt.hist(X_obs, histtype="step", label=r"$x \sim p_r(x)$",
+                 range=(0, 15), bins=50, normed=1)
 
-        thetas = gaussian_draw(params_proposal, 10000)
+        thetas = gaussian_draw(params_proposal, 20000)
         X_gen = np.zeros((len(thetas), 1))
         for j, theta in enumerate(thetas):
             X_gen[j, :] = simulator(theta, 1).ravel()
 
-        thetas = np.linspace(-3, 3, num=300)
-        logp = np.array([gaussian_logpdf(params_proposal, theta)
-                         for theta in thetas])
-        plt.plot(thetas, np.exp(logp), label=r"$q_\psi$")
+        plt.hist(X_gen, histtype="step", label=r"$x \sim p(x|\psi)$",
+                 range=(0, 15), bins=50, normed=1)
 
-        plt.hist(X_gen, histtype="step", label=r"$x \sim p_\psi$",
-                 range=(-3, 3), bins=50, normed=1)
-        plt.title(r"$i = %d, \mu=%.3f, \sigma=%.3f$" %
-                  (i, np.mean(X_gen[:, 0]), np.std(X_gen[:, 0])))
-        plt.legend()
+        thetas = np.linspace(0.001, 15, num=300)
+        logp = np.array([gaussian_logpdf(params_proposal, theta, to_scalar=False)
+                         for theta in thetas])
+        plt.plot(thetas, np.exp([l[0] for l in logp]),
+                 label=r"$q(\log \lambda|\psi)$", linestyle="--")
+        plt.legend(loc="upper right")
 
         ax2 = fig.add_subplot(212)
-        plt.xlim(-3, 3)
-        plt.ylim(-30, 30)
-        xs = np.linspace(-3, 3).reshape(-1, 1)
-        y_pred = predict(xs, params_critic)
-        plt.plot(xs, y_pred, label=r"$d(x)$")
-        plt.legend()
+        xs = np.arange(i+1)
+        plt.plot(xs, loss_d, label=r"$-U_d$")
+        plt.xlim(0, n_epochs)
+        plt.ylim(0, 30)
+        plt.legend(loc="upper right")
 
         plt.savefig("figs/%.4d.png" % i)
+
+        if i == n_epochs - 1:
+            plt.savefig("figs/poisson-gamma=%.2f.pdf" % gamma)
+
         plt.close()
