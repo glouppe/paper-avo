@@ -299,16 +299,7 @@ generated data
 \begin{equation}
     \nabla_\psi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\mathbf{z}_m; \theta_m); \phi) \nabla_\psi \log q(\theta_m|\psi)
 \end{equation}
-for $\theta_m \sim q(\theta|\psi)$ and $\mathbf{z}_m \sim p(\mathbf{z}|\theta_m)$ and .
-\glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
-is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?
-% In practice, using
-% \begin{equation}
-%     \tilde{\nabla}_\psi U_g = \frac{1}{M} \sum_{m=1}^M g(\mathbf{z}_m; \theta_m) \nabla_\psi \log q_\psi(\theta_m) \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}_m; \phi))
-% \end{equation}
-% works as good it seems, but I am not sure to precisely understand why, nor whether this is correct...
-% It feels like this is approximating the chain rule $\nabla_\theta g(\theta)  \nabla_{\tilde{\mathbf{x}}} (-d(\tilde{\mathbf{x}}))$.
-}
+for $\theta_m \sim q(\theta|\psi)$ and $\mathbf{z}_m \sim p(\mathbf{z}|\theta_m)$.
 For completeness, Algorithm~\ref{alg:avo} outlines the proposed adversarial variational
 optimization procedure, as built on top of WGAN-GP.
 Obviously, the variational relaxation could similarly be coupled with
@@ -360,7 +351,8 @@ well-known distributions for continuous and discrete data. We artificially
 consider these distributions as parameterized black box simulators, from which
 we can only generate data.
 
-For continuous data, we first consider inference for
+{\it Continuous data.}
+We first consider inference for
 a univariate Gaussian with unknown mean and
 unknown variance. The observed data is sampled from a univariate Gaussian with
 mean $\mu^* = 1$ and standard deviation ${\sigma^*} = 0.5$. Algorithm~\ref{alg:avo} is run
@@ -392,7 +384,7 @@ $\gamma=5$.
     \includegraphics[width=0.48\textwidth]{figures/poisson-gamma=5.pdf}
     \vspace{-1cm}
     \caption{Toy problem on discrete data: Poisson with unknown scale.
-             This example illustrates the effectiveness of adversarial variational optimization on discrete non-differentiable generators.}\label{fig:poisson}
+             This example illustrates adversarial variational optimization on discrete non-differentiable generators.}\label{fig:poisson}
 \end{figure}
 
 The upper plot of Figure~\ref{fig:gaussian} illustrates the resulting model
@@ -409,19 +401,20 @@ $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)}
 p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$ and that the critic cannot distinguish
 between true and model data.
 
+{\it Discrete data.}
 Similarly, we evaluate adversarial variational optimization on discrete data,
 for the inference of the scale parameter $\lambda$ of a Poisson distribution.
 The observed data is sampled from a univariate Poisson with scale $\lambda^*=7$.
 We use a univariate Gaussian proposal distribution $q(\log \lambda|\psi)$
 initialized with a mean at $\log 5$ and unit variance. The optimization setup is
-otherwise left unchanged. Despite the discreteness and the non-differentiability
+otherwise the same as for the continuous case. Despite the discreteness and the non-differentiability
 of the underlying generator, Figure~\ref{fig:poisson} shows that inference with
 adversarial variational optimization works. The upper plot in the figure shows
 that $p(\mathbf{x}|\psi)$ closely matches $p_r(\mathbf{x})$, with the mass of
 the proposal distribution concentrated at $\log 7 = 1.94$.
 
 
-\subsection{Plinko}
+\subsection{Galton box}
 
 
 
@@ -462,6 +455,10 @@ ABC~\citep{gutmann2017likelihood}.
 
 \glnote{avo = extension of gans to non-differentiable generator}
 \glnote{nice for discrete data}
+\glnote{next version = try on an actual particle physics simulator.}
+
+\glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
+is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?}
 
 % ==============================================================================
 
