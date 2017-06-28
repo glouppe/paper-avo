@@ -78,8 +78,8 @@ algorithms relying e.g. on the simulator being a function with computable deriva
 or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
 In this note, we develop a likelihood-free inference algorithm for the point
-estimation from observed data of the parameters of a forward non-differentiable
-generative model. We propose to adapt the adversarial
+estimation of the parameters of a forward non-differentiable
+generative model. We adapt the adversarial
 training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
@@ -178,7 +178,7 @@ p_r(\mathbf{x})$ and $\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)$.
 
 \subsection{Variational optimization}
 
-Evolution strategies~\citep{2011arXiv1106.4487W} and variational optimization~\cite{2012arXiv1212.4507S} are general
+Variational optimization~\cite{2012arXiv1212.4507S} and evolution strategies~\citep{2011arXiv1106.4487W} are general
 optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
@@ -286,10 +286,10 @@ parameters of $g$ and $p(\mathbf{x}|\theta)$ and minimize in alternation the var
     U_g &= \mathbb{E}_{\theta \sim q(\theta|\psi)} [ {\cal L}_g ] \label{eqn:vo-ug}
 \end{align} respectively over $\phi$ and $\psi$.
 When updating
-$d$, unbiased gradient estimates of $\nabla_\phi U_d$ can be obtained by
+$\phi$, unbiased estimates of $\nabla_\phi U_d$ can be obtained by
 evaluating the exact and known gradient of $U_d$ over mini-batches of true and
 generated data, as ordinarily done in stochastic gradient descent. When updating
-$g$, estimates of $\nabla_\psi U_g$ can be derived with forward
+$\psi$, estimates of $\nabla_\psi U_g$ can be derived with forward
 simulations, as described in the previous section.
 That is,
 \begin{equation}
@@ -338,14 +338,14 @@ the proposal distribution. That is,
 \end{equation}
 where $\gamma \in \mathbb{R}^+$ is a hyper-parameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
-For large values of $\gamma$, the procedure is constrained to fit a proposal
+For small values of $\gamma$,
+proposal distributions with large entropy are not penalized, which may result
+in learning a smeared variation of the original simulator. On the other hand,
+for large values of $\gamma$, the procedure is constrained to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
-tightly around one or a few $\theta$ values. On the other hand, for small values of $\gamma$,
-proposal distributions with larger entropy are not penalized, which may result
-in learning a smeared variation of the original simulator.
-\glnote{Add note on minimum entropy, otherwise it degenerates back to a non-differentiable function.}
-
-
+tightly around one or a few $\theta$ values. A too large penalty may however
+eventually make the optimization unstable, as the variance of $\nabla_\psi \log q(\theta_m|\psi)$
+typically increases as the entropy of the proposal decreases.
 
 
 
@@ -363,13 +363,13 @@ we can only generate data.
 For continuous data, we first consider inference for
 a univariate Gaussian with unknown mean and
 unknown variance. The observed data is sampled from a univariate Gaussian with
-mean $\mu = 1$ and variance $\sigma^2 = 0.5^2$. Algorithm~\ref{alg:avo} is run
+mean $\mu^* = 1$ and standard deviation ${\sigma^*} = 0.5$. Algorithm~\ref{alg:avo} is run
 for 300 epochs with mini-batches of size $M=64$ and the following configuration.
 For the critic, we use a 3-layer MLP with 10 hidden nodes per layer and ReLU
 activations. At each epoch, Adam is run for $n_\text{critic}=100$ iterations
 with a step size $\alpha=0.01$, decay rates $\beta_1=\beta_2=0.5$ and its inner
 first and second moment vectors reset at each epoch in order to avoid building
-momentum in staled directions.  For modeling $\mu$ and $\sigma^2$, we use
+momentum in staled directions.  For estimating $\theta^* = (\mu^*, \sigma^*)$, we use
 factored univariate Gaussian proposal distributions $q(\mu|\psi)$ and $q(\log
 \sigma|\psi)$ initialized with zero mean and unit variance. At each epoch,
 parameters $\psi$ are updated by making one Adam step, with $\alpha=0.01$ and
@@ -381,39 +381,44 @@ $\gamma=5$.
     \vspace{-0.8cm}
     \includegraphics[width=0.48\textwidth]{figures/gaussian-gamma=5.pdf}
     \vspace{-1cm}
-    \caption{Toy problem on continuous data: Gaussian with unknown mean and unknown variance.}\label{fig:gaussian}
+    \caption{Toy problem on continuous data: Gaussian with unknown mean and unknown variance.
+             (Top) Model distribution $p(\mathbf{x}|\psi)$ after adversarial variational optimization along with the proposal distributions $q(\mu|\psi)$ and $q(\log
+             \sigma|\psi)$ over the generator parameters.
+             (Bottom) Evolution of the variational upper bound $U_d$ on the loss ${\cal L}_d$ of the critic. }\label{fig:gaussian}
 \end{figure}
 \begin{figure}
     \centering
     \vspace{-0.5cm}
     \includegraphics[width=0.48\textwidth]{figures/poisson-gamma=5.pdf}
     \vspace{-1cm}
-    \caption{Toy problem on discrete data: Poisson with unknown scale.}\label{fig:poisson}
+    \caption{Toy problem on discrete data: Poisson with unknown scale.
+             This example illustrates the effectiveness of adversarial variational optimization on discrete non-differentiable generators.}\label{fig:poisson}
 \end{figure}
 
 The upper plot of Figure~\ref{fig:gaussian} illustrates the resulting model
-after the optimization procedure. As theoretically expected from adversarial training, the
-model density $p(\mathbf{x}|\psi)$ closely matches the true density
-$p_r(\mathbf{x})$, as shown by the aligned histograms in blue and orange. Under
-the effect of the entropy penalty $\gamma H(q(\theta|\psi))$, we also observe
-that the proposal distributions have correctly concentrated their mass around
-$\mu=1$ and $\log \sigma=-0.69$. The bottom plot of Figure~\ref{fig:gaussian}
-shows an empirical estimate of $-U_d$ with respect to the epoch. We observe
-that it quickly falls towards $0$, which indicates that
-$\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)] \approx \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$
-and that the critic cannot distinguish between true and model data.
+after the optimization procedure. As theoretically expected from adversarial
+training, the model density $p(\mathbf{x}|\psi)$ closely matches the true
+density $p_r(\mathbf{x})$, as shown by the aligned histograms in blue and
+orange. Under the effect of the entropy penalty $\gamma H(q(\theta|\psi))$, we
+also observe that the proposal distributions have correctly concentrated their
+mass around $\mu^*=1$ and $\log \sigma^*=-0.69$. The bottom plot of
+Figure~\ref{fig:gaussian} shows an empirical estimate of $-U_d$ with respect to
+the epoch. We observe that it quickly falls towards $0$, which indicates that
+$\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)}
+[d(\tilde{\mathbf{x}};\phi)] \approx \mathbb{E}_{\mathbf{x} \sim
+p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$ and that the critic cannot distinguish
+between true and model data.
 
 Similarly, we evaluate adversarial variational optimization on discrete data,
 for the inference of the scale parameter $\lambda$ of a Poisson distribution.
-The observed data is sampled from a univariate Poisson with scale $\lambda=7$.
+The observed data is sampled from a univariate Poisson with scale $\lambda^*=7$.
 We use a univariate Gaussian proposal distribution $q(\log \lambda|\psi)$
-initialized with a mean at $5$ and unit variance. Hyper-parameters are otherwise
-left unchanged with respect to the previous setup. Despite the discreteness
-and the non-differentiability of the underlying generator, Figure~\ref{fig:poisson}
-shows that inference with adversarial variational optimization works.
-The upper plot in the figure shows that $p(\mathbf{x}|\psi)$ closely
-matches $p_r(\mathbf{x})$, with the mass of the proposal distribution
-concentrated at $\log 7 = 1.94$.
+initialized with a mean at $\log 5$ and unit variance. The optimization setup is
+otherwise left unchanged. Despite the discreteness and the non-differentiability
+of the underlying generator, Figure~\ref{fig:poisson} shows that inference with
+adversarial variational optimization works. The upper plot in the figure shows
+that $p(\mathbf{x}|\psi)$ closely matches $p_r(\mathbf{x})$, with the mass of
+the proposal distribution concentrated at $\log 7 = 1.94$.
 
 
 \subsection{Plinko}
@@ -455,7 +460,8 @@ ABC~\citep{gutmann2017likelihood}.
 
 \section{Summary}
 
-
+\glnote{avo = extension of gans to non-differentiable generator}
+\glnote{nice for discrete data}
 
 % ==============================================================================
 
