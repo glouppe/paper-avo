@@ -88,6 +88,7 @@ bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
 objectives. The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an arbitrarily tight family of models whose
 joint collection of generated samples matches the observed data.
+\glnote{add note on discrete data}
 
 
 % ==============================================================================
@@ -344,77 +345,66 @@ typically increases as the entropy of the proposal decreases.
 
 \section{Experiments}
 
-\subsection{Toy problems}
+\subsection{Univariate discrete data}
 
-As illustrative experiments, we evaluate adversarial variational optimization on
-well-known distributions for continuous and discrete data. We artificially
-consider these distributions as parameterized black box simulators, from which
-we can only generate data.
+\glnote{contour plots of q(theta|psi) + histograms + learning curves}
+\glnote{contours maybe with $\gamma=0$ and $\gamma>0$ contours}
+\glnote{insist that we dont learn the simulator}
 
-{\it Continuous data.}
-We first consider inference for
-a univariate Gaussian with unknown mean and
-unknown variance. The observed data is sampled from a univariate Gaussian with
-mean $\mu^* = 1$ and standard deviation ${\sigma^*} = 0.5$. Algorithm~\ref{alg:avo} is run
-for 300 epochs with mini-batches of size $M=64$ and the following configuration.
-For the critic, we use a 3-layer MLP with 10 hidden nodes per layer and ReLU
-activations. At each epoch, Adam is run for $n_\text{critic}=100$ iterations
-with a step size $\alpha=0.01$, decay rates $\beta_1=\beta_2=0.5$ and its inner
-first and second moment vectors reset at each epoch in order to avoid building
-momentum in staled directions.  For estimating $\theta^* = (\mu^*, \sigma^*)$, we use
-factored univariate Gaussian proposal distributions $q(\mu|\psi)$ and $q(\log
-\sigma|\psi)$ initialized with zero mean and unit variance. At each epoch,
-parameters $\psi$ are updated by making one Adam step, with $\alpha=0.01$ and
-$\beta_1=\beta_2=0.1$. Penalty coefficients are set to $\lambda=0.025$ and
-$\gamma=5$.
+As a first illustrative experiment, we evaluate adversarial variational
+optimization on a Poisson distribution with unknown scale parameter $\lambda$.
+We artificially consider the distribution as a parameterized black box
+simulator, from which we can only generate (discrete) data.
 
-\begin{figure}
-    \centering
-    \vspace{-0.8cm}
-    \includegraphics[width=0.48\textwidth]{figures/gaussian-gamma=5.pdf}
-    \vspace{-1cm}
-    \caption{Toy problem on continuous data: Gaussian with unknown mean and unknown variance.
-             (Top) Model distribution $p(\mathbf{x}|\psi)$ after adversarial variational optimization along with the proposal distributions $q(\mu|\psi)$ and $q(\log
-             \sigma|\psi)$ over the generator parameters.
-             (Bottom) Evolution of the variational upper bound $U_d$ on the loss ${\cal L}_d$ of the critic. }\label{fig:gaussian}
-\end{figure}
+The observed data is sampled from a Poisson with scale $\lambda^* = 7$.
+Algorithm~\ref{alg:avo} is run for 300 epochs with mini-batches of size $M=64$
+and the following configuration. For the critic, we use a 3-layer MLP with 10
+hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
+$n_\text{critic}=100$ iterations with a step size $\alpha=0.01$, decay rates
+$\beta_1=\beta_2=0.5$ and its inner first and second moment vectors reset at
+each epoch in order to avoid building momentum in staled directions.  For
+estimating $\lambda^*$, we use a univariate Gaussian proposal distribution
+$q(\log \lambda|\psi)$ initialized with a mean at $\log(5)$ and unit variance. At
+each epoch, parameters $\psi$ are updated by making one Adam step, with
+$\alpha=0.01$ and $\beta_1=\beta_2=0.1$. Penalty coefficients are set to
+$\lambda=0.025$ and $\gamma=5$.
+
 \begin{figure}
     \centering
     \vspace{-0.5cm}
     \includegraphics[width=0.48\textwidth]{figures/poisson-gamma=5.pdf}
     \vspace{-1cm}
     \caption{Toy problem on discrete data: Poisson with unknown scale.
-             This example illustrates adversarial variational optimization on discrete non-differentiable generators.}\label{fig:poisson}
+             This example illustrates adversarial variational optimization for a discrete non-differentiable generator.
+             (Top) Model distribution $p(\mathbf{x}|\psi)$ after adversarial variational optimization along with the proposal distribution $q(\lambda|\psi)$.
+             (Bottom) Evolution of the variational upper bound $U_d$ on the loss ${\cal L}_d$ of the critic.
+             }\label{fig:poisson}
 \end{figure}
 
-The upper plot of Figure~\ref{fig:gaussian} illustrates the resulting model
+The upper plot of Figure~\ref{fig:poisson} illustrates the resulting model
 after the optimization procedure. As theoretically expected from adversarial
 training, the model density $p(\mathbf{x}|\psi)$ closely matches the true
 density $p_r(\mathbf{x})$, as shown by the aligned histograms in blue and
 orange. Under the effect of the entropy penalty $\gamma H(q(\theta|\psi))$, we
-also observe that the proposal distributions have correctly concentrated their
-mass around $\mu^*=1$ and $\log \sigma^*=-0.69$. The bottom plot of
-Figure~\ref{fig:gaussian} shows an empirical estimate of $-U_d$ with respect to
+also observe that the proposal distribution has correctly concentrated its
+mass around $\log(7) = 1.94$. The bottom plot of
+Figure~\ref{fig:poisson} shows an empirical estimate of $-U_d$ with respect to
 the epoch. We observe that it quickly falls towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)}
 [d(\tilde{\mathbf{x}};\phi)] \approx \mathbb{E}_{\mathbf{x} \sim
 p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$ and that the critic cannot distinguish
-between true and model data.
-
-{\it Discrete data.}
-Similarly, we evaluate adversarial variational optimization on discrete data,
-for the inference of the scale parameter $\lambda$ of a Poisson distribution.
-The observed data is sampled from a univariate Poisson with scale $\lambda^*=7$.
-We use a univariate Gaussian proposal distribution $q(\log \lambda|\psi)$
-initialized with a mean at $\log 5$ and unit variance. The optimization setup is
-otherwise the same as for the continuous case. Despite the discreteness and the non-differentiability
-of the underlying generator, Figure~\ref{fig:poisson} shows that inference with
-adversarial variational optimization works. The upper plot in the figure shows
-that $p(\mathbf{x}|\psi)$ closely matches $p_r(\mathbf{x})$, with the mass of
-the proposal distribution concentrated at $\log 7 = 1.94$.
+between true and model data. Despite the discreteness and the non-differentiability
+of the underlying generator, this confirms that inference with
+adversarial variational optimization works.
 
 
-\subsection{Galton box}
+\subsection{Multidimensional continuous data}
+
+\glnote{use 5d example from carl}
+\glnote{contour plots}
+
+
+\subsection{Weinberg}
 
 
 
