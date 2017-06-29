@@ -45,7 +45,7 @@ experimental observations. Inference in this setup is often
 difficult, as simulators rarely provide a way to directly evaluate the likelihood
 function for a given observation. In this note, we develop a likelihood-free
 inference algorithm for fitting a forward non-differentiable generative model to
-observed data. We adapt the adversarial training procedure of generative
+(continuous or discrete) observed data. We adapt the adversarial training procedure of generative
 adversarial networks by replacing the implicit generative network with a
 domain-based scientific simulator, and solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the adversarial objectives.
@@ -69,7 +69,7 @@ genetics, computer simulators are used to describe complex processes that tie
 parameters of an underlying theory to high dimensional observations. In most
 cases, these implicit generative models~\citep{2016arXiv161003483M} are
 specified as procedural implementations of forward stochastic processes that
-generate data. Because it is usually computationally intractable, most simulators
+generate discrete or continuous data. Because it is usually computationally intractable, most simulators
 do not provide a way to directly evaluate the likelihood function for a
 given observation, thereby making inference difficult.
 In addition, most scientific simulators are written using opaque low-level programming
@@ -88,7 +88,6 @@ bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
 objectives. The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an arbitrarily tight family of models whose
 joint collection of generated samples matches the observed data.
-\glnote{add note on discrete data}
 
 
 % ==============================================================================
@@ -316,8 +315,11 @@ a distribution parameterized in terms of $\psi$:
 Intuitively, this corresponds to a family of simulators, each configured
 with randomly sampled parameters $\theta \sim q(\theta|\psi)$, whose joint collection
 of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
-More formally, the learned model $p(\mathbf{x}|\psi)$ therefore corresponds to the marginal distribution
-$\int q(\theta|\psi) p(\mathbf{x}|\theta) d\theta$ of the generated data.
+More formally, the learned model  therefore corresponds to the marginal distribution
+of the generated data. That is,
+\begin{equation}
+    p(\mathbf{x}|\psi) = \int q(\theta|\psi) p(\mathbf{x}|\theta) d\theta.
+\end{equation}
 
 In consequence, the proposed inference algorithm does not necessarily guarantee that the
 proposal distribution $q(\theta|\psi)i$ will place its mass arbitrarily tight
@@ -371,7 +373,8 @@ $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\g
     \caption{Discrete Poisson model with unknown scale.
              (Top left) Proposal distributions $p(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
                         the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density and therefore to better inference.
-             (Top right) Model distributions $p(\mathbf{x}|\psi)$ after training.
+             (Top right) Model distributions $p(\mathbf{x}|\psi)$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution with, in this case, qualitatively
+                        better results for the penalized model.
              (Bottom) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
              }\label{fig:poisson}
 \end{figure}
