@@ -361,8 +361,8 @@ hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
 $n_\text{critic}=100$ iterations with a step size $\alpha=0.01$, decay rates
 $\beta_1=\beta_2=0.5$ and its inner first and second moment vectors reset at
 each outer epoch in order to avoid building momentum in staled directions.  For
-estimating $\lambda^*$, we use a univariate Gaussian proposal distribution
-$q(\log \lambda|\psi)$ initialized with a mean at $\log(5)$ and unit variance. At
+estimating $\lambda^*$, we parameterize $\theta$ as $\log(\lambda)$ and use a univariate Gaussian proposal distribution
+$q(\theta|\psi)$ initialized with a mean at $\log(5)$ and unit variance. At
 each epoch, parameters $\psi$ are updated by taking one Adam step, with
 $\alpha=0.01$ and $\beta_1=\beta_2=0.1$. The gradient penalty coefficient is set to
 $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=5$.
@@ -371,11 +371,10 @@ $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\g
     \centering
     \includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
     \caption{Discrete Poisson model with unknown scale.
-             (Top left) Proposal distributions $p(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
+             ({\it Top left}) Proposal distributions $p(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
                         the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density and therefore to better inference.
-             (Top right) Model distributions $p(\mathbf{x}|\psi)$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution with, in this case, qualitatively
-                        better results for the penalized model.
-             (Bottom) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+             ({\it Top right}) Model distributions $p(\mathbf{x}|\psi)$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution.
+             ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
              }\label{fig:poisson}
 \end{figure}
 
@@ -388,7 +387,7 @@ the proposal distribution for $\gamma=5$ concentrates its mass more tightly,
 yielding in this case a more precise inference.  The top right plot compares the
 model distributions to the true distribution.  As theoretically expected from
 adversarial training, we see that the resulting distributions closely match
-the true distribution, with qualitatively  better results for the penalized
+the true distribution, with in this case slightly  better results for the penalized
 model.  The bottom plot of Figure~\ref{fig:poisson} shows empirical estimates
 of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=5$,
 the curves quickly fall towards $0$, which indicates that
@@ -402,8 +401,40 @@ with adversarial variational optimization works.
 
 \subsection{Multidimensional continuous data}
 
-\glnote{use 5d example from carl.}
-\glnote{contour plots for $\alpha$ and $\beta$.}
+As a second example, we evaluate parameter inference for a generator producing
+5-dimensional continuous data, as originally specified in Section 4.2. of
+\citep{cranmer2015approximating}. More specifically, we consider the following
+generative process:
+\begin{itemize}
+    \item $\mathbf{z} = (z_0, z_1, z_2, z_3, z_4)$, such that
+        $z_0 \sim {\cal N}(\mu=\alpha, \sigma=1)$,
+        $z_1 \sim {\cal N}(\mu=\beta, \sigma=3)$,
+        $z_2 \sim {\text{Mixture}}(\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5))$,
+        $z_3 \sim {\text{Exponential}(\lambda=3)}$, and
+        $z_4 \sim {\text{Exponential}(\lambda=0.5)}$;
+    \item $\mathbf{x} = R  \mathbf{z}$, where $R$ is a fixed
+    semi-positive definite $5 \times 5$ matrix defining a fixed projection
+    of $\mathbf{z}$ into the observed space.
+\end{itemize}
+We consider observed data generated at the nominal values $\theta^* = (\alpha^*=1,\beta^*=-1)$.
+The simulator parameters are modeled with a factored Gaussian
+proposal distribution $q(\theta|\psi) = q(\alpha|\psi) q(\beta|\psi)$, where each component is
+initialized with zero mean and unit variance. The entropy penalty is set
+to $\gamma=5$, while all other hyper-parameters are otherwise the same as in the previous example.
+
+Starting with a proposal distribution $q(\theta|\psi)$ largely spread over
+the parameter space, as illustrated in the left plot of Figure~\ref{fig:multi},
+inference quickly converges towards a proposal distribution whose density
+concentrates around the nominal values $\theta^*$, as shown in the right plot of Figure~\ref{fig:multi}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.48\textwidth]{figures/multi.pdf}
+    \caption{Multidimensional continuous data.
+             ({\it Left}) Likelihood $q(\theta|\psi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
+             ({\it Right}) Likelihood $q(\theta|\psi)$ after adverarial variational optimization. The proposal density correctly concentrates around $\theta^* = (1, -1)$.
+             }\label{fig:multi}
+\end{figure}
 
 
 \subsection{Weinberg}
