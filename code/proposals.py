@@ -6,8 +6,6 @@ from autograd.scipy.special import gammaln
 from scipy.stats import norm as sp_norm
 from scipy.stats import beta as sp_beta
 
-from sklearn.utils import check_random_state
-
 
 # Gaussian proposal (for unbounded support)
 
@@ -82,7 +80,7 @@ def beta_draw(params, n_samples, random_state=None):
     return thetas
 
 
-def beta_logpdf(params, theta):
+def beta_logpdf(params, theta, to_scalar=True):
     alpha = np.exp(params["log_alpha"])
     beta = np.exp(params["log_beta"])
 
@@ -90,7 +88,10 @@ def beta_logpdf(params, theta):
             (alpha - 1) * np.log(theta) +
             (beta - 1) * np.log(1 - theta))
 
-    return np.sum(logp)
+    if to_scalar:
+        return np.sum(logp)
+    else:
+        return logp
 
 
 def betaln(alpha, beta):

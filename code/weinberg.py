@@ -1,11 +1,19 @@
-import copy
 import autograd as ag
 import autograd.numpy as np
 import matplotlib.pyplot as plt
+import copy
 
 from nn import glorot_uniform
 from nn import relu
 from nn import AdamOptimizer
+
+# from proposals import make_gaussian_proposal
+# from proposals import gaussian_draw
+# from proposals import gaussian_logpdf
+# from proposals import grad_gaussian_logpdf
+# from proposals import grad_gaussian_entropy
+
+# XXX switch to a gaussian proposal
 
 from proposals import make_beta_proposal
 from proposals import beta_draw
@@ -18,12 +26,11 @@ from sklearn.utils import check_random_state
 # Global params
 
 batch_size = 64
-n_epochs = 200+1
-lambda_gp = 0.01
-gamma = 0.5
+n_epochs = 300+1
+lambda_gp = 0.025
+gamma = 0.0
 
-true_theta = np.array([(42 - 40) / (50 - 40),
-                       (0.9 - 0.5) / (1.5 - 0.5)])
+true_theta = np.array([(42 - 40) / (50 - 40)])
 make_plots = True
 
 
@@ -45,7 +52,7 @@ def diffxsec(costheta, sqrtshalf, gf):
 
 def rej_sample_costheta(n_samples, theta, rng):
     sqrtshalf = theta[0]
-    gf = theta[1]
+    gf = 0.9
 
     ntrials = 0
     samples = []
@@ -65,15 +72,14 @@ def rej_sample_costheta(n_samples, theta, rng):
 
 def simulator(theta, n_samples, random_state=None):
     theta = copy.copy(theta)
-    theta[0] = theta[0] * (50 - 40) + 40     # sqrtshalf
-    theta[1] = theta[1] * (1.5 - 0.5) + 0.5  # gf
+    theta[0] = theta[0] * (50 - 40) + 40
 
     rng = check_random_state(random_state)
     samples = rej_sample_costheta(n_samples, theta, rng)
 
     return samples.reshape(-1, 1)
 
-X_obs = simulator(true_theta, 10000, random_state=123)
+X_obs = simulator(true_theta, 20000, random_state=123)
 n_params = len(true_theta)
 n_features = X_obs.shape[1]
 
@@ -113,11 +119,11 @@ def predict(X, params):
 grad_predict_critic = ag.elementwise_grad(predict)
 
 
-y_critic = np.zeros(batch_size)
-y_critic[:batch_size // 2] = 0.0  # 0 == fake
-y_critic[batch_size // 2:] = 1.0
-
 def loss_critic(params_critic, i, lambda_gp=lambda_gp, batch_size=batch_size):
+    y_critic = np.zeros(batch_size)
+    # y_critic[:batch_size // 2] = 0.0  # 0 == fake
+    y_critic[batch_size // 2:] = 1.0
+
     rng = check_random_state(i)
 
     # WGAN loss
@@ -149,8 +155,8 @@ grad_loss_critic = ag.grad(loss_critic)
 
 def approx_grad_u(params_proposal, i, gamma=gamma):
     rng = check_random_state(i)
-    grad_u = make_beta_proposal(n_params)
-    grad_ent = make_beta_proposal(n_params)
+    grad_u = {k: np.zeros(len(params_proposal[k])) for k in params_proposal}
+    grad_ent = {k: np.zeros(len(params_proposal[k])) for k in params_proposal}
     thetas = beta_draw(params_proposal, batch_size, random_state=rng)
 
     for theta in thetas:
@@ -178,13 +184,15 @@ def approx_grad_u(params_proposal, i, gamma=gamma):
 opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
                            step_size=0.01, b1=0.5, b2=0.5)
 opt_proposal = AdamOptimizer(approx_grad_u, params_proposal,
-                             step_size=0.01, b1=0.1, b2=0.1) # was 0.005
+                             step_size=0.005, b1=0.1, b2=0.1)
 
 opt_critic.step(100)
 opt_critic.move_to(params_critic)
 
+loss_d = []
+
 for i in range(n_epochs):
-    print(params_proposal)
+    print(i, params_proposal)
 
     # fit simulator
     opt_proposal.step(1)
@@ -192,36 +200,45 @@ for i in range(n_epochs):
 
     # fit critic
     opt_critic.reset()   # reset moments
-    opt_critic.step(50)
+    opt_critic.step(100)
     opt_critic.move_to(params_critic)
+
+    loss_d.append(-loss_critic(params_critic, i, batch_size=5000))
 
     # plot
     if make_plots:
         fig = plt.figure(figsize=(6, 6))
 
         ax1 = fig.add_subplot(211)
-        plt.xlim(-1, 1)
+        plt.xlim(-1.0, 1.0)
         plt.ylim(0, 1.5)
-        plt.hist(X_obs, histtype="step", label=r"$x \sim p_r$",
-                 range=(-1, 1), bins=20, normed=1)
+        plt.hist(X_obs, histtype="step", label=r"$x \sim p_r(x)$",
+                 range=(-1.0, 1.0), bins=50, normed=1)
 
-        thetas = beta_draw(params_proposal, 10000)
+        thetas = beta_draw(params_proposal, 20000)
         X_gen = np.zeros((len(thetas), 1))
         for j, theta in enumerate(thetas):
             X_gen[j, :] = simulator(theta, 1).ravel()
 
-        plt.hist(X_gen, histtype="step", label=r"$x \sim p_\psi$",
-                 range=(-1, 1), bins=20, normed=1)
-        plt.title(r"$i = %d$" % i)
-        plt.legend()
+        plt.hist(X_gen, histtype="step", label=r"$x \sim p(x|\psi)$",
+                 range=(-1.0, 1.0), bins=50, normed=1)
+
+        # thetas = np.linspace(0.0, 1.0, num=300)
+        # logp = np.array([beta_logpdf(params_proposal, theta, to_scalar=False)
+        #                  for theta in thetas])
+        # plt.plot(thetas, np.exp([l[0] for l in logp]),
+        #          label=r"$q(\log \lambda|\psi)$", linestyle="--")
+        plt.legend(loc="upper right")
 
         ax2 = fig.add_subplot(212)
-        plt.xlim(-1, 1)
-        plt.ylim(-30, 30)
-        xs = np.linspace(-3, 3).reshape(-1, 1)
-        y_pred = predict(xs, params_critic)
-        plt.plot(xs, y_pred, label=r"$d(x)$")
-        plt.legend()
+        xs = np.arange(i+1)
+        plt.plot(xs, loss_d, label=r"$-U_d$")
+        plt.xlim(0, n_epochs)
+        plt.legend(loc="upper right")
 
         plt.savefig("figs/%.4d.png" % i)
+
+        if i == n_epochs - 1:
+            plt.savefig("figs/weinberg-gamma=%.2f.pdf" % gamma)
+
         plt.close()

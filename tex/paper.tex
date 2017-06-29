@@ -347,61 +347,60 @@ typically increases as the entropy of the proposal decreases.
 
 \subsection{Univariate discrete data}
 
-\glnote{contour plots of q(theta|psi) + histograms + learning curves}
-\glnote{contours maybe with $\gamma=0$ and $\gamma>0$ contours}
-\glnote{insist that we dont learn the simulator}
-
-As a first illustrative experiment, we evaluate adversarial variational
-optimization on a Poisson distribution with unknown scale parameter $\lambda$.
-We artificially consider the distribution as a parameterized black box
-simulator, from which we can only generate (discrete) data.
+As a first illustrative experiment, we evaluate inference for a discrete Poisson
+distribution with unknown scale parameter $\lambda$. We artificially consider
+the distribution as a parameterized simulator, from which we can only
+generate data.
 
 The observed data is sampled from a Poisson with scale $\lambda^* = 7$.
 Algorithm~\ref{alg:avo} is run for 300 epochs with mini-batches of size $M=64$
-and the following configuration. For the critic, we use a 3-layer MLP with 10
+and the following configuration. For the critic $d$, we use a 3-layer MLP with 10
 hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
 $n_\text{critic}=100$ iterations with a step size $\alpha=0.01$, decay rates
 $\beta_1=\beta_2=0.5$ and its inner first and second moment vectors reset at
-each epoch in order to avoid building momentum in staled directions.  For
+each outer epoch in order to avoid building momentum in staled directions.  For
 estimating $\lambda^*$, we use a univariate Gaussian proposal distribution
 $q(\log \lambda|\psi)$ initialized with a mean at $\log(5)$ and unit variance. At
-each epoch, parameters $\psi$ are updated by making one Adam step, with
-$\alpha=0.01$ and $\beta_1=\beta_2=0.1$. Penalty coefficients are set to
-$\lambda=0.025$ and $\gamma=5$.
+each epoch, parameters $\psi$ are updated by taking one Adam step, with
+$\alpha=0.01$ and $\beta_1=\beta_2=0.1$. The gradient penalty coefficient is set to
+$\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=5$.
 
 \begin{figure}
     \centering
-    \vspace{-0.5cm}
-    \includegraphics[width=0.48\textwidth]{figures/poisson-gamma=5.pdf}
-    \vspace{-1cm}
-    \caption{Toy problem on discrete data: Poisson with unknown scale.
-             This example illustrates adversarial variational optimization for a discrete non-differentiable generator.
-             (Top) Model distribution $p(\mathbf{x}|\psi)$ after adversarial variational optimization along with the proposal distribution $q(\lambda|\psi)$.
-             (Bottom) Evolution of the variational upper bound $U_d$ on the loss ${\cal L}_d$ of the critic.
+    \includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
+    \caption{Discrete Poisson model with unknown scale.
+             (Top left) Proposal distributions $p(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
+                        the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density and therefore to better inference.
+             (Top right) Model distributions $p(\mathbf{x}|\psi)$ after training.
+             (Bottom) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
              }\label{fig:poisson}
 \end{figure}
 
-The upper plot of Figure~\ref{fig:poisson} illustrates the resulting model
-after the optimization procedure. As theoretically expected from adversarial
-training, the model density $p(\mathbf{x}|\psi)$ closely matches the true
-density $p_r(\mathbf{x})$, as shown by the aligned histograms in blue and
-orange. Under the effect of the entropy penalty $\gamma H(q(\theta|\psi))$, we
-also observe that the proposal distribution has correctly concentrated its
-mass around $\log(7) = 1.94$. The bottom plot of
-Figure~\ref{fig:poisson} shows an empirical estimate of $-U_d$ with respect to
-the epoch. We observe that it quickly falls towards $0$, which indicates that
+The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
+distributions $p(\theta|\psi)$ after adversarial variational optimization.  For
+both $\gamma=0$ and $\gamma=5$, the proposal distributions correctly concentrate
+their density around the true parameter value $\log(\lambda^*) = 1.94$. Under
+the effect of the positive entropy penalty $H(q(\theta|\psi))$,
+the proposal distribution for $\gamma=5$ concentrates its mass more tightly,
+yielding in this case a more precise inference.  The top right plot compares the
+model distributions to the true distribution.  As theoretically expected from
+adversarial training, we see that the resulting distributions closely match
+the true distribution, with qualitatively  better results for the penalized
+model.  The bottom plot of Figure~\ref{fig:poisson} shows empirical estimates
+of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=5$,
+the curves quickly fall towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)}
 [d(\tilde{\mathbf{x}};\phi)] \approx \mathbb{E}_{\mathbf{x} \sim
 p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$ and that the critic cannot distinguish
-between true and model data. Despite the discreteness and the non-differentiability
-of the underlying generator, this confirms that inference with
-adversarial variational optimization works.
+between true and model data. Despite the discreteness and the
+non-differentiability of the underlying generator, this confirms that inference
+with adversarial variational optimization works.
 
 
 \subsection{Multidimensional continuous data}
 
-\glnote{use 5d example from carl}
-\glnote{contour plots}
+\glnote{use 5d example from carl.}
+\glnote{contour plots for $\alpha$ and $\beta$.}
 
 
 \subsection{Weinberg}
