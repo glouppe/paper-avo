@@ -50,7 +50,7 @@ def orthogonal(shape, rng, scale=1.1):
 
 class AdamOptimizer:
     def __init__(self, grad, init_params, callback=None,
-                 step_size=0.01, b1=0.9, b2=0.99, eps=10**-8):
+                 step_size=0.01, b1=0.9, b2=0.999, eps=10**-8):
         self.grad = grad
         self.init_params = copy.copy(init_params)
         self.callback = callback

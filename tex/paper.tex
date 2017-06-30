@@ -39,21 +39,21 @@
 
 \begin{abstract}
 
-Complex computer simulators are increasingly used across fields of science to
+Complex computer simulators are used across fields of science to
 describe generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely provide a way to directly evaluate the likelihood
 function for a given observation. In this note, we develop a likelihood-free
 inference algorithm for fitting a forward non-differentiable generative model to
-(continuous or discrete) observed data. We adapt the adversarial training procedure of generative
+continuous or discrete observed data. We adapt the adversarial training procedure of generative
 adversarial networks by replacing the implicit generative network with a
 domain-based scientific simulator, and solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the adversarial objectives.
 Effectively, the procedure results in learning an arbitrarily tight
 proposal distribution over simulator parameters, such that the corresponding
 marginal distribution of the generated data matches the observations.
-\glnote{Mention experimental results.}
-\glnote{Add 'so what?' conclusion.}
+Preliminary results with non-differentiable simulators producing discrete/continuous univariate/multi-dimensional data
+validate the proposed method.
 
 
 \end{abstract}
@@ -364,14 +364,14 @@ each outer epoch in order to avoid building momentum in staled directions.  For
 estimating $\lambda^*$, we parameterize $\theta$ as $\log(\lambda)$ and use a univariate Gaussian proposal distribution
 $q(\theta|\psi)$ initialized with a mean at $\log(5)$ and unit variance. At
 each epoch, parameters $\psi$ are updated by taking one Adam step, with
-$\alpha=0.01$ and $\beta_1=\beta_2=0.1$. The gradient penalty coefficient is set to
+$\alpha=0.01$ and $\beta_1=\beta_2=0.5$. The gradient penalty coefficient is set to
 $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=5$.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
     \caption{Discrete Poisson model with unknown scale.
-             ({\it Top left}) Proposal distributions $p(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
+             ({\it Top left}) Proposal distributions $q(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
                         the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density and therefore to better inference.
              ({\it Top right}) Model distributions $p(\mathbf{x}|\psi)$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution.
              ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
@@ -379,7 +379,7 @@ $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\g
 \end{figure}
 
 The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
-distributions $p(\theta|\psi)$ after adversarial variational optimization.  For
+distributions $q(\theta|\psi)$ after adversarial variational optimization.  For
 both $\gamma=0$ and $\gamma=5$, the proposal distributions correctly concentrate
 their density around the true parameter value $\log(\lambda^*) = 1.94$. Under
 the effect of the positive entropy penalty $H(q(\theta|\psi))$,
@@ -419,13 +419,17 @@ generative process:
 We consider observed data generated at the nominal values $\theta^* = (\alpha^*=1,\beta^*=-1)$.
 The simulator parameters are modeled with a factored Gaussian
 proposal distribution $q(\theta|\psi) = q(\alpha|\psi) q(\beta|\psi)$, where each component is
-initialized with zero mean and unit variance. The entropy penalty is set
-to $\gamma=5$, while all other hyper-parameters are otherwise the same as in the previous example.
+initialized with zero mean and unit variance. Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
+Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
 
 Starting with a proposal distribution $q(\theta|\psi)$ largely spread over
 the parameter space, as illustrated in the left plot of Figure~\ref{fig:multi},
 inference quickly converges towards a proposal distribution whose density
 concentrates around the nominal values $\theta^*$, as shown in the right plot of Figure~\ref{fig:multi}.
+Overall, this example further illustrates and confirms the ability of adversarial
+variational optimization for inference with multiple parameters and multidimensional
+data, where reliable approximations of $p(\mathbf{x}|\theta)$ in a traditional
+MLE setting would otherwise be difficult to construct.
 
 \begin{figure}
     \centering
@@ -437,9 +441,62 @@ concentrates around the nominal values $\theta^*$, as shown in the right plot of
 \end{figure}
 
 
-\subsection{Weinberg}
+\subsection{Electron--positron annihilation}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
+    \caption{Electron--positron annihilation.
+    ({\it Top left}) Proposal distributions $q(\theta|\psi)$ after adversarial variational optimization. The density of the penalized distribution ($\gamma=5$) is here highly concentrated, resulting in the green mass near $\theta^*$.
+    ({\it Top right}) Model distributions $p(\mathbf{x}|\psi)$ after training. Despite the differences between their respective proposal distributions, both models closely match the observed data.
+    ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+             }\label{fig:weinberg}
+\end{figure}
 
+As a more challenging example, we now consider a (simplified) simulator from
+particle physics for electron--positron collisions resulting in muon--antimuon
+pairs ($e^+e^- \rightarrow \mu^+\mu^-$). The simulator approximates the
+distribution of observed measurements $\mathbf{x} = \cos(A) \in [-1,1]$, where $A$ is the
+polar angle of the outgoing muon with respect  to the originally incoming
+electron. This random variable is approximately distributed as
+\begin{equation}
+    p(\mathbf{x}|E_\text{beam}, G_f) = \frac{1}{Z} \left[ (1 + \mathbf{x}^2) + c(E_\text{beam}, G_f) \mathbf{x} \right]
+\end{equation}
+where $Z$ is a known normalization constant and $c$ is an asymmetry coefficient
+function. Due to the linear term in the expression, the density $p(\mathbf{x} |
+E_\text{beam}, G_f)$ exhibits a so-called {\it forward-backward} asymmetry.  Its
+size depends on the values of the parameters $E_\text{beam}$ (the beam energy)
+and $G_f$ (the Fermi constant) through the coefficient function $c$. Given the
+known analytical form of the probability density function, a simulator for
+$\mathbf{x}$ can be implemented with rejection sampling~\citep{von195113}. As an
+arbitrary number of random drawings may be required before passing the
+acceptance threshold, this illustrates how the latent variable
+$\mathbf{z}$ does not necessarily need to be fixed-sized vector, and how its
+density  $p(\mathbf{z}|\theta)$ may depend on $\theta$ in some complicated way
+(Section~\ref{sec:problem}).
+
+In this example, we consider observed data generated with $\theta^* =
+(E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
+factored Gaussian proposal distribution $q(\theta|\psi) = q(E_\text{beam}|\psi)
+q(G_f|\psi)$, where each component is respectively initialized with mean $45$
+and $1$ and variance $1$ and $0.01$. Hyper-parameters are set to $M=64$,
+$n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
+$\beta_1=0.9$ and $\beta_2=0.999$. As for the first example, we compare
+entropy penalties $\gamma=0$ and $\gamma=5$.
+
+The top left plot in Figure~\ref{fig:poisson} illustates the resulting proposal
+distributions $q(\theta|\psi)$ for $\gamma=0$ and $\gamma=5$ after adversarial
+variational optimization. We see that the distributions both arrive in the
+neighborhood of $\theta^*$, with a density highly more concentrated for
+$\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
+distance with $\theta^*$, both models closely match the observed data, as shown
+in the top right plot of  Figure~\ref{fig:poisson}. This suggests either a
+relatively flat landscape around $\theta^*$ or that the observed data can in
+this case also be reproduced with a smeared variation $p(\mathbf{x}|\psi)$ of
+the simulator. Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that
+for both $\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ quickly
+fall towards $0$, which indicates  convergence towards a distribution that the
+critic cannot distinguish from the true distribution.
 
 % ==============================================================================
 
@@ -479,6 +536,7 @@ ABC~\citep{gutmann2017likelihood}.
 \glnote{avo = extension of gans to non-differentiable generator}
 \glnote{nice for discrete data}
 \glnote{next version = try on an actual particle physics simulator.}
+\glnote{nes for better invariance and stability?}
 
 \glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
 is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?}

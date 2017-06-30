@@ -48,7 +48,7 @@ params_proposal = make_gaussian_proposal(n_params, mu=0.0)
 
 def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
-    params = {"W": [glorot_uniform(n_hidden, 1, rng),
+    params = {"W": [glorot_uniform(n_hidden, n_features, rng),
                     glorot_uniform(n_hidden, n_hidden, rng),
                     glorot_uniform(n_hidden, 0, rng)],
               "b": [np.zeros(n_hidden),
@@ -56,7 +56,7 @@ def make_critic(n_features, n_hidden, random_state=None):
                     np.zeros(1)]}
     return params
 
-params_critic = make_critic(1, 10)
+params_critic = make_critic(n_features, 10)
 
 
 def predict(X, params):

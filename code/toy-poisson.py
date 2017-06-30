@@ -17,6 +17,8 @@ from sklearn.utils import check_random_state
 
 # Global params
 
+rng = check_random_state(123)
+
 batch_size = 64
 n_epochs = 300+1
 lambda_gp = 0.025
@@ -32,7 +34,7 @@ def simulator(theta, n_samples, random_state=None):
                        size=n_samples,
                        random_state=random_state).reshape(-1, 1)
 
-X_obs = simulator(true_theta, 20000, random_state=123)
+X_obs = simulator(true_theta, 20000, random_state=rng)
 n_params = len(true_theta)
 n_features = X_obs.shape[1]
 
@@ -40,11 +42,11 @@ n_features = X_obs.shape[1]
 # Critic
 
 gammas = [0.0, 5.0]
-colors = ["C1", "C3"]
+colors = ["C1", "C2"]
 
 def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
-    params = {"W": [glorot_uniform(n_hidden, 1, rng),
+    params = {"W": [glorot_uniform(n_hidden, n_features, rng),
                     glorot_uniform(n_hidden, n_hidden, rng),
                     glorot_uniform(n_hidden, 0, rng)],
               "b": [np.zeros(n_hidden),
@@ -67,13 +69,14 @@ history = [{"gamma": gammas[i],
             "loss_d": [],
             "params_proposal": make_gaussian_proposal(n_params,
                                                       mu=np.log(5.0)),
-            "params_critic": make_critic(1, 10)}
+            "params_critic": make_critic(n_features, 10, random_state=rng)}
            for i in range(len(gammas))]
 
 
 # Global loop over gammas
 
 for state in history:
+    # WGAN + GP
     def loss_critic(params_critic, i, lambda_gp=lambda_gp, batch_size=batch_size):
         y_critic = np.zeros(batch_size)
         # y_critic[:batch_size // 2] = 0.0  # 0 == fake
@@ -82,7 +85,8 @@ for state in history:
         rng = check_random_state(i)
 
         # WGAN loss
-        thetas = gaussian_draw(state["params_proposal"], batch_size // 2)
+        thetas = gaussian_draw(state["params_proposal"],
+                               batch_size // 2, random_state=rng)
         _X_gen = np.zeros((batch_size // 2, n_features))
         for j, theta in enumerate(thetas):
             _X_gen[j, :] = simulator(theta, 1, random_state=rng).ravel()
@@ -105,9 +109,7 @@ for state in history:
 
     grad_loss_critic = ag.grad(loss_critic)
 
-
-    # grad_psi E_theta~q_psi, z~p_z(theta) [ d(g(z, theta) ]
-
+    # grad_psi E_theta~q_psi, z~p_z(theta) [ d(g(z, theta)
     def approx_grad_u(params_proposal, i):
         rng = check_random_state(i)
         grad_u = {k: np.zeros(len(params_proposal[k]))
@@ -139,7 +141,7 @@ for state in history:
     opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
                                step_size=0.01, b1=0.5, b2=0.5)
     opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"],
-                                 step_size=0.01, b1=0.1, b2=0.1)
+                                 step_size=0.01, b1=0.5, b2=0.5)
 
     opt_critic.step(100)
     opt_critic.move_to(state["params_critic"])
@@ -165,13 +167,11 @@ for state in history:
 if make_plots:
     fig = plt.figure(figsize=(6, 6))
 
-    # XXX add log true_theta
-
     # proposal
     ax1 = plt.subplot2grid((2, 2), (0, 0))
     plt.xlim(true_theta[0]-3, true_theta[0]+3)
 
-    plt.axvline(x=true_theta[0], linestyle="--", label=r"$\log(\lambda^*)$")
+    plt.axvline(x=true_theta[0], linestyle="--", label=r"$\theta^*$")
     thetas = np.linspace(true_theta[0]-3, true_theta[0]+3, num=300)
 
     for state in history:
@@ -180,7 +180,7 @@ if make_plots:
                          for theta in thetas])
         plt.plot(thetas,
                  np.exp([l[0] for l in logp]),
-                 label=r"$q(\log(\lambda)|\psi) \quad\gamma=%d$" % state["gamma"],
+                 label=r"$q(\theta|\psi) \quad\gamma=%d$" % state["gamma"],
                  color=state["color"])
 
     plt.legend(loc="upper right")
@@ -193,7 +193,7 @@ if make_plots:
     Xs = [X_obs]
 
     for state in history:
-        thetas = gaussian_draw(state["params_proposal"], 20000)
+        thetas = gaussian_draw(state["params_proposal"], 20000, random_state=rng)
         X_ = np.zeros((len(thetas), 1))
         for j, theta in enumerate(thetas):
             X_[j, :] = simulator(theta, 1).ravel()
@@ -208,7 +208,7 @@ if make_plots:
 
     # U_g
     ax3 = plt.subplot2grid((2, 2), (1, 0), colspan=2)
-    xs = np.arange(i+1)
+    xs = np.arange(n_epochs)
 
     for state in history:
         plt.plot(xs,
@@ -220,9 +220,6 @@ if make_plots:
     plt.legend(loc="upper right")
 
     plt.tight_layout()
-    plt.savefig("figs/%.4d.png" % i)
-
-    if i == n_epochs - 1:
-        plt.savefig("figs/poisson.pdf")
+    plt.savefig("figs/poisson.pdf")
 
     plt.close()
