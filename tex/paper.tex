@@ -419,8 +419,10 @@ generative process:
 We consider observed data generated at the nominal values $\theta^* = (\alpha^*=1,\beta^*=-1)$.
 The simulator parameters are modeled with a factored Gaussian
 proposal distribution $q(\theta|\psi) = q(\alpha|\psi) q(\beta|\psi)$, where each component is
-initialized with zero mean and unit variance. Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
+initialized with zero mean and unit variance. 
+Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
 Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
+The network architecture of the critic is the same as in the previous example.
 
 Starting with a proposal distribution $q(\theta|\psi)$ largely spread over
 the parameter space, as illustrated in the left plot of Figure~\ref{fig:multi},
@@ -559,7 +561,7 @@ the derivatives of $d$ are known exactly.
 
 \section*{Acknowledgments}
 
-The authors would like to thank Lukas Heinrich for helpful comments regarding
+We would like to thank Lukas Heinrich for helpful comments regarding
 the electron--positron annihilation simulation.
 
 GL and KL are both supported through NSF ACI-1450310, additionally KC is
