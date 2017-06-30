@@ -419,7 +419,7 @@ generative process:
 We consider observed data generated at the nominal values $\theta^* = (\alpha^*=1,\beta^*=-1)$.
 The simulator parameters are modeled with a factored Gaussian
 proposal distribution $q(\theta|\psi) = q(\alpha|\psi) q(\beta|\psi)$, where each component is
-initialized with zero mean and unit variance. 
+initialized with zero mean and unit variance.
 Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
 Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
 The network architecture of the critic is the same as in the previous example.
@@ -486,20 +486,26 @@ $n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
 $\beta_1=0.9$ and $\beta_2=0.999$. As for the first example, we compare
 entropy penalties $\gamma=0$ and $\gamma=5$.
 
-The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting proposal
-distributions $q(\theta|\psi)$ for $\gamma=0$ and $\gamma=5$ after adversarial
-variational optimization. We see that the distributions both arrive in the
-neighborhood of $\theta^*$, with a density highly more concentrated for
+The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting
+proposal distributions $q(\theta|\psi)$ for $\gamma=0$ and $\gamma=5$ after
+adversarial variational optimization. We see that the distributions both arrive
+in the neighborhood of $\theta^*$, with a density highly more concentrated for
 $\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
 distance with $\theta^*$, both models closely match the observed data, as shown
-in the top right plot of  Figure~\ref{fig:weinberg}, with again
-slightly better results for the entropy penalized model. This suggests either a
-relatively flat landscape around $\theta^*$ or that the observed data can in
-this case also be reproduced with a smeared variation $p(\mathbf{x}|\psi)$ of
-the simulator. Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that
-for both $\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ quickly
-fall towards $0$, which indicates  convergence towards a distribution that the
-critic cannot distinguish from the true distribution.
+in the top right plot of  Figure~\ref{fig:weinberg}, with again slightly better
+results for the entropy penalized model. This suggests either a relatively flat
+landscape around $\theta^*$ or that the observed data can in this case also be
+reproduced with a smeared variation $p(\mathbf{x}|\psi)$ of the simulator.
+Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that for both
+$\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ quickly fall
+towards $0$, which indicates  convergence towards a distribution that the critic
+cannot distinguish from the true distribution. In summary, despite the intricate
+relation betwen the observations $\mathbf{x}$, the latent variable $\mathbf{z}$
+and the parameters $\theta$, this example demonstrates once again the efficacy
+of adversarial variational optimization for parameter inference on black box
+simulator.
+
+
 
 % ==============================================================================
 
