@@ -436,7 +436,7 @@ MLE setting would otherwise be difficult to construct.
     \includegraphics[width=0.48\textwidth]{figures/multi.pdf}
     \caption{Multidimensional continuous data.
              ({\it Left}) Likelihood $q(\theta|\psi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
-             ({\it Right}) Likelihood $q(\theta|\psi)$ after adverarial variational optimization. The proposal density correctly concentrates around $\theta^* = (1, -1)$.
+             ({\it Right}) Likelihood $q(\theta|\psi)$ after adversarial variational optimization. The proposal density correctly concentrates around $\theta^* = (1, -1)$.
              }\label{fig:multi}
 \end{figure}
 
@@ -467,7 +467,7 @@ function. Due to the linear term in the expression, the density $p(\mathbf{x} |
 E_\text{beam}, G_f)$ exhibits a so-called {\it forward-backward} asymmetry.  Its
 size depends on the values of the parameters $E_\text{beam}$ (the beam energy)
 and $G_f$ (the Fermi constant) through the coefficient function $c$. Given the
-known analytical form of the probability density function, a simulator for
+known analytic form of the probability density function, a simulator for
 $\mathbf{x}$ can be implemented with rejection sampling~\citep{von195113}. As an
 arbitrary number of random drawings may be required before passing the
 acceptance threshold, this illustrates how the latent variable
@@ -484,14 +484,14 @@ $n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
 $\beta_1=0.9$ and $\beta_2=0.999$. As for the first example, we compare
 entropy penalties $\gamma=0$ and $\gamma=5$.
 
-The top left plot in Figure~\ref{fig:poisson} illustates the resulting proposal
+The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting proposal
 distributions $q(\theta|\psi)$ for $\gamma=0$ and $\gamma=5$ after adversarial
 variational optimization. We see that the distributions both arrive in the
 neighborhood of $\theta^*$, with a density highly more concentrated for
 $\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
 distance with $\theta^*$, both models closely match the observed data, as shown
-in the top right plot of  Figure~\ref{fig:poisson}, with again
-slighlty better results for the entropy penalized model. This suggests either a
+in the top right plot of  Figure~\ref{fig:weinberg}, with again
+slightly better results for the entropy penalized model. This suggests either a
 relatively flat landscape around $\theta^*$ or that the observed data can in
 this case also be reproduced with a smeared variation $p(\mathbf{x}|\psi)$ of
 the simulator. Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that
@@ -539,7 +539,7 @@ forward non-differentiable simulator to continuous or discrete observed data.
 The algorithm combines adversarial training  with variational optimization to
 minimize variational upper bounds  on the otherwise non-differentiable
 adversarial objectives.
-Effectively, the procedure results in learning an abitrarily tight proposal
+Effectively, the procedure results in learning an arbitrarily tight proposal
 distribution over the simulator parameters, such that corresponding the marginal
 distribution of the generated data matches the observations. Preliminary results
 with non-differentiable discrete or continuous simulators validate the proposed method.
