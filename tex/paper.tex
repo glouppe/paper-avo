@@ -292,7 +292,7 @@ generated data, as ordinarily done in stochastic gradient descent. When updating
 $\psi$, estimates of $\nabla_\psi U_g$ can be derived with forward
 simulations, as described in the previous section.
 That is,
-\begin{equation}
+\begin{equation}\label{eqn:grad-ug-approx}
     \nabla_\psi U_g = \mathbb{E}_{\theta \sim q(\theta|\psi), \mathbf{z} \sim p(\mathbf{z}|\theta)}  [-d(g(\mathbf{z};\theta);\phi) \nabla_\psi \log q(\theta|\psi)],
 \end{equation} which we can approximate with mini-batches of
 generated data
@@ -490,7 +490,8 @@ variational optimization. We see that the distributions both arrive in the
 neighborhood of $\theta^*$, with a density highly more concentrated for
 $\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
 distance with $\theta^*$, both models closely match the observed data, as shown
-in the top right plot of  Figure~\ref{fig:poisson}. This suggests either a
+in the top right plot of  Figure~\ref{fig:poisson}, with again
+slighlty better results for the entropy penalized model. This suggests either a
 relatively flat landscape around $\theta^*$ or that the observed data can in
 this case also be reproduced with a smeared variation $p(\mathbf{x}|\psi)$ of
 the simulator. Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that
@@ -533,13 +534,26 @@ ABC~\citep{gutmann2017likelihood}.
 
 \section{Summary}
 
-\glnote{avo = extension of gans to non-differentiable generator}
-\glnote{nice for discrete data}
-\glnote{next version = try on an actual particle physics simulator.}
-\glnote{nes for better invariance and stability?}
+In this note, we develop a likelihood-free inference algorithm for fitting a
+forward non-differentiable simulator to continuous or discrete observed data.
+The algorithm combines adversarial training  with variational optimization to
+minimize variational upper bounds  on the otherwise non-differentiable
+adversarial objectives.
+Effectively, the procedure results in learning an abitrarily tight proposal
+distribution over the simulator parameters, such that corresponding the marginal
+distribution of the generated data matches the observations. Preliminary results
+with non-differentiable discrete or continuous simulators validate the proposed method.
 
-\glnote{Can we exploit the fact that $\nabla_\mathbf{x} d(\mathbf{x})$
-is known exactly for building better estimates $\tilde{\nabla}_\psi U_g$?}
+While the obtained results are encouraging, the complete validation of the
+method remains to be carried out in real conditions on a full fledged scientific
+simulator -- which we plan to achieve for a next version of this work.
+In terms of method, several components need to be further investigated.
+First, we need to better study the interplay between the entropy penalty and the adversarial objectives.
+Second, we should better understand the dynamics of the optimization
+procedure, in particular when combined with momentum-based optimizers like Adam.
+Third, we need to consider whether less noisy estimates of the gradients
+$\nabla_\psi U_g$ can be computed, in particular by exploiting the fact in the composition $d(g(\mathbf{z};\theta); \psi)$
+the derivatives of $d$ are known exactly.
 
 % ==============================================================================
 
