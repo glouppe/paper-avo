@@ -39,7 +39,7 @@
 
 \begin{abstract}
 
-Complex computer simulators are used across fields of science to
+Complex computer simulators are increasingly used across fields of science to
 describe generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely provide a way to directly evaluate the likelihood
@@ -322,7 +322,7 @@ of the generated data. That is,
 \end{equation}
 
 In consequence, the proposed inference algorithm does not necessarily guarantee that the
-proposal distribution $q(\theta|\psi)i$ will place its mass arbitrarily tight
+proposal distribution $q(\theta|\psi)$ will place its mass arbitrarily tight
 around the parameters of interest, which might be an issue when one is rather interested in point estimates $\theta^*$.
 For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
@@ -437,8 +437,8 @@ MLE setting would otherwise be difficult to construct.
     \centering
     \includegraphics[width=0.48\textwidth]{figures/multi.pdf}
     \caption{Multidimensional continuous data.
-             ({\it Left}) Likelihood $q(\theta|\psi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
-             ({\it Right}) Likelihood $q(\theta|\psi)$ after adversarial variational optimization. The proposal density correctly concentrates around $\theta^* = (1, -1)$.
+             ({\it Left}) Density $q(\theta|\psi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
+             ({\it Right}) Density $q(\theta|\psi)$ after adversarial variational optimization. The proposal density correctly converges towards a distributon whose density concentrates around $\theta^* = (1, -1)$.
              }\label{fig:multi}
 \end{figure}
 
@@ -501,8 +501,8 @@ $\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ quickly fall
 towards $0$, which indicates  convergence towards a distribution that the critic
 cannot distinguish from the true distribution. In summary, despite the intricate
 relation betwen the observations $\mathbf{x}$, the latent variable $\mathbf{z}$
-and the parameters $\theta$, this example demonstrates once again the efficacy
-of adversarial variational optimization for parameter inference on black box
+and the parameters $\theta$, this example demonstrates the efficacy
+of adversarial variational optimization for parameter inference on a black box
 simulator.
 
 
@@ -524,7 +524,7 @@ discrepancy between the true and the model distributions. For example,
 unnormalized differentiable statistical models, while
 \citep{goodfellow2014generative} exploits an adversarial neural network for
 learning a differentiable implicit generative model. In the likelihood-free
-setup, \citep{cranmer2015approximating,2016arXiv161110242D} estimate likelihood
+setup, \citep{cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D} estimate likelihood
 ratios through supervised classification, which can in turn be used for
 parameter inference in combination with a gradient-free optimization algorithm.
 Similarly, \citep{gutmann2017likelihood} makes use of classification accuracy as
@@ -534,7 +534,7 @@ In this context, the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative} to
 non-differentiable simulators. It also constitutes an approximate gradient
 descent alternative to bayesian optimization based on density
-ratios~\citep{cranmer2015approximating} or to classifier
+ratios~\citep{cranmer2015approximating,cranmer2016experiments} or to classifier
 ABC~\citep{gutmann2017likelihood}.
 
 
