@@ -18,7 +18,7 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-seed = 123
+seed = 777
 rng = check_random_state(seed)
 
 batch_size = 64
