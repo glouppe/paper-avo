@@ -23,7 +23,8 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-rng = check_random_state(777)
+seed = 777
+rng = check_random_state(seed)
 
 batch_size = 64
 n_epochs = 300+1
@@ -134,7 +135,7 @@ def approx_grad_u(params_proposal, i, gamma=gamma):
     thetas = gaussian_draw(params_proposal, batch_size, random_state=rng)
 
     for theta in thetas:
-        x = simulator(theta, 1)
+        x = simulator(theta, 1, random_state=rng)
         dx = predict(x, params_critic).ravel()
 
         grad_q = grad_gaussian_logpdf(params_proposal, theta)
@@ -224,6 +225,6 @@ for i in range(n_epochs):
             plt.tight_layout()
 
             if i == n_epochs - 1:
-                plt.savefig("figs/multi-%d.pdf" % seed)
+                plt.savefig("figs/multi.pdf")
 
             plt.close()

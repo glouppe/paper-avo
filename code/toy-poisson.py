@@ -17,7 +17,8 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-rng = check_random_state(123)
+seed = 777
+rng = check_random_state(seed)
 
 batch_size = 64
 n_epochs = 300+1
@@ -119,7 +120,7 @@ for state in history:
         thetas = gaussian_draw(params_proposal, batch_size, random_state=rng)
 
         for theta in thetas:
-            x = simulator(theta, 1)
+            x = simulator(theta, 1, random_state=rng)
             dx = predict(x, state["params_critic"]).ravel()
 
             grad_q = grad_gaussian_logpdf(params_proposal, theta)
@@ -169,10 +170,10 @@ if make_plots:
 
     # proposal
     ax1 = plt.subplot2grid((2, 2), (0, 0))
-    plt.xlim(true_theta[0]-3, true_theta[0]+3)
+    plt.xlim(true_theta[0]-1, true_theta[0]+2)
 
     plt.axvline(x=true_theta[0], linestyle="--", label=r"$\theta^*$")
-    thetas = np.linspace(true_theta[0]-3, true_theta[0]+3, num=300)
+    thetas = np.linspace(true_theta[0]-1, true_theta[0]+2, num=300)
 
     for state in history:
         logp = np.array([gaussian_logpdf(state["params_proposal"],
@@ -180,7 +181,7 @@ if make_plots:
                          for theta in thetas])
         plt.plot(thetas,
                  np.exp([l[0] for l in logp]),
-                 label=r"$q(\theta|\psi) \quad\gamma=%d$" % state["gamma"],
+                 label=r"$q(\theta|\psi)\quad\gamma=%d$" % state["gamma"],
                  color=state["color"])
 
     plt.legend(loc="upper right")
@@ -201,7 +202,7 @@ if make_plots:
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
-                   [r"$x \sim p(x|\psi) \quad\gamma=%d$" % state["gamma"] for state in history],
+                   [r"$x \sim p(x|\psi)\quad\gamma=%d$" % state["gamma"] for state in history],
              color=["C0"] + [state["color"] for state in history],
              range=(0, 15), bins=16, normed=1)
     plt.legend(loc="upper right")
@@ -213,7 +214,7 @@ if make_plots:
     for state in history:
         plt.plot(xs,
                  state["loss_d"],
-                 label=r"$-U_d \quad\gamma=%d$" % state["gamma"],
+                 label=r"$-U_d\quad\gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs)
     plt.ylim(0, 30)

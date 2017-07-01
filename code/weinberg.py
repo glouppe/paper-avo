@@ -18,7 +18,8 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-rng = check_random_state(321)
+seed = 123
+rng = check_random_state(seed)
 
 batch_size = 64
 n_epochs = 300+1
@@ -156,7 +157,7 @@ for state in history:
         thetas = gaussian_draw(params_proposal, batch_size, random_state=rng)
 
         for theta in thetas:
-            x = simulator(theta, 1)
+            x = simulator(theta, 1, random_state=rng)
             dx = predict(x, state["params_critic"]).ravel()
 
             grad_q = grad_gaussian_logpdf(params_proposal, theta)
@@ -206,10 +207,11 @@ if make_plots:
 
     # proposal
     ax1 = plt.subplot2grid((2, 2), (0, 0))
+    offset = 0.15
 
     for state in history:
-        x = np.linspace(true_theta[0]-0.3, true_theta[0]+0.3, num=300)
-        y = np.linspace(true_theta[1]-0.3, true_theta[1]+0.3, num=300)
+        x = np.linspace(true_theta[0]-offset, true_theta[0]+offset, num=300)
+        y = np.linspace(true_theta[1]-offset, true_theta[1]+offset, num=300)
         X, Y = np.meshgrid(x, y)
         Z = [gaussian_logpdf(state["params_proposal"], theta)
              for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
@@ -218,7 +220,7 @@ if make_plots:
         CS = plt.contour(X*(50-40)+40, Y*(1.5-0.5)+0.5, Z, colors=state["color"])
         plt.clabel(CS)
         plt.plot([-999], [-999],
-                 label=r"$q(\theta|\psi) \quad\gamma=%d$" % state["gamma"],
+                 label=r"$q(\theta|\psi)\quad\gamma=%d$" % state["gamma"],
                  color=state["color"])
 
     plt.scatter(true_theta[0]*(50-40)+40, true_theta[1]*(1.5-0.5)+0.5,
@@ -228,10 +230,10 @@ if make_plots:
 
     plt.xlabel(r"$E_{beam}$")
     plt.ylabel(r"$G_f$")
-    plt.xlim((true_theta[0]-0.3)*(50-40)+40, (true_theta[0]+0.3)*(50-40)+40)
-    plt.ylim((true_theta[1]-0.3)*(1.5-0.5)+0.5, (true_theta[1]+0.3)*(1.5-0.5)+0.5)
+    plt.xlim((true_theta[0]-offset)*(50-40)+40, (true_theta[0]+offset)*(50-40)+40)
+    plt.ylim((true_theta[1]-offset)*(1.5-0.5)+0.5, (true_theta[1]+offset)*(1.5-0.5)+0.5)
 
-    plt.legend(loc="best")
+    plt.legend(loc="lower right")
 
     # histograms
     ax2 = plt.subplot2grid((2, 2), (0, 1))
@@ -247,7 +249,7 @@ if make_plots:
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
-                   [r"$x \sim p(x|\psi) \quad\gamma=%d$" % state["gamma"] for state in history],
+                   [r"$x \sim p(x|\psi)\quad\gamma=%d$" % state["gamma"] for state in history],
              color=["C0"] + [state["color"] for state in history],
              range=(-1, 1), bins=15, normed=1)
     plt.legend(loc="upper right")
@@ -259,12 +261,12 @@ if make_plots:
     for state in history:
         plt.plot(xs,
                  state["loss_d"],
-                 label=r"$-U_d \quad\gamma=%d$" % state["gamma"],
+                 label=r"$-U_d\quad\gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs-1)
     plt.legend(loc="upper right")
 
     plt.tight_layout()
-    plt.savefig("figs/weinberg.pdf")
+    plt.savefig("figs/weinberg-%d.pdf" % seed)
 
     plt.close()
