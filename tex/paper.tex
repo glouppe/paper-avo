@@ -39,15 +39,15 @@
 
 \begin{abstract}
 
-Complex computer simulators are increasingly used across fields of science to
-describe generative models tying parameters of an underlying theory to
+Complex computer simulators are increasingly used across fields of science as
+generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely provide a way to directly evaluate the likelihood
-function for a given observation. In this note, we develop a likelihood-free
-inference algorithm for fitting a forward non-differentiable generative model to
+function. In this note, we develop a likelihood-free
+inference algorithm for fitting a forward, non-differentiable generative model to
 continuous or discrete observed data. We adapt the adversarial training procedure of generative
-adversarial networks by replacing the implicit generative network with a
-domain-based scientific simulator, and solve the resulting non-differentiable
+adversarial networks by replacing the differentiable generative network with a
+domain-specific simulator and solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the adversarial objectives.
 Effectively, the procedure results in learning an arbitrarily tight
 proposal distribution over simulator parameters, such that the corresponding
@@ -154,7 +154,7 @@ are trained simultaneously, in such a way that $g$ learns to fool
 its adversary $d$ (which happens when $g$ produces samples comparable to the
 observed data), while $d$ continuously adapts to changes in $g$. When $d$ is
 trained to optimality before each parameter update of the generator, it can
-be shown that the original adversarial learning procedure amounts to minimizing
+be shown that the original adversarial learning procedure~\cite{goodfellow2014generative} amounts to minimizing
 the Jensen-Shannon divergence $\text{JSD}(p_r(\mathbf{x}) \parallel p(\mathbf{x}|\theta))$ between $p_r(\mathbf{x})$ and $p(\mathbf{x}|\theta)$.
 
 As thoroughly explored in \citep{2017arXiv170104862A}, GANs remain remarkably
@@ -195,7 +195,7 @@ $U(\psi)$ is differentiable with respect to $\psi$, and using the log-likelihood
 trick it comes:
 \begin{align}\label{eqn:approx-grad}
     \nabla_\psi U(\psi) &= \nabla_\psi \mathbb{E}_{\theta \sim q(\theta|\psi)} [f(\theta)] \nonumber \\
-    &= \nabla_\psi \int f(\theta)  q(\theta|\psi)  d\theta \nonumber \\
+    %&= \nabla_\psi \int f(\theta)  q(\theta|\psi)  d\theta \nonumber \\
     &= \int f(\theta) \nabla_\psi q(\theta|\psi)  d\theta \nonumber \\
     &= \int \left[ f(\theta) \nabla_\psi \log q(\theta|\psi) \right]  q(\theta|\psi) d\theta \nonumber \\
     &= \mathbb{E}_{\theta \sim q(\theta|\psi)} [f(\theta) \nabla_\psi \log q(\theta|\psi)]
@@ -236,7 +236,7 @@ robustness to noisy gradients).
 \begin{figure*}
     \begin{minipage}{\linewidth}
     \begin{algorithm}[H]
-    \caption{Adversarial variational optimization.}
+    \caption{Adversarial variational optimization (AVO).}
 
     \begin{flushleft}
         {\it Inputs:} observed data $\{ \mathbf{x}_i \sim p_r(\mathbf{x}) \}_{i=1}^N$, simulator $g$.\\
@@ -270,9 +270,9 @@ robustness to noisy gradients).
 
 The alternating stochastic gradient descent on ${\cal L}_d$ and ${\cal L}_g$ in
 GANs (Section~\ref{sec:gans}) inherently assumes that the generator $g$ is a differentiable function. In
-the setting where we are not interested in learning the implicit model itself but are
-rather interested in the inference of parameters of a fixed
-non-differentiable simulator (Section~\ref{sec:problem}),
+the setting where we are interested in the inference of the parameters of a
+fixed non-differentiable simulator (Section~\ref{sec:problem}),
+rather than in learning the generative model itself,
 gradients $\nabla_\theta g$ either do not exist or cannot be accessed. As a
 result, gradients $\nabla_\theta {\cal L}_g$ cannot be constructed and the
 optimization procedure cannot be carried out.
@@ -301,7 +301,7 @@ generated data
 \end{equation}
 for $\theta_m \sim q(\theta|\psi)$ and $\mathbf{z}_m \sim p(\mathbf{z}|\theta_m)$.
 For completeness, Algorithm~\ref{alg:avo} outlines the proposed adversarial variational
-optimization procedure, as built on top of WGAN-GP.
+optimization (AVO) procedure, as built on top of WGAN-GP.
 Obviously, the variational relaxation could similarly be coupled with
 other variants of GANs and/or of evolution strategies.
 
@@ -350,11 +350,11 @@ typically increases as the entropy of the proposal decreases.
 \subsection{Univariate discrete data}
 
 As a first illustrative experiment, we evaluate inference for a discrete Poisson
-distribution with unknown scale parameter $\lambda$. We artificially consider
+distribution with unknown mean $\lambda$. We artificially consider
 the distribution as a parameterized simulator, from which we can only
 generate data.
 
-The observed data is sampled from a Poisson with scale $\lambda^* = 7$.
+The observed data is sampled from a Poisson with mean $\lambda^* = 7$.
 Algorithm~\ref{alg:avo} is run for 300 epochs with mini-batches of size $M=64$
 and the following configuration. For the critic $d$, we use a 3-layer MLP with 10
 hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
@@ -370,16 +370,16 @@ $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\g
 \begin{figure}
     \centering
     \includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
-    \caption{Discrete Poisson model with unknown scale.
+    \caption{Discrete Poisson model with unknown mean.
              ({\it Top left}) Proposal distributions $q(\theta|\psi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
-                        the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density and therefore to better inference.
+                        the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density.
              ({\it Top right}) Model distributions $p(\mathbf{x}|\psi)$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution.
              ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
              }\label{fig:poisson}
 \end{figure}
 
 The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
-distributions $q(\theta|\psi)$ after adversarial variational optimization.  For
+distributions $q(\theta|\psi)$ after AVO.  For
 both $\gamma=0$ and $\gamma=5$, the proposal distributions correctly concentrate
 their density around the true parameter value $\log(\lambda^*) = 1.94$. Under
 the effect of the positive entropy penalty $H(q(\theta|\psi))$,
@@ -387,7 +387,7 @@ the proposal distribution for $\gamma=5$ concentrates its mass more tightly,
 yielding in this case a more precise inference.  The top right plot compares the
 model distributions to the true distribution.  As theoretically expected from
 adversarial training, we see that the resulting distributions closely match
-the true distribution, with in this case slightly  better results for the penalized
+the true distribution, with in this case visually slightly better results for the penalized
 model.  The bottom plot of Figure~\ref{fig:poisson} shows empirical estimates
 of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=5$,
 the curves quickly fall towards $0$, which indicates that
@@ -401,7 +401,7 @@ with adversarial variational optimization works.
 
 \subsection{Multidimensional continuous data}
 
-As a second example, we evaluate parameter inference for a generator producing
+As a second toy example, we evaluate parameter inference for a generator producing
 5-dimensional continuous data, as originally specified in Section 4.2. of
 \citep{cranmer2015approximating}. More specifically, we consider the following
 generative process:
@@ -488,8 +488,8 @@ entropy penalties $\gamma=0$ and $\gamma=5$.
 
 The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting
 proposal distributions $q(\theta|\psi)$ for $\gamma=0$ and $\gamma=5$ after
-adversarial variational optimization. We see that the distributions both arrive
-in the neighborhood of $\theta^*$, with a density highly more concentrated for
+AVO. We see that the distributions both arrive
+in the neighborhood of $\theta^*$, with a density  more highly concentrated for
 $\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
 distance with $\theta^*$, both models closely match the observed data, as shown
 in the top right plot of  Figure~\ref{fig:weinberg}, with again slightly better
@@ -502,7 +502,7 @@ towards $0$, which indicates  convergence towards a distribution that the critic
 cannot distinguish from the true distribution. In summary, despite the intricate
 relation betwen the observations $\mathbf{x}$, the latent variable $\mathbf{z}$
 and the parameters $\theta$, this example demonstrates the efficacy
-of adversarial variational optimization for parameter inference on a black box
+of AVO for parameter inference on a black box
 simulator.
 
 
@@ -533,7 +533,7 @@ a summary statistics for approximate Bayesian computation.
 In this context, the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative} to
 non-differentiable simulators. It also constitutes an approximate gradient
-descent alternative to bayesian optimization based on density
+descent alternative to likelihood-free inference based on bayesian optimization and approximated density
 ratios~\citep{cranmer2015approximating,cranmer2016experiments} or to classifier
 ABC~\citep{gutmann2017likelihood}.
 
