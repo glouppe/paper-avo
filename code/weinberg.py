@@ -220,7 +220,7 @@ if make_plots:
         CS = plt.contour(X*(50-40)+40, Y*(1.5-0.5)+0.5, Z, colors=state["color"])
         plt.clabel(CS)
         plt.plot([-999], [-999],
-                 label=r"$q(\theta|\psi)\quad\gamma=%d$" % state["gamma"],
+                 label=r"$q(\theta|\psi)\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
 
     plt.scatter(true_theta[0]*(50-40)+40, true_theta[1]*(1.5-0.5)+0.5,
@@ -249,7 +249,7 @@ if make_plots:
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
-                   [r"$x \sim p(x|\psi)\quad\gamma=%d$" % state["gamma"] for state in history],
+                   [r"$x \sim p(x|\psi)\ \gamma=%d$" % state["gamma"] for state in history],
              color=["C0"] + [state["color"] for state in history],
              range=(-1, 1), bins=15, normed=1)
     plt.legend(loc="upper right")
@@ -261,7 +261,7 @@ if make_plots:
     for state in history:
         plt.plot(xs,
                  state["loss_d"],
-                 label=r"$-U_d\quad\gamma=%d$" % state["gamma"],
+                 label=r"$-U_d\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs-1)
     plt.legend(loc="upper right")

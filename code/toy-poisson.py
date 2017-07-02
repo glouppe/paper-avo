@@ -181,7 +181,7 @@ if make_plots:
                          for theta in thetas])
         plt.plot(thetas,
                  np.exp([l[0] for l in logp]),
-                 label=r"$q(\theta|\psi)\quad\gamma=%d$" % state["gamma"],
+                 label=r"$q(\theta|\psi)\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
 
     plt.legend(loc="upper right")
@@ -202,7 +202,7 @@ if make_plots:
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
-                   [r"$x \sim p(x|\psi)\quad\gamma=%d$" % state["gamma"] for state in history],
+                   [r"$x \sim p(x|\psi)\ \gamma=%d$" % state["gamma"] for state in history],
              color=["C0"] + [state["color"] for state in history],
              range=(0, 15), bins=16, normed=1)
     plt.legend(loc="upper right")
@@ -214,13 +214,13 @@ if make_plots:
     for state in history:
         plt.plot(xs,
                  state["loss_d"],
-                 label=r"$-U_d\quad\gamma=%d$" % state["gamma"],
+                 label=r"$-U_d\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs)
     plt.ylim(0, 30)
     plt.legend(loc="upper right")
 
     plt.tight_layout()
-    plt.savefig("figs/poisson.pdf")
+    plt.savefig("figs/poisson-%d.pdf" % seed)
 
     plt.close()
