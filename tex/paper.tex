@@ -55,7 +55,6 @@ marginal distribution of the generated data matches the observations.
 Preliminary results with non-differentiable simulators producing discrete/continuous univariate/multi-dimensional data
 validate the proposed method.
 
-
 \end{abstract}
 
 \maketitle
@@ -305,7 +304,6 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 Obviously, the variational relaxation could similarly be coupled with
 other variants of GANs and/or of evolution strategies.
 
-
 Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 a distribution parameterized in terms of $\psi$:
@@ -340,7 +338,6 @@ distribution with low entropy, which has the effect of concentrating its density
 tightly around one or a few $\theta$ values. A too large penalty may however
 eventually make the optimization unstable, as the variance of $\nabla_\psi \log q(\theta_m|\psi)$
 typically increases as the entropy of the proposal decreases.
-
 
 
 % ==============================================================================
@@ -505,6 +502,7 @@ simulator.
              }\label{fig:weinberg}
 \end{figure}
 
+
 % ==============================================================================
 
 \section{Related works}
@@ -561,6 +559,7 @@ Third, we need to consider whether less noisy estimates of the gradients
 $\nabla_\psi U_g$ can be computed, in particular by exploiting the fact in the composition $d(g(\mathbf{z};\theta); \psi)$
 the derivatives of $d$ are known exactly.
 
+
 % ==============================================================================
 
 \section*{Acknowledgments}
@@ -576,6 +575,5 @@ supported through PHY-1505463 and PHY-1205376.
 
 \bibliographystyle{acm}
 \bibliography{bibliography.bib}
-
 
 \end{document}
