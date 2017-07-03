@@ -83,7 +83,7 @@ training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
 non-differentiable minimax problem by minimizing variational upper
-bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
+bounds~\citep{2011arXiv1106.4487W,staines2013optimization} of the adversarial
 objectives. The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an arbitrarily tight family of models whose
 joint collection of generated samples matches the observed data.
@@ -177,7 +177,7 @@ p_r(\mathbf{x})$ and $\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)$.
 
 \subsection{Variational optimization}
 
-Variational optimization~\cite{2012arXiv1212.4507S} and evolution strategies~\citep{2011arXiv1106.4487W} are general
+Variational optimization~\cite{staines2013optimization} and evolution strategies~\citep{2011arXiv1106.4487W} are general
 optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
@@ -189,7 +189,7 @@ That is, the minimum of a set of function values is always less than or equal
 to any of their average. Provided that the proposal is flexible enough, the parameters $\psi$
 can be updated to place its mass arbitrarily tight around the optimum $\theta^* = \min_{\theta \in \Theta} f(\theta)$.
 
-Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound
+Under mild restrictions outlined in  \citep{staines2013optimization}, the bound
 $U(\psi)$ is differentiable with respect to $\psi$, and using the log-likelihood
 trick it comes:
 \begin{align}\label{eqn:approx-grad}
