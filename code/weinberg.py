@@ -13,8 +13,8 @@ from proposals import gaussian_logpdf
 from proposals import grad_gaussian_logpdf
 from proposals import grad_gaussian_entropy
 
-
 from sklearn.utils import check_random_state
+from scipy.spatial.distance import mahalanobis
 
 # Global params
 
@@ -28,6 +28,7 @@ lambda_gp = 0.0025
 true_theta = np.array([(42.0-40)/(50-40),
                        (0.9 - 0.5) / (1.5-0.5)])
 make_plots = True
+plt.rcParams["figure.dpi"] = 200
 
 
 # Simulator
@@ -213,12 +214,20 @@ if make_plots:
         x = np.linspace(true_theta[0]-offset, true_theta[0]+offset, num=300)
         y = np.linspace(true_theta[1]-offset, true_theta[1]+offset, num=300)
         X, Y = np.meshgrid(x, y)
-        Z = [gaussian_logpdf(state["params_proposal"], theta)
-             for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
-        Z = np.exp(np.array(Z).reshape(X.shape))
 
-        CS = plt.contour(X*(50-40)+40, Y*(1.5-0.5)+0.5, Z, colors=state["color"])
-        plt.clabel(CS)
+        mu = state["params_proposal"]["mu"]
+        sigma = np.diag(np.exp(state["params_proposal"]["log_sigma"])) ** 2.0
+        sigma_inv = np.linalg.inv(sigma)
+
+        Z = [mahalanobis(theta, mu, sigma_inv)
+             for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
+        Z = np.array(Z).reshape(X.shape)
+
+        CS = plt.contour(X*(50-40)+40, Y*(1.5-0.5)+0.5, Z, [1.0, 2.0, 3.0], colors=state["color"])
+        fmt = {l:s for l, s in zip(CS.levels, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])}
+        plt.clabel(CS, fmt=fmt)
+
+        plt.scatter(mu[0]*(50-40)+40, mu[1]*(1.5-0.5)+0.5, c=state["color"], marker="+")
         plt.plot([-999], [-999],
                  label=r"$q(\theta|\psi)\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
