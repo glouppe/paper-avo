@@ -1,0 +1,111 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{2016arXiv161003483M}
+\citation{2016arXiv160507826G}
+\citation{2016arXiv161009900L}
+\citation{goodfellow2014generative}
+\citation{2011arXiv1106.4487W,2012arXiv1212.4507S}
+\citation{goodfellow2014generative}
+\citation{goodfellow2014generative}
+\newlabel{FirstPage}{{}{1}{}{section*.1}{}}
+\@writefile{toc}{\contentsline {title}{\relax \fontsize  {14.4}{18pt}\selectfont  {Adversarial Variational Optimization of Non-Differentiable Simulators}}{1}{section*.2}}
+\@writefile{toc}{\contentsline {abstract}{Abstract}{1}{section*.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section*.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Problem statement}{1}{section*.4}}
+\newlabel{sec:problem}{{II}{1}{}{section*.4}{}}
+\newlabel{eqn:p_x}{{1}{1}{}{equation.2.1}{}}
+\newlabel{eqn:p_theta}{{2}{1}{}{equation.2.2}{}}
+\newlabel{eqn:p_x_sim}{{3}{1}{}{equation.2.3}{}}
+\citation{2017arXiv170104862A}
+\citation{2017arXiv170107875A}
+\citation{2017arXiv170400028G}
+\citation{2012arXiv1212.4507S,staines2013optimization}
+\citation{2011arXiv1106.4487W}
+\citation{2012arXiv1212.4507S}
+\citation{2014arXiv1412.6980K}
+\citation{2011arXiv1106.4487W}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Background}{2}{section*.5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A}Generative adversarial networks}{2}{section*.6}}
+\newlabel{sec:gans}{{III\tmspace  +\thinmuskip {.1667em}A}{2}{}{section*.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B}Variational optimization}{2}{section*.7}}
+\newlabel{eqn:approx-grad}{{9}{2}{}{equation.3.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Adversarial variational optimization}{2}{section*.8}}
+\newlabel{eqn:vo-ud}{{10}{2}{}{equation.4.10}{}}
+\newlabel{eqn:vo-ug}{{11}{2}{}{equation.4.11}{}}
+\newlabel{eqn:grad-ug-approx}{{12}{2}{}{equation.4.12}{}}
+\citation{2016arXiv161009033R}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Adversarial variational optimization (AVO).}}{3}{algorithm.1}}
+\newlabel{alg:avo}{{1}{3}{}{algorithm.1}{}}
+\newlabel{eqn:p_psi}{{14}{3}{}{equation.4.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A}Operator Variational Optimization}{3}{section*.9}}
+\citation{opvi}
+\citation{cranmer2015approximating}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Experiments}{4}{section*.10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A}Univariate discrete data}{4}{section*.11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Discrete Poisson model with unknown mean. ({\it  Top left}) Proposal distributions $q(\theta |\psi )$ after adversarial variational optimization. For both $\gamma =0$ and $\gamma =5$, the distributions correctly concentrate their density around the true value $\qopname  \relax o{log}(\lambda ^*)$. Penalizing the entropy of the proposal distribution ($\gamma =5$) results in a tighter density. ({\it  Top right}) Model distributions $p(\mathbf  {x}|\psi )$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution. ({\it  Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses. }}{4}{figure.1}}
+\newlabel{fig:poisson}{{1}{4}{Discrete Poisson model with unknown mean. ({\it Top left}) Proposal distributions $q(\theta |\psi )$ after adversarial variational optimization. For both $\gamma =0$ and $\gamma =5$, the distributions correctly concentrate their density around the true value $\log (\lambda ^*)$. Penalizing the entropy of the proposal distribution ($\gamma =5$) results in a tighter density. ({\it Top right}) Model distributions $p(\mathbf {x}|\psi )$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution. ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B}Multidimensional continuous data}{4}{section*.12}}
+\citation{von195113}
+\citation{2016arXiv161003483M}
+\citation{gutmann2012noise}
+\citation{goodfellow2014generative}
+\citation{cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D}
+\citation{gutmann2017likelihood}
+\citation{goodfellow2014generative}
+\citation{cranmer2015approximating,cranmer2016experiments}
+\citation{gutmann2017likelihood}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Multidimensional continuous data. ({\it  Left}) Density $q(\theta |\psi )$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance. ({\it  Right}) Density $q(\theta |\psi )$ after adversarial variational optimization ($\gamma =10$). The proposal density correctly converges towards a distributon whose density concentrates around $\theta ^* = (1, -1)$. }}{5}{figure.2}}
+\newlabel{fig:multi}{{2}{5}{Multidimensional continuous data. ({\it Left}) Density $q(\theta |\psi )$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance. ({\it Right}) Density $q(\theta |\psi )$ after adversarial variational optimization ($\gamma =10$). The proposal density correctly converges towards a distributon whose density concentrates around $\theta ^* = (1, -1)$}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C}Electron--positron annihilation}{5}{section*.13}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Related works}{5}{section*.14}}
+\citation{DBLP:journals/corr/MeschederNG17}
+\citation{2017arXiv170208235H}
+\citation{tran2017variational}
+\citation{2017arXiv170208235H}
+\bibdata{paperNotes,bibliography.bib}
+\bibcite{2017arXiv170104862A}{{1}{}{{}}{{}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Electron--positron annihilation. ({\it  Top left}) Proposal distributions $q(\theta |\psi )$ after adversarial variational optimization. The density of the penalized distribution ($\gamma =5$) is here highly concentrated, resulting in the green mass near $\theta ^*$. ({\it  Top right}) Model distributions $p(\mathbf  {x}|\psi )$ after training. Despite the differences between their respective proposal distributions, both models closely match the observed data. ({\it  Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses. }}{6}{figure.3}}
+\newlabel{fig:weinberg}{{3}{6}{Electron--positron annihilation. ({\it Top left}) Proposal distributions $q(\theta |\psi )$ after adversarial variational optimization. The density of the penalized distribution ($\gamma =5$) is here highly concentrated, resulting in the green mass near $\theta ^*$. ({\it Top right}) Model distributions $p(\mathbf {x}|\psi )$ after training. Despite the differences between their respective proposal distributions, both models closely match the observed data. ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses}{figure.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Summary}{6}{section*.15}}
+\@writefile{toc}{\contentsline {section}{\numberline {}Acknowledgments}{6}{section*.16}}
+\bibcite{2017arXiv170107875A}{{2}{}{{}}{{}}}
+\bibcite{cranmer2015approximating}{{3}{}{{}}{{}}}
+\bibcite{cranmer2016experiments}{{4}{}{{}}{{}}}
+\bibcite{2016arXiv161110242D}{{5}{}{{}}{{}}}
+\bibcite{goodfellow2014generative}{{6}{}{{}}{{}}}
+\bibcite{2016arXiv160507826G}{{7}{}{{}}{{}}}
+\bibcite{2017arXiv170400028G}{{8}{}{{}}{{}}}
+\bibcite{gutmann2017likelihood}{{9}{}{{}}{{}}}
+\bibcite{gutmann2012noise}{{10}{}{{}}{{}}}
+\bibcite{2017arXiv170208235H}{{11}{}{{}}{{}}}
+\bibcite{2014arXiv1412.6980K}{{12}{}{{}}{{}}}
+\bibcite{2016arXiv161009900L}{{13}{}{{}}{{}}}
+\bibcite{DBLP:journals/corr/MeschederNG17}{{14}{}{{}}{{}}}
+\bibcite{2016arXiv161003483M}{{15}{}{{}}{{}}}
+\bibcite{2016arXiv161009033R}{{16}{}{{}}{{}}}
+\bibcite{2012arXiv1212.4507S}{{17}{}{{}}{{}}}
+\bibcite{staines2013optimization}{{18}{}{{}}{{}}}
+\bibcite{tran2017variational}{{19}{}{{}}{{}}}
+\bibcite{von195113}{{20}{}{{}}{{}}}
+\bibcite{2011arXiv1106.4487W}{{21}{}{{}}{{}}}
+\bibstyle{acm}
+\providecommand\NAT@force@numbers{}\NAT@force@numbers
+\@writefile{toc}{\contentsline {section}{\numberline {}References}{7}{section*.17}}
+\newlabel{LastBibItem}{{21}{7}{}{section*.17}{}}
+\newlabel{LastPage}{{}{7}{}{}{}}

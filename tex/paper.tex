@@ -163,7 +163,7 @@ setup in order to minimize the Wasserstein-1 distance $W(p_r(\mathbf{x}), p(\mat
 replacing the adversarial classifier with a 1-Lipschitz adversarial critic
 $d(\cdot; \phi) : \mathbb{R}^d \to \mathbb{R}$. 
 \begin{align}
-   W( p_r(\mathbf{x} ), p(\mathbf{x} | \theta)  ) = \mathcal{L}_W = \sup_{f} \mathbb{E}_{p(\mathbf{x}|\theta)} [f(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [f(\mathbf{x})]
+   W( p_r(\mathbf{x} ), p(\mathbf{x} | \theta)  ) = \mathcal{L}_W = \sup_{f} \mathbb{E}_{p(\tilde{\mathbf{x}}|\theta)} [f(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [f(\mathbf{x})]
 \end{align}
 Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
 for stabilizing the optimization procedure,
@@ -185,7 +185,7 @@ p_r(\mathbf{x})$ and $\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)$.
 
 \subsection{Variational optimization}
 
-Variational optimization~\cite{2012arXiv1212.4507S} and evolution strategies~\citep{2011arXiv1106.4487W} are general
+Variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization} and evolution strategies~\citep{2011arXiv1106.4487W} are general
 optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
@@ -350,7 +350,8 @@ typically increases as the entropy of the proposal decreases.
 
 \subsection{Operator Variational Optimization}
 
-Original OPVI
+Original OPVI  \citep{2016arXiv161009033R}
+
 \begin{eqnarray}
 \lambda^* = \inf_\lambda \sup_\phi \mathbb{E}_{ z \sim q( z | \lambda)} [ (O^{p,q} f_\lambda) ] 
 \end{eqnarray}
@@ -578,7 +579,13 @@ descent alternative to likelihood-free inference based on bayesian optimization 
 ratios~\citep{cranmer2015approximating,cranmer2016experiments} or to classifier
 ABC~\citep{gutmann2017likelihood}.
 
-\glnote{Discuss 1702.08235 and references therein on adversarial variational bayes/inference.}
+This work has many connections to variational inference, in which the goal is to optimize the recognition model $q(\theta|\psi)$ so that it is close to the true posterior $p(\theta|x)$. This is slighty different from variational optimization (or variational learning), where the toal is to find $\theta^*$ such that $p(x|\theta^*) \approx p_r(x)$.  Typically in variational inference the model $p(x|\theta)$ admits a density, so that the likelihood is known. Thus, assuming the prior also admits a density, it is tractable to evaluate the posterior is (up to a constant factor). In Adversarial Variational Bayes \citep{DBLP:journals/corr/MeschederNG17} and , equivalently, the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H}), the authors use an adversarial setup, but assume a known density $p(x|\theta)$ that is differentiable with respect to $\theta$. 
+
+In \citep{tran2017variational}, the authors consider Variational Bayes with an intractable likelihood. In that approach "The only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of most simulators it is not clear how one would obtain the unbiased estimator $\hat{p}(x|\theta)$.
+
+
+In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. The  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\theta$''.
+
 
 
 % ==============================================================================
@@ -606,6 +613,8 @@ Third, we need to consider whether less noisy estimates of the gradients
 $\nabla_\psi U_g$ can be computed, in particular by exploiting the fact in the composition $d(g(\mathbf{z};\theta); \psi)$
 the derivatives of $d$ are known exactly.
 
+
+\textbf{KC: could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
 
 % ==============================================================================
 

@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: paper.aux
+The style file: acm.bst
+Database file #1: paperNotes.bib
+Database file #2: bibliography.bib.bib
+Warning--I didn't find a database entry for "opvi"
+Warning--I didn't find a database entry for ""
+Warning--can't use both volume and number fields in cranmer2016experiments
+Warning--empty journal in von195113
+You've used 21 entries,
+            2253 wiz_defined-function locations,
+            635 strings with 7315 characters,
+and the built_in function-call counts, 6490 in all, are:
+= -- 599
+> -- 367
+< -- 0
++ -- 151
+- -- 130
+* -- 506
+:= -- 1095
+add.period$ -- 62
+call.type$ -- 21
+change.case$ -- 128
+chr.to.int$ -- 0
+cite$ -- 23
+duplicate$ -- 238
+empty$ -- 473
+format.name$ -- 130
+if$ -- 1319
+int.to.chr$ -- 0
+int.to.str$ -- 21
+missing$ -- 21
+newline$ -- 107
+num.names$ -- 42
+pop$ -- 119
+preamble$ -- 1
+purify$ -- 107
+quote$ -- 0
+skip$ -- 170
+stack$ -- 0
+substring$ -- 230
+swap$ -- 72
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 84
+warning$ -- 2
+while$ -- 53
+width$ -- 23
+write$ -- 196
+(There were 4 warnings)

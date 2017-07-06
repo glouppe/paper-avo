@@ -58,6 +58,11 @@
   applications to natural image statistics.
 \newblock {\em Journal of Machine Learning Research 13}, Feb (2012), 307--361.
 
+\bibitem{2017arXiv170208235H}
+{\sc {Husz{\'a}r}, F.}
+\newblock {Variational Inference using Implicit Distributions}.
+\newblock {\em ArXiv e-prints\/} (Feb. 2017).
+
 \bibitem{2014arXiv1412.6980K}
 {\sc {Kingma}, D.~P., and {Ba}, J.}
 \newblock {Adam: A Method for Stochastic Optimization}.
@@ -68,15 +73,39 @@
 \newblock {Inference Compilation and Universal Probabilistic Programming}.
 \newblock {\em ArXiv e-prints\/} (Oct. 2016).
 
+\bibitem{DBLP:journals/corr/MeschederNG17}
+{\sc Mescheder, L.~M., Nowozin, S., and Geiger, A.}
+\newblock Adversarial variational bayes: Unifying variational autoencoders and
+  generative adversarial networks.
+\newblock {\em CoRR abs/1701.04722\/} (2017).
+
 \bibitem{2016arXiv161003483M}
 {\sc {Mohamed}, S., and {Lakshminarayanan}, B.}
 \newblock {Learning in Implicit Generative Models}.
+\newblock {\em ArXiv e-prints\/} (Oct. 2016).
+
+\bibitem{2016arXiv161009033R}
+{\sc {Ranganath}, R., {Altosaar}, J., {Tran}, D., and {Blei}, D.~M.}
+\newblock {Operator Variational Inference}.
 \newblock {\em ArXiv e-prints\/} (Oct. 2016).
 
 \bibitem{2012arXiv1212.4507S}
 {\sc {Staines}, J., and {Barber}, D.}
 \newblock {Variational Optimization}.
 \newblock {\em ArXiv e-prints\/} (Dec. 2012).
+
+\bibitem{staines2013optimization}
+{\sc Staines, J., and Barber, D.}
+\newblock Optimization by variational bounding.
+\newblock In {\em ESANN 2013 proceedings, 21st European Symposium on Artificial
+  Neural Networks, Computational Intelligence and Machine Learning\/} (2013),
+  pp.~473--478.
+
+\bibitem{tran2017variational}
+{\sc Tran, M.-N., Nott, D.~J., and Kohn, R.}
+\newblock Variational bayes with intractable likelihood.
+\newblock {\em Journal of Computational and Graphical Statistics},
+  just-accepted (2017).
 
 \bibitem{von195113}
 {\sc Von~Neumann, J.}
