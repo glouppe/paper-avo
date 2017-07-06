@@ -38,21 +38,20 @@
 \affiliation{New York University}
 
 \begin{abstract}
-
 Complex computer simulators are increasingly used across fields of science as
 generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
-difficult, as simulators rarely provide a way to directly evaluate the likelihood
-function. In this note, we develop a likelihood-free
-inference algorithm for fitting a forward, non-differentiable generative model to
-continuous or discrete observed data. We adapt the adversarial training procedure of generative
+difficult, as simulators rarely admit a tractable likelihood
+function. In this note, we develop Adversarial Variational Optimization (AVO), a likelihood-free
+inference algorithm for fitting a non-differentiable generative model to
+continuous or discrete  data. We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
 domain-specific simulator and solve the resulting non-differentiable
-minimax problem by minimizing variational upper bounds of the adversarial objectives.
+minimax problem by minimizing variational upper bounds of the two adversarial objectives.
 Effectively, the procedure results in learning an arbitrarily tight
 proposal distribution over simulator parameters, such that the corresponding
 marginal distribution of the generated data matches the observations.
-Preliminary results with non-differentiable simulators producing discrete/continuous univariate/multi-dimensional data
+We present results of the method with with non-differentiable simulators producing discrete/continuous univariate/multi-dimensional data
 validate the proposed method.
 
 \end{abstract}
@@ -162,14 +161,23 @@ unreliable updates when the training procedure is relaxed. As a remedy,
 Wasserstein GANs~\citep{2017arXiv170107875A} reformulate the adversarial
 setup in order to minimize the Wasserstein-1 distance $W(p_r(\mathbf{x}), p(\mathbf{x}|\theta))$ by
 replacing the adversarial classifier with a 1-Lipschitz adversarial critic
-$d(\cdot; \phi) : \mathbb{R}^d \to \mathbb{R}$. Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
+$d(\cdot; \phi) : \mathbb{R}^d \to \mathbb{R}$. 
+\begin{align}
+   W( p_r(\mathbf{x} ), p(\mathbf{x} | \theta)  ) = \mathcal{L}_W = \sup_{f} \mathbb{E}_{p(\mathbf{x}|\theta)} [f(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [f(\mathbf{x})]
+\end{align}
+Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
 for stabilizing the optimization procedure,
 training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\theta$ in order to respectively minimize
+
 \begin{align}
-    {\cal L}_d =\,& \mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\phi)]  \nonumber \\
-                  & + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
-    {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)]
+    {\cal L}_d =\,&  {\cal L}_W + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
+    {\cal L}_g =\,& - {\cal L}_W
 \end{align}
+%\begin{align}
+%    {\cal L}_d =\,& \mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\phi)]  \nonumber \\
+%                  & + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
+%    {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)} [d(\tilde{\mathbf{x}};\phi)]
+%\end{align}
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} +
 (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim
 p_r(\mathbf{x})$ and $\tilde{\mathbf{x}} \sim p(\mathbf{x}|\theta)$.
@@ -226,6 +234,7 @@ robustness to noisy gradients).
 % \end{equation}
 % and can be estimated from samples, in particular by reusing the derivatives $\nabla_\psi \log q_\psi(\theta)$ already
 % evaluated to form $\nabla_\psi U(\psi)$.
+
 
 
 % ==============================================================================
@@ -338,6 +347,42 @@ distribution with low entropy, which has the effect of concentrating its density
 tightly around one or a few $\theta$ values. A too large penalty may however
 eventually make the optimization unstable, as the variance of $\nabla_\psi \log q(\theta_m|\psi)$
 typically increases as the entropy of the proposal decreases.
+
+\subsection{Operator Variational Optimization}
+
+Original OPVI
+\begin{eqnarray}
+\lambda^* = \inf_\lambda \sup_\phi \mathbb{E}_{ z \sim q( z | \lambda)} [ (O^{p,q} f_\lambda) ] 
+\end{eqnarray}
+with
+\begin{equation}
+(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}
+\end{equation}
+
+
+%This is natural here, but not quite OPVI formalism:
+%\begin{equation}
+%\psi^* = \inf_\psi \sup_\phi \mathbb{E}_{ \theta \sim q(\theta | \psi)} [ (O^{p,q} f_\phi) ]
+%\end{equation}
+%
+%\begin{equation}
+%(O^{p,q} f) = W(p,q) = \sup_f \mathbb{E}_{x\sim p}[f(x)] - \mathbb{E}_{x \sim q}[f(x)]
+%\end{equation}
+%The expectation should be $x \sim p(x|\psi)$ and here $(O^{p,q} f)$ is a scalar and not a function of $x$
+
+To get into OPVI formalism
+
+\begin{eqnarray}
+\psi^* &=& \inf_\psi \sup_\phi\mathbb{E}_{x\sim p_r(x)}[f(x)] - \mathbb{E}_{x \sim p(x|\psi)}[f(x)] \\
+&=&  \inf_\psi \sup_\phi \mathbb{E}_{ x \sim p( x | \psi)} [ (O^{p_r,p_\psi} f_\phi) ] 
+\end{eqnarray}
+with
+\begin{equation}
+(O^{p,q} f) = \left( \frac{p_r(x)}{p(x|\psi)}  -1 \right) f(x)
+\end{equation}
+
+We can think of $p(x|\psi)$ as a \textit{variational program} as described in ~\cite{opvi}, though more complicated than the a simple reparametrization of normally distributed noise $\epsilon$ through a differentiable function $R(\epsilon, \psi)$. In our case, the variational program is a marginalized non-differentiable simulator simulator.  Nevertheless, it can generate samples for $x$, is differentiable with respect to $\phi$, and its density is be intractable.
+
 
 
 % ==============================================================================

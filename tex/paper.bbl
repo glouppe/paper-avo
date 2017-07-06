@@ -1,0 +1,91 @@
+\begin{thebibliography}{10}
+
+\bibitem{2017arXiv170104862A}
+{\sc {Arjovsky}, M., and {Bottou}, L.}
+\newblock {Towards Principled Methods for Training Generative Adversarial
+  Networks}.
+\newblock {\em ArXiv e-prints\/} (Jan. 2017).
+
+\bibitem{2017arXiv170107875A}
+{\sc {Arjovsky}, M., {Chintala}, S., and {Bottou}, L.}
+\newblock {Wasserstein GAN}.
+\newblock {\em ArXiv e-prints\/} (Jan. 2017).
+
+\bibitem{cranmer2015approximating}
+{\sc Cranmer, K., Pavez, J., and Louppe, G.}
+\newblock Approximating likelihood ratios with calibrated discriminative
+  classifiers.
+\newblock {\em arXiv preprint arXiv:1506.02169\/} (2015).
+
+\bibitem{cranmer2016experiments}
+{\sc Cranmer, K., Pavez, J., Louppe, G., and Brooks, W.}
+\newblock Experiments using machine learning to approximate likelihood ratios
+  for mixture models.
+\newblock In {\em Journal of Physics: Conference Series\/} (2016), vol.~762,
+  IOP Publishing, p.~012034.
+
+\bibitem{2016arXiv161110242D}
+{\sc {Dutta}, R., {Corander}, J., {Kaski}, S., and {Gutmann}, M.~U.}
+\newblock {Likelihood-free inference by ratio estimation}.
+\newblock {\em ArXiv e-prints\/} (Nov. 2016).
+
+\bibitem{goodfellow2014generative}
+{\sc Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D.,
+  Ozair, S., Courville, A., and Bengio, Y.}
+\newblock Generative adversarial nets.
+\newblock In {\em Advances in Neural Information Processing Systems\/} (2014),
+  pp.~2672--2680.
+
+\bibitem{2016arXiv160507826G}
+{\sc {Graham}, M.~M., and {Storkey}, A.~J.}
+\newblock {Asymptotically exact inference in differentiable generative models}.
+\newblock {\em ArXiv e-prints\/} (May 2016).
+
+\bibitem{2017arXiv170400028G}
+{\sc {Gulrajani}, I., {Ahmed}, F., {Arjovsky}, M., {Dumoulin}, V., and
+  {Courville}, A.}
+\newblock {Improved Training of Wasserstein GANs}.
+\newblock {\em ArXiv e-prints\/} (Mar. 2017).
+
+\bibitem{gutmann2017likelihood}
+{\sc Gutmann, M.~U., Dutta, R., Kaski, S., and Corander, J.}
+\newblock Likelihood-free inference via classification.
+\newblock {\em Statistics and Computing\/} (2017), 1--15.
+
+\bibitem{gutmann2012noise}
+{\sc Gutmann, M.~U., and Hyv{\"a}rinen, A.}
+\newblock Noise-contrastive estimation of unnormalized statistical models, with
+  applications to natural image statistics.
+\newblock {\em Journal of Machine Learning Research 13}, Feb (2012), 307--361.
+
+\bibitem{2014arXiv1412.6980K}
+{\sc {Kingma}, D.~P., and {Ba}, J.}
+\newblock {Adam: A Method for Stochastic Optimization}.
+\newblock {\em ArXiv e-prints\/} (Dec. 2014).
+
+\bibitem{2016arXiv161009900L}
+{\sc {Le}, T.~A., {Gunes Baydin}, A., and {Wood}, F.}
+\newblock {Inference Compilation and Universal Probabilistic Programming}.
+\newblock {\em ArXiv e-prints\/} (Oct. 2016).
+
+\bibitem{2016arXiv161003483M}
+{\sc {Mohamed}, S., and {Lakshminarayanan}, B.}
+\newblock {Learning in Implicit Generative Models}.
+\newblock {\em ArXiv e-prints\/} (Oct. 2016).
+
+\bibitem{2012arXiv1212.4507S}
+{\sc {Staines}, J., and {Barber}, D.}
+\newblock {Variational Optimization}.
+\newblock {\em ArXiv e-prints\/} (Dec. 2012).
+
+\bibitem{von195113}
+{\sc Von~Neumann, J.}
+\newblock 13. various techniques used in connection with random digits.
+
+\bibitem{2011arXiv1106.4487W}
+{\sc {Wierstra}, D., {Schaul}, T., {Glasmachers}, T., {Sun}, Y., and
+  {Schmidhuber}, J.}
+\newblock {Natural Evolution Strategies}.
+\newblock {\em ArXiv e-prints\/} (June 2011).
+
+\end{thebibliography}
