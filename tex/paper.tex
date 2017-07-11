@@ -316,6 +316,7 @@ robustness to noisy gradients).
 
 \section{Adversarial variational optimization}
 
+
 \begin{figure*}
     \begin{minipage}{\linewidth}
     \begin{algorithm}[H]
@@ -378,7 +379,7 @@ That is,
 %   \nabla_\bfpsi U_g = \mathbb{E}_{\subarray{l}{\bftheta \sim q(\bftheta|\bfpsi), \\ \hat{\bfx} \sim p(\bfx | \bftheta) }}  [-d( \hat{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
 %\end{equation} 
 \begin{equation}\label{eqn:grad-ug-approx}
-   \nabla_\bfpsi U_g = \mathbb{E}_{\substack{\bftheta \sim q(\bftheta|\bfpsi), \\ \hat{\bfx} \sim p(\bfx | \bftheta)}}  [-d( \hat{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
+   \nabla_\bfpsi U_g = \mathbb{E}_{\substack{\bftheta \sim q(\bftheta|\bfpsi), \\ \tilde{\bfx} \sim p(\bfx | \bftheta)}}  [-d( \tilde{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
 \end{equation} 
 %\begin{equation}\label{eqn:grad-ug-approx}
 %    \nabla_\bfpsi U_g = \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta)}  [-d(g(\bfz;\bftheta);\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
@@ -391,8 +392,9 @@ generated data
 for $\bftheta_m \sim q(\bftheta|\bfpsi)$ and $\bfz_m \sim p(\bfz|\bftheta_m)$.
 For completeness, Algorithm~\ref{alg:avo} outlines the proposed adversarial variational
 optimization (AVO) procedure, as built on top of WGAN-GP.
-Obviously, the variational relaxation could similarly be coupled with
-other variants of GANs and/or of evolution strategies.
+%
+%Obviously, the variational relaxation could similarly be coupled with
+%other variants of GANs and/or of evolution strategies.
 
 %Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 %have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
@@ -412,20 +414,30 @@ other variants of GANs and/or of evolution strategies.
 %with randomly sampled parameters $\bftheta \sim q(\bftheta|\bfpsi)$, whose joint collection
 %of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
 
+Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here as they are in black box variational inference~\citep{ranganath2014black}.
+
+\subsection{Adversarial variational inference through model criticism}
+
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 the marginal distribution parameterized by $\bfpsi$
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
+We can think of $p(\bfx|\bfpsi)$ as a \textit{variational program} as described in \citep{2016arXiv161009033R}, though more complicated than a simple reparameterization of normally distributed noise $\bfz$ through a differentiable function $g(\bfz, \bfpsi)$. In our case, the variational program is a marginalized, non-differentiable  simulator.  Its density is  intractable; nevertheless, it can generate samples for $\bfx$ and is differentiable with respect to $\bfpsi$ and $\bfphi$. 
 Operationally, we sample from this marginal model via
 \begin{equation}\label{eqn:p_psi}
     \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
 \end{equation}
-Effectively, we are optimizing a variational posterior $q(\bftheta | \psi)$ by minimizing the 
+
+%Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by directly minimizing the 
+%divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating the unknown joint density $p(\bfx,\bftheta)$. 
+
+
+Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by minimizing the 
 divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$. 
 %Effectively, we are performing variational inference through model criticism~\citep{box1980sampling}.
-Consequently, the proposed algorithm is a form of variational Bayesian inference through model criticism~\citep{box1980sampling}. 
+Consequently, the proposed algorithm is a form of variational inference through model criticism~\citep{box1980sampling}, which we denote AVI-MC. 
 
 %Consequently, the proposed inference algorithm does not necessarily guarantee that the
 %proposal distribution $q(\bftheta|\bfpsi)$ will place its mass arbitrarily tight
@@ -433,9 +445,11 @@ Consequently, the proposed algorithm is a form of variational Bayesian inference
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
 
+\subsection{Adversarial variational learning}
+
 If instead, one is interested in point estimates $\bftheta^*$, then we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
-the proposal distribution. That is,
+the proposal distribution $q(\bftheta | \bfpsi)$. That is,
 \begin{equation}
     U_g = \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] + \gamma H(q(\bftheta|\bfpsi))
 \end{equation}
@@ -450,8 +464,13 @@ tightly around one or a few $\bftheta$ values. Very large penalties may
 eventually make the optimization unstable, as the variance of $\nabla_\bfpsi \log q(\bftheta_m|\bfpsi)$
 typically increases as the entropy of the proposal decreases. \kcnote{maybe, but not obvious why}
 
+%Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here analogous to their use in black box variational inference~\citep{ranganath2014black}.
 
 
+\kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVI-MC?}
+
+
+\newpage
 % ==============================================================================
 
 \section{Experiments}
@@ -719,7 +738,7 @@ $\nabla_\bfpsi U_g$ can be computed, in particular by exploiting the fact in the
 the derivatives of $d$ are known exactly.
 
 
-\textbf{KC: could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
+\kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
 
 % ==============================================================================
 

@@ -99,10 +99,11 @@ George~EP Box.
 \newblock {\em Journal of the Royal Statistical Society. Series A (General)},
   pages 383--430, 1980.
 
-\bibitem{2016arXiv161009033R}
-R.~{Ranganath}, J.~{Altosaar}, D.~{Tran}, and D.~M. {Blei}.
-\newblock {Operator Variational Inference}.
-\newblock {\em ArXiv e-prints}, October 2016, 1610.09033.
+\bibitem{ranganath2014black}
+Rajesh Ranganath, Sean Gerrish, and David Blei.
+\newblock Black box variational inference.
+\newblock In {\em Artificial Intelligence and Statistics}, pages 814--822,
+  2014.
 
 \bibitem{von195113}
 John Von~Neumann.
@@ -153,5 +154,10 @@ Minh-Ngoc Tran, David~J Nott, and Robert Kohn.
 \newblock Variational bayes with intractable likelihood.
 \newblock {\em Journal of Computational and Graphical Statistics},
   (just-accepted), 2017, 1503.08621.
+
+\bibitem{2016arXiv161009033R}
+R.~{Ranganath}, J.~{Altosaar}, D.~{Tran}, and D.~M. {Blei}.
+\newblock {Operator Variational Inference}.
+\newblock {\em ArXiv e-prints}, October 2016, 1610.09033.
 
 \end{thebibliography}

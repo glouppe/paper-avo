@@ -1,5 +1,7 @@
 
-tex/paper.synctex.gz
+code/figs/*
+
+code/__pycache__/*
 
 tex/paper.log
 
