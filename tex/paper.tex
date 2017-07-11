@@ -167,16 +167,20 @@ be a fixed-size vector with a simple density. Instead, the dimensionality of $z$
 %distribution $p(\bfz|\bftheta)$ may itself depend on $\bftheta$ in some intricate way
 %inherited from the control flow of the simulation code.
 
-We assume that the stochastic generative process that defines $p(\mathbf{x}|\bfz,\bftheta)$ is
-specified through a deterministic function $g(\cdot; \bftheta) : {\cal Z} \to
-\mathbb{R}^d$ with usually few parameters. That is, we consider
+We assume that the stochastic generative process that defines $p(\mathbf{x}|\bftheta)$ is
+specified through a non-differentiable deterministic function $g(\cdot; \bftheta) : {\cal Z} \to
+\mathbb{R}^d$. Operationally, %That is, we consider
 \begin{equation}\label{eqn:p_theta}
     \mathbf{x} \sim p(\mathbf{x}|\bftheta) \equiv \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta)
 \end{equation}
-such that the likelihood $p(\mathbf{x}|\bftheta)$ can be 
-considered as a non-differentiable reparameterization of the random variable $\bfz$
+such that the density $p(\mathbf{x}|\bftheta)$ can be 
+rewritten as
+%considered as a non-differentiable reparameterization of the random variable $\bfz$
+%\begin{equation}\label{eqn:p_x_sim}
+%    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g_i(\bfz;\bftheta) \leq x_i\}} p(\bfz|\bftheta) \mu(d\bfz),
+%\end{equation}
 \begin{equation}\label{eqn:p_x_sim}
-    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g(\bfz;\bftheta) \leq \mathbf{x}\}} p(\bfz|\bftheta) \mu(d\bfz),
+    p(\mathbf{x}|\bftheta) = \int_{\{\bfz:g(\bfz;\bftheta) = \bfx \}} p(\bfz|\bftheta) \mu(d\bfz),
 \end{equation}
 where $\mu$ is a probability measure.
 %Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
@@ -186,10 +190,9 @@ where $\mu$ is a probability measure.
 %e.g. as when $g$ is specified as a computer program.
 
 Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the
-(unknown) true distribution $p_r(\mathbf{x})$, our goal is the inference of the parameters
-of interest $\bftheta^*$ that minimize the divergence between $p_r(\mathbf{x})$ and
-the modeled data distribution $p(\mathbf{x}|\bftheta)$ induced by $g(\cdot;
-\bftheta)$ over $\bfz$. That is,
+(unknown) true distribution $p_r(\mathbf{x})$, our goal is to estimate the parameters 
+$\bftheta^*$ that minimize the divergence between $p_r(\mathbf{x})$ and
+the implicit model $p(\mathbf{x}|\bftheta)$. That is,
 \begin{equation}
     \bftheta^* = \arg \min_{\bftheta \in \bftheta} \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta)),
 \end{equation}
