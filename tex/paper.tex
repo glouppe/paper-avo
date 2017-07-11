@@ -430,14 +430,16 @@ Operationally, we sample from this marginal model via
     \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
 \end{equation}
 
-%Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by directly minimizing the 
-%divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating the unknown joint density $p(\bfx,\bftheta)$. 
-
-
-Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by minimizing the 
-divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$. 
-%Effectively, we are performing variational inference through model criticism~\citep{box1980sampling}.
+Typically in variational inference one would has access to the posterior $p(\bfx | \bftheta)$ (or the joint density $p(\bfx,\bftheta)$), and after optimizing $q(\bftheta | \bfpsi)$ one would criticize the model through the the posterior predictive distribution as advocated by Box~\citep{box1980sampling}.   
+Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by directly minimizing the 
+divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating the unknown posterior $p(\bfx | \bftheta)$ or joint density $p(\bfx,\bftheta)$. 
 Consequently, the proposed algorithm is a form of variational inference through model criticism~\citep{box1980sampling}, which we denote AVI-MC. 
+
+
+%Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by minimizing the 
+%divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$. 
+%%Effectively, we are performing variational inference through model criticism~\citep{box1980sampling}.
+%Consequently, the proposed algorithm is a form of variational inference through model criticism~\citep{box1980sampling}, which we denote AVI-MC. 
 
 %Consequently, the proposed inference algorithm does not necessarily guarantee that the
 %proposal distribution $q(\bftheta|\bfpsi)$ will place its mass arbitrarily tight
@@ -447,7 +449,7 @@ Consequently, the proposed algorithm is a form of variational inference through 
 
 \subsection{Adversarial variational learning}
 
-If instead, one is interested in point estimates $\bftheta^*$, then we augment Eqn.~\ref{eqn:vo-ug}
+In order to target point estimates $\bftheta^*$, we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
 the proposal distribution $q(\bftheta | \bfpsi)$. That is,
 \begin{equation}
@@ -460,7 +462,9 @@ proposal distributions with large entropy are not penalized, which results
 in learning a smeared variation of the original simulator corresponding to the posterior predictive model. On the other hand,
 for large values of $\gamma$, the procedure is encouraged to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
-tightly around one or a few $\bftheta$ values. Very large penalties may 
+tightly around one or a few $\bftheta$ values. 
+
+Very large penalties may 
 eventually make the optimization unstable, as the variance of $\nabla_\bfpsi \log q(\bftheta_m|\bfpsi)$
 typically increases as the entropy of the proposal decreases. \kcnote{maybe, but not obvious why}
 
@@ -522,39 +526,40 @@ the curves quickly fall towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)}
 [d(\tilde{\mathbf{x}};\bfphi)] \approx \mathbb{E}_{\mathbf{x} \sim
 p_r(\mathbf{x})} [d(\mathbf{x};\bfphi)]$ and that the critic cannot distinguish
-between true and model data. Despite the discreteness and the
-non-differentiability of the underlying generator, this confirms that inference
-with adversarial variational optimization works.
-
+between true and model data. This confirms that adversarial variational optimization 
+works despite the discreteness of the data and lack of access to the 
+density $p(\bfx | \bftheta)$ or its gradient. 
 
 \subsection{Multidimensional continuous data}
 
-As a second toy example, we evaluate parameter inference for a generator producing
+As a second toy example, we consider a generator producing
 5-dimensional continuous data, as originally specified in Section 4.2. of
 \citep{cranmer2015approximating}. More specifically, we consider the following
 generative process:
 \begin{itemize}
-    \item $\bfz = (z_0, z_1, z_2, z_3, z_4)$, such that
+    \item $\bfz = (z_0, z_1, z_2, z_3, z_4)$, such that \\
         $z_0 \sim {\cal N}(\mu=\alpha, \sigma=1)$,
         $z_1 \sim {\cal N}(\mu=\beta, \sigma=3)$,
-        $z_2 \sim {\text{Mixture}}(\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5))$,
+        $z_2 \sim {\text{Mixture}}[\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \\  \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5)]$,
         $z_3 \sim {\text{Exponential}(\lambda=3)}$, and
         $z_4 \sim {\text{Exponential}(\lambda=0.5)}$;
     \item $\mathbf{x} = R  \bfz$, where $R$ is a fixed
     semi-positive definite $5 \times 5$ matrix defining a fixed projection
     of $\bfz$ into the observed space.
 \end{itemize}
+Again, the AVO algorithm does not have access to the density or its gradient, only samples from the generative model
 We consider observed data generated at the nominal values $\bftheta^* = (\alpha^*=1,\beta^*=-1)$.
-The simulator parameters are modeled with a factored Gaussian
-proposal distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component is
+The simulator parameters are modeled with a factored  (mean field) Gaussian
+variational distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
 initialized with zero mean and unit variance.
 Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
 Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
 The network architecture of the critic is the same as in the previous example.
 
+
 Starting with a proposal distribution $q(\bftheta|\bfpsi)$ largely spread over
 the parameter space, as illustrated in the left plot of Figure~\ref{fig:multi},
-inference quickly converges towards a proposal distribution whose density
+AVO quickly converges towards a variational distribution whose density
 concentrates around the nominal values $\bftheta^*$, as shown in the right plot of Figure~\ref{fig:multi}.
 Overall, this example further illustrates and confirms the ability of adversarial
 variational optimization for inference with multiple parameters and multidimensional
@@ -573,35 +578,48 @@ MLE setting would otherwise be difficult to construct.
 
 \subsection{Electron--positron annihilation}
 
-As a more challenging example, we now consider a (simplified) simulator from
+As a more realistic example, we now consider a (simplified) simulator from
 particle physics for electron--positron collisions resulting in muon--antimuon
 pairs ($e^+e^- \rightarrow \mu^+\mu^-$). The simulator approximates the
 distribution of observed measurements $\mathbf{x} = \cos(A) \in [-1,1]$, where $A$ is the
 polar angle of the outgoing muon with respect  to the originally incoming
-electron. This random variable is approximately distributed as
-\begin{equation}
+electron. Neglecting measurement uncertainty induced from the particle detectors, 
+this random variable is approximately distributed as
+\begin{equation}\label{eq:simple_weinberg}
     p(\mathbf{x}|E_\text{beam}, G_f) = \frac{1}{Z} \left[ (1 + \mathbf{x}^2) + c(E_\text{beam}, G_f) \mathbf{x} \right]
 \end{equation}
 where $Z$ is a known normalization constant and $c$ is an asymmetry coefficient
 function. Due to the linear term in the expression, the density $p(\mathbf{x} |
 E_\text{beam}, G_f)$ exhibits a so-called {\it forward-backward} asymmetry.  Its
 size depends on the values of the parameters $E_\text{beam}$ (the beam energy)
-and $G_f$ (the Fermi constant) through the coefficient function $c$. Given the
-known analytic form of the probability density function, a simulator for
-$\mathbf{x}$ can be implemented with rejection sampling~\citep{von195113}. As an
-arbitrary number of random drawings may be required before passing the
-acceptance threshold, this illustrates how the latent variable
-$\bfz$ does not necessarily need to be fixed-sized vector, and how its
-density  $p(\bfz|\bftheta)$ may depend on $\bftheta$ in some complicated way
-(Section~\ref{sec:problem}).
+and $G_f$ (the Fermi constant) through the coefficient function $c$. 
 
-In this example, we consider observed data generated with $\bftheta^* =
-(E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
-factored Gaussian proposal distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
+A typical physics simulator for this process includes a more precise treatment of the 
+quantum mechanical  $e^+e^- \rightarrow \mu^+\mu^-$ scattering 
+using \texttt{MadGraph}~\citep{Alwall:2011uj},  ionization of matter in the 
+detector due to the passage of the out-going $\mu^+\mu^-$ particles using 
+\texttt{GEANT4}~\citep{Agostinelli:2002hh}, electronic noise and other details of the sensors 
+that measure the ionization signal, and the deterministic algorithms that 
+estimate the polar angle $A$ based on the sensor readouts. The simulation of 
+this process is highly non-trivial as is the space of latent variables $\mathcal{Z}$.
+
+
+%Given the
+%known analytic form of the probability density function, a simulator for
+%$\mathbf{x}$ can be implemented with rejection sampling~\citep{von195113}. As an
+%arbitrary number of random drawings may be required before passing the
+%acceptance threshold, this illustrates how the latent variable
+%$\bfz$ does not necessarily need to be fixed-sized vector, and how its
+%density  $p(\bfz|\bftheta)$ may depend on $\bftheta$ in some complicated way
+%(Section~\ref{sec:problem}).
+
+In this example, we consider observed data generated with the simplified generator of Eq.~\ref{eq:simple_weinberg}
+using $\bftheta^* = (E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
+factored (mean field) Gaussian variational distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
 q(G_f|\bfpsi)$, where each component is respectively initialized with mean $45$
 and $1$ and variance $1$ and $0.01$. Hyper-parameters are set to $M=64$,
 $n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
-$\beta_1=0.9$ and $\beta_2=0.999$. As for the first example, we compare
+$\beta_1=0.9$ and $\beta_2=0.999$. As with the first example, we compare
 entropy penalties $\gamma=0$ and $\gamma=5$.
 
 The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting
@@ -613,15 +631,16 @@ distance with $\bftheta^*$, both models closely match the observed data, as show
 in the top right plot of  Figure~\ref{fig:weinberg}, with again slightly better
 results for the entropy penalized model. This suggests either a relatively flat
 landscape around $\bftheta^*$ or that the observed data can in this case also be
-reproduced with a smeared variation $\qxpsi$ of the simulator.
+reproduced with the posterior predictive distribution $\qxpsi$.
 Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that for both
 $\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ quickly fall
 towards $0$, which indicates  convergence towards a distribution that the critic
-cannot distinguish from the true distribution. In summary, despite the intricate
-relation betwen the observations $\mathbf{x}$, the latent variable $\bfz$
-and the parameters $\bftheta$, this example demonstrates the efficacy
-of AVO for parameter inference on a black box
-simulator.
+cannot distinguish from the true distribution. 
+%In summary, despite the intricate
+%relation between the observations $\mathbf{x}$, the latent variable $\bfz$
+%and the parameters $\bftheta$, this example demonstrates the efficacy
+%of AVO for parameter inference on a black box
+%simulator.
 
 \begin{figure}
     \centering
@@ -636,7 +655,7 @@ simulator.
 
 % ==============================================================================
 
-\section{Related works}
+\section{Related work}
 
 As reviewed in \cite{2016arXiv161003483M}, likelihood-free inference is
 intimately tied to a class of algorithms that can be framed as density
@@ -739,6 +758,8 @@ the derivatives of $d$ are known exactly.
 
 
 \kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
+
+\kcnote{proposal distribution $\to$ variational distribution}
 
 % ==============================================================================
 
