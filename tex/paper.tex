@@ -48,18 +48,17 @@
 Complex computer simulators are increasingly used across fields of science as
 generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
-difficult, as simulators rarely admit a tractable likelihood
+difficult, as simulators rarely admit a tractable density or likelihood
 function. In this note, we develop Adversarial Variational Optimization (AVO), a likelihood-free
 inference algorithm for fitting a non-differentiable generative model to
 continuous or discrete  data. We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
-domain-specific simulator and solve the resulting non-differentiable
+domain-specific simulator. We solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the two adversarial objectives.
 Effectively, the procedure results in learning an arbitrarily tight
 proposal distribution over simulator parameters, such that the corresponding
 marginal distribution of the generated data matches the observations.
-We present results of the method with with non-differentiable simulators producing discrete/continuous univariate/multi-dimensional data
-validate the proposed method.
+We present results of the method with simulators producing both discrete and continuous data.
 
 \end{abstract}
 
@@ -69,21 +68,51 @@ validate the proposed method.
 
 \section{Introduction}
 
-In many fields of science such as particle physics, climatology or population
-genetics, computer simulators are used to describe complex processes that tie
-parameters of an underlying theory to high dimensional observations. In most
-cases, these implicit generative models~\citep{2016arXiv161003483M} are
-specified as procedural implementations of forward stochastic processes that
-generate discrete or continuous data. Because it is usually computationally intractable, most simulators
-do not provide a way to directly evaluate the likelihood function for a
-given observation, thereby making inference difficult.
-In addition, most scientific simulators are written using opaque low-level programming
-languages, hence raising the bar for likelihood-free inference
-algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
-or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
+%Computer simulators are used to describe complex data generation processes in a diverse set of fields of science including particle physics, climatology, epidemiology,  and population
+%genetics, 
+
+In many fields of science such as particle physics, epidemiology,  and population
+genetics, computer simulators are used to describe complex data generation processes. These simulators relate 
+observations $\bfx$ to the parameters $\bftheta$ of an underlying theory or mechanistic model. 
+In most cases, these simulators are specified as procedural implementations of forward, stochastic processes involving latent variables $\bfz$.
+% and may generate either discrete or continuous data. 
+Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx | \bftheta)$. The prevalence and significance of this problem has motivated an active research effort in so-called \textit{likelihood-free inference} algorithms such as Approximate Bayesian Computation (ABC)~\cite{abc, cranmer2015approximating}. 
+Often the simulation involves control-flow that leads to models such that even $p(\bfx, \bfz | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
+
+In parallel, with the introduction of variational autoencoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial networks~\cite{goodfellow2014generative}, there has been a vibrant research program around implicit generative models based on neural networks~\citep{2016arXiv161003483M}.  While these neural generative models also do not admit a tractable density, they are differentiable. 
+
+%%In contrast, scientific simulators involve control-flow that leads to models such that $p(\bfx, \bfz | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
+%Scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters  endowed with some level of interpretation. In contrast, generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
+
+Generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In contrast, scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters that are endowed with some level of interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
+
+
+%While generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation, scientific simulators typically have relatively few parameters that endowed with some level of interpretation. Thus simulators can be thought of as highly regularized, non-differentiable generative models. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latents $\bfz$.
+
+%Generative models based on neural networks are differentiable with respect to their high dimensional model parameters $\bftheta$, which  with no particular , differentiable with respect to $\bfz$ and $\bftheta$, and the distribution of the latent $\bfz$
+%
+%In the context of variational inference, one assumes the the likelihood $p(\bfx | \bftheta)$ is available and posterior $p(\bftheta | \bfx)$ is tractable up to a constant (ie. ($p(\bfx, \bfz | \bftheta)$ is tractable). Moreover, one is typically interested in estimating the posterior distribution of the latent variables instead of the parameters of the simulator $\bftheta$.
+
+
+%In the context of variational inference, these technihave also been used as the recognition model ~\citep{2015arXiv150505770J, DBLP:journals/corr/KingmaSW16, DBLP:conf/icml/RezendeMW14}; however, in those cases the likelihood $p(\bfx | \bftheta)$ is available and posterior $p(\bftheta | \bfx)$ is tractable up to a constant. 
+
+%Because it is usually computationally intractable, most simulators
+%
+%implicit generative models~\citep{2016arXiv161003483M} 
+%
+%In most
+%cases, these implicit generative models~\citep{2016arXiv161003483M} are
+%specified as procedural implementations of forward stochastic processes that
+%generates discrete or continuous data, and rarely do these simulators admit a tractable density. Because it is usually computationally intractable, most simulators
+%do not provide a way to directly evaluate the likelihood function for a
+%given observation, thereby making inference difficult.
+%In addition, most scientific simulators are written using opaque low-level programming
+%languages, hence raising the bar for likelihood-free inference
+%algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
+%or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
 In this note, we develop a likelihood-free inference algorithm for the point
-estimation of the parameters of a forward non-differentiable
+estimation of the parameters $\bftheta$ of a non-differentiable, implicit
 generative model. We adapt the adversarial
 training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
@@ -92,7 +121,7 @@ non-differentiable minimax problem by minimizing variational upper
 bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
 objectives. The procedure results in learning a proposal distribution over
 simulator parameters, hence producing an arbitrarily tight family of models whose
-joint collection of generated samples matches the observed data.
+marginal distribution of generated data matches the observed data.
 
 
 % ==============================================================================

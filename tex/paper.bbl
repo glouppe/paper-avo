@@ -63,10 +63,25 @@
 \newblock {Variational Inference using Implicit Distributions}.
 \newblock {\em ArXiv e-prints\/} (Feb. 2017).
 
+\bibitem{2015arXiv150505770J}
+{\sc {Jimenez Rezende}, D., and {Mohamed}, S.}
+\newblock {Variational Inference with Normalizing Flows}.
+\newblock {\em ArXiv e-prints\/} (May 2015).
+
 \bibitem{2014arXiv1412.6980K}
 {\sc {Kingma}, D.~P., and {Ba}, J.}
 \newblock {Adam: A Method for Stochastic Optimization}.
 \newblock {\em ArXiv e-prints\/} (Dec. 2014).
+
+\bibitem{DBLP:journals/corr/KingmaSW16}
+{\sc Kingma, D.~P., Salimans, T., and Welling, M.}
+\newblock Improving variational inference with inverse autoregressive flow.
+\newblock {\em CoRR abs/1606.04934\/} (2016).
+
+\bibitem{DBLP:journals/corr/KingmaW13}
+{\sc Kingma, D.~P., and Welling, M.}
+\newblock Auto-encoding variational bayes.
+\newblock {\em CoRR abs/1312.6114\/} (2013).
 
 \bibitem{2016arXiv161009900L}
 {\sc {Le}, T.~A., {Gunes Baydin}, A., and {Wood}, F.}
@@ -88,6 +103,14 @@
 {\sc {Ranganath}, R., {Altosaar}, J., {Tran}, D., and {Blei}, D.~M.}
 \newblock {Operator Variational Inference}.
 \newblock {\em ArXiv e-prints\/} (Oct. 2016).
+
+\bibitem{DBLP:conf/icml/RezendeMW14}
+{\sc Rezende, D.~J., Mohamed, S., and Wierstra, D.}
+\newblock Stochastic backpropagation and approximate inference in deep
+  generative models.
+\newblock In {\em Proceedings of the 31th International Conference on Machine
+  Learning, {ICML} 2014, Beijing, China, 21-26 June 2014\/} (2014),
+  pp.~1278--1286.
 
 \bibitem{2012arXiv1212.4507S}
 {\sc {Staines}, J., and {Barber}, D.}
