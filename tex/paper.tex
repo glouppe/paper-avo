@@ -77,11 +77,15 @@ observations $\bfx$ to the parameters $\bftheta$ of an underlying theory or mech
 In most cases, these simulators are specified as procedural implementations of forward, stochastic processes involving latent variables $\bfz$.
 % and may generate either discrete or continuous data. 
 Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx | \bftheta)$. The prevalence and significance of this problem has motivated an active research effort in so-called \textit{likelihood-free inference} algorithms such as Approximate Bayesian Computation (ABC)~\cite{abc, cranmer2015approximating}. 
-Often the simulation code involves control-flow that implies the dependence of $\bfx$ on $\bfz$ is non-differentiable, making inference even more difficult and precludes approaches such as Ref.~\citep{2016arXiv160507826G}.
+Often the simulation code involves control-flow that implies the dependence of $\bfx$ on $\bfz$ is non-differentiable, making inference even more difficult and precludes approaches such as Ref.~\citep{2016arXiv160507826G}. \kcnote{HMC https://arxiv.org/pdf/1503.01916.pdf}
+
+\kcnote{add ABC refs mentioned in tex}
+%(Beaumont et al., 2002; Marjoram et al., 2003; Sisson et al., 2007; Sisson \& Fan, 2010; Marin et al., 2012; Fan et al., 2013) }
 
 %Often the simulation code involves control-flow that leads to models such that even $p(\bfx | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
 
 In parallel, with the introduction of variational autoencoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial networks~\cite{goodfellow2014generative}, there has been a vibrant research program around implicit generative models based on neural networks~\citep{2016arXiv161003483M}.  While these implicit generative networks also do not admit a tractable density, they are differentiable. 
+
 
 %%In contrast, scientific simulators involve control-flow that leads to models such that $p(\bfx, \bfz | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
 %Scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters  endowed with some level of interpretation. In contrast, generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
