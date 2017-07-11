@@ -76,10 +76,12 @@ genetics, computer simulators are used to describe complex data generation proce
 observations $\bfx$ to the parameters $\bftheta$ of an underlying theory or mechanistic model. 
 In most cases, these simulators are specified as procedural implementations of forward, stochastic processes involving latent variables $\bfz$.
 % and may generate either discrete or continuous data. 
-Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx | \bftheta)$. The prevalence and significance of this problem has motivated an active research effort in so-called \textit{likelihood-free inference} algorithms such as Approximate Bayesian Computation (ABC)~\cite{abc, cranmer2015approximating}. 
-Often the simulation code involves control-flow that implies the dependence of $\bfx$ on $\bfz$ is non-differentiable, making inference even more difficult and precludes approaches such as Ref.~\citep{2016arXiv160507826G}. \kcnote{HMC https://arxiv.org/pdf/1503.01916.pdf}
+Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx | \bftheta)$. The prevalence and significance of this problem has motivated an active research effort in so-called \textit{likelihood-free inference} algorithms such as Approximate Bayesian Computation (ABC)~\cite{beaumont2002approximate, marjoram2003markov, sisson2007sequential, sisson2011likelihood, marin2012approximate, cranmer2015approximating}. 
+Often the simulation code involves control-flow that implies the dependence of $\bfx$ on $\bfz$ is non-differentiable, making inference even more difficult and precludes approaches such as Ref.~\citep{2016arXiv160507826G}. 
 
-\kcnote{add ABC refs mentioned in tex}
+%\kcnote{HMC https://arxiv.org/pdf/1503.01916.pdf}
+
+%\kcnote{add ABC refs mentioned in tex}
 %(Beaumont et al., 2002; Marjoram et al., 2003; Sisson et al., 2007; Sisson \& Fan, 2010; Marin et al., 2012; Fan et al., 2013) }
 
 %Often the simulation code involves control-flow that leads to models such that even $p(\bfx | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
@@ -640,6 +642,8 @@ parameter inference in combination with a gradient-free optimization algorithm.
 Similarly, \citep{gutmann2017likelihood} makes use of classification accuracy as
 a summary statistics for approximate Bayesian computation.
 
+\citep{meeds2015hamiltonian}
+
 In this context, the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative} to
 non-differentiable simulators. It also constitutes an approximate gradient
@@ -697,7 +701,8 @@ supported through PHY-1505463 and PHY-1205376.
 
 % ==============================================================================
 
-\bibliographystyle{acm}
+%\bibliographystyle{hacm}
+\bibliographystyle{hunsrt}
 \bibliography{bibliography.bib}
 
 \end{document}
