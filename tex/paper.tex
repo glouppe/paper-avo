@@ -77,14 +77,15 @@ observations $\bfx$ to the parameters $\bftheta$ of an underlying theory or mech
 In most cases, these simulators are specified as procedural implementations of forward, stochastic processes involving latent variables $\bfz$.
 % and may generate either discrete or continuous data. 
 Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx | \bftheta)$. The prevalence and significance of this problem has motivated an active research effort in so-called \textit{likelihood-free inference} algorithms such as Approximate Bayesian Computation (ABC)~\cite{abc, cranmer2015approximating}. 
-Often the simulation involves control-flow that leads to models such that even $p(\bfx, \bfz | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
+Often the simulation code involves control-flow that implies the dependence of $\bfx$ on $\bfz$ is non-differentiable, making inference even more difficult and precludes approaches such as Ref.~\citep{2016arXiv160507826G}.
 
-In parallel, with the introduction of variational autoencoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial networks~\cite{goodfellow2014generative}, there has been a vibrant research program around implicit generative models based on neural networks~\citep{2016arXiv161003483M}.  While these neural generative models also do not admit a tractable density, they are differentiable. 
+%Often the simulation code involves control-flow that leads to models such that even $p(\bfx | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
+
+In parallel, with the introduction of variational autoencoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial networks~\cite{goodfellow2014generative}, there has been a vibrant research program around implicit generative models based on neural networks~\citep{2016arXiv161003483M}.  While these implicit generative networks also do not admit a tractable density, they are differentiable. 
 
 %%In contrast, scientific simulators involve control-flow that leads to models such that $p(\bfx, \bfz | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
 %Scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters  endowed with some level of interpretation. In contrast, generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
 
-Generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In contrast, scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters that are endowed with some level of interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
 
 
 %While generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation, scientific simulators typically have relatively few parameters that endowed with some level of interpretation. Thus simulators can be thought of as highly regularized, non-differentiable generative models. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latents $\bfz$.
@@ -111,7 +112,9 @@ Generative models based on neural networks are highly parametrized and the model
 %algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
 %or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
-In this note, we develop a likelihood-free inference algorithm for the point
+Generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In contrast, scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters that are endowed with some level of interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
+
+In this note, we develop an unsupervised learning algorithm for the point
 estimation of the parameters $\bftheta$ of a non-differentiable, implicit
 generative model. We adapt the adversarial
 training procedure of generative adversarial
@@ -119,9 +122,22 @@ networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
 non-differentiable minimax problem by minimizing variational upper
 bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
-objectives. The procedure results in learning a proposal distribution over
-simulator parameters, hence producing an arbitrarily tight family of models whose
-marginal distribution of generated data matches the observed data.
+objectives. The procedure results in learning an arbitrarily tight
+proposal distribution over simulator parameters, such that the corresponding
+marginal distribution of the generated data matches the observations.
+
+
+%In this note, we develop a likelihood-free inference algorithm for the point
+%estimation of the parameters $\bftheta$ of a non-differentiable, implicit
+%generative model. We adapt the adversarial
+%training procedure of generative adversarial
+%networks~\cite{goodfellow2014generative} by replacing the implicit generative
+%network with a domain-based scientific simulator, and solve the resulting
+%non-differentiable minimax problem by minimizing variational upper
+%bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
+%objectives. The procedure results in learning a proposal distribution over
+%simulator parameters, hence producing an arbitrarily tight family of models whose
+%marginal distribution of generated data matches the observed data.
 
 
 % ==============================================================================
@@ -133,34 +149,41 @@ We consider a family of parameterized densities $p(\mathbf{x}|\bftheta)$
 defined implicitly through the simulation of a stochastic generative process,
 where $\mathbf{x} \in \mathbb{R}^d$ is the data and $\bftheta$ are the
 parameters of interest. The simulation may involve some complicated latent
-process, such that
-\begin{equation}\label{eqn:p_x}
-    p(\mathbf{x}|\bftheta) = \int p(\mathbf{x}|\bfz,\bftheta) p(\bfz|\bftheta) d\bfz
-\end{equation}
+process
+%, such that
+%\begin{equation}\label{eqn:p_x}
+%    p(\mathbf{x}|\bftheta) = \int p(\mathbf{x}|\bfz,\bftheta) p(\bfz|\bftheta) d\bfz
+%\end{equation}
+%\begin{equation}\label{eqn:p_x_sim}
+%    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g(\bfz;\bftheta) \leq \mathbf{x}\}} p(\bfz|\bftheta) \mu(d\bfz),
+%\end{equation}
 where $\bfz \in {\cal Z}$ is a latent variable providing an external
-source of randomness. In particular, $\bfz$ is not necessarily assumed to
-be a fixed-size vector (e.g., it can be a sequence of variable length) and its
-distribution $p(\bfz|\bftheta)$ may itself depend on $\bftheta$ in some intricate way.
+source of randomness. 
+Unlike implicit generative models defined by neural networks, we do not assume $\bfz$ to
+be a fixed-size vector with a simple density. Instead, the dimensionality of $z$ and the nature of it's components (uniform, normal, discrete, continuous, etc.) are inherited from the control flow of the simulation code and may depend on $\bftheta$ in some intricate way. Moreover, the dimensionality of $\bfz$ may be much larger than the dimensionality of $\bfx$.
 
-We assume that we already have an accurate simulation of the stochastic
-generative process that defines $p(\mathbf{x}|\bfz,\bftheta)$, as
-specified through a highly regularized deterministic function $g(\cdot; \bftheta) : {\cal Z} \to
+%Unlike implicit generative models defined by neural networks, we do not assume $\bfz$ to
+%be a fixed-size vector (e.g., it can be a sequence of variable length) and its
+%distribution $p(\bfz|\bftheta)$ may itself depend on $\bftheta$ in some intricate way
+%inherited from the control flow of the simulation code.
+
+We assume that the stochastic generative process that defines $p(\mathbf{x}|\bfz,\bftheta)$ is
+specified through a deterministic function $g(\cdot; \bftheta) : {\cal Z} \to
 \mathbb{R}^d$ with usually few parameters. That is, we consider
 \begin{equation}\label{eqn:p_theta}
     \mathbf{x} \sim p(\mathbf{x}|\bftheta) \equiv \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta)
 \end{equation}
 such that the likelihood $p(\mathbf{x}|\bftheta)$ can be 
-considered as a non-differentiable reparameterization of the random variable $\bfz$.
-%rewritten as
-%\begin{equation}\label{eqn:p_x_sim}
-%    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g(\bfz;\bftheta) \leq \mathbf{x}\}} p(\bfz|\bftheta) \mu(d\bfz),
-%\end{equation}
-%where $\mu$ is a probability measure.
-Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
-used to generate data in forward mode. For this reason, evaluating the integral
-in Eqn.~\ref{eqn:p_x_sim} is intractable. As commonly found
-in science, we finally assume the lack of access to or existence of derivatives of $g$ with respect to $\bftheta$,
-e.g. as when $g$ is specified as a computer program.
+considered as a non-differentiable reparameterization of the random variable $\bfz$
+\begin{equation}\label{eqn:p_x_sim}
+    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g(\bfz;\bftheta) \leq \mathbf{x}\}} p(\bfz|\bftheta) \mu(d\bfz),
+\end{equation}
+where $\mu$ is a probability measure.
+%Importantly, the simulator $g$ is assumed to be a non-invertible function, that can only be
+%used to generate data in forward mode. For this reason, evaluating the integral
+%in Eqn.~\ref{eqn:p_x_sim} is intractable. As commonly found
+%in science, we finally assume the lack of access to or existence of derivatives of $g$ with respect to $\bftheta$,
+%e.g. as when $g$ is specified as a computer program.
 
 Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the
 (unknown) true distribution $p_r(\mathbf{x})$, our goal is the inference of the parameters
