@@ -25,6 +25,7 @@
 \newcommand{\qxpsi}{q(\mathbf{x}|\bfpsi)}
 \newcommand{\bftheta}{{\bm \theta}}
 \newcommand{\bfpsi}{{\bm \psi}}
+\newcommand{\bfphi}{{\bm \phi}}
 \newcommand{\bfx}{\mathbf{x}}
 \newcommand{\bfz}{\mathbf{z}}
 
@@ -202,7 +203,7 @@ the implicit model $p(\mathbf{x}|\bftheta)$. That is,
 \begin{equation}
     \bftheta^* = \arg \min_{\bftheta \in \bftheta} \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta)),
 \end{equation}
-where $\rho$ is some distance or divergence.
+where $\rho$ is some distance or divergence. For many choices of divergence $\rho$, this is asymptotically equivalent to a maximum likelihood estimate.
 
 
 % ==============================================================================
@@ -216,7 +217,7 @@ Generative adversarial networks (GANs) were first proposed by
 \cite{goodfellow2014generative} as a way to build an implicit generative model
 capable of producing samples from random noise $\bfz$. More specifically,
 a generative model $g(\cdot; \bftheta)$ is pit against an adversarial
-classifier $d(\cdot; \phi):\mathbb{R}^d \to [0,1]$ with parameters $\phi$ and whose antagonistic objective is to recognize real data $\mathbf{x}$
+classifier $d(\cdot; \bfphi):\mathbb{R}^d \to [0,1]$ with parameters $\bfphi$ and whose antagonistic objective is to recognize real data $\mathbf{x}$
 from generated data $\tilde{\mathbf{x}} = g(\bfz; \bftheta)$. Both models $g$ and $d$
 are trained simultaneously, in such a way that $g$ learns to fool
 its adversary $d$ (which happens when $g$ produces samples comparable to the
@@ -231,22 +232,26 @@ unreliable updates when the training procedure is relaxed. As a remedy,
 Wasserstein GANs~\citep{2017arXiv170107875A} reformulate the adversarial
 setup in order to minimize the Wasserstein-1 distance $W(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta))$ by
 replacing the adversarial classifier with a 1-Lipschitz adversarial critic
-$d(\cdot; \phi) : \mathbb{R}^d \to \mathbb{R}$. 
+$d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$. 
 \begin{align}
-   W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) = \mathcal{L}_W = \sup_{f} \mathbb{E}_{p(\tilde{\mathbf{x}}|\bftheta)} [f(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [f(\mathbf{x})]
+W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) = \sup_{d} \mathbb{E}_{p(\tilde{\mathbf{x}}|\bftheta)} [d(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [d(\mathbf{x})]
 \end{align}
 Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
 for stabilizing the optimization procedure,
-training $d$ and $g$ results in alternating gradient updates on $\phi$ and $\bftheta$ in order to respectively minimize
-
+training $d$ and $g$ results in alternating gradient updates on $\bfphi$ and $\bftheta$ in order to respectively minimize
 \begin{align}
-    {\cal L}_d =\,&  {\cal L}_W + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
-    {\cal L}_g =\,& - {\cal L}_W
+    {\cal L}_d =\,&  W(p_r, p_\theta) + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
+    {\cal L}_g =\,& - W(p_r, p_\theta)
 \end{align}
+%
 %\begin{align}
-%    {\cal L}_d =\,& \mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)} [d(\tilde{\mathbf{x}};\phi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\phi)]  \nonumber \\
-%                  & + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\phi) ||_2 - 1)^2] \\
-%    {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)} [d(\tilde{\mathbf{x}};\phi)]
+%    {\cal L}_d =\,&  {\cal L}_W + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
+%    {\cal L}_g =\,& - {\cal L}_W
+%\end{align}
+%\begin{align}
+%    {\cal L}_d =\,& \mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)} [d(\tilde{\mathbf{x}};\bfphi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x};\bfphi)]  \nonumber \\
+%                  & + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
+%    {\cal L}_g =\,& -\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)} [d(\tilde{\mathbf{x}};\bfphi)]
 %\end{align}
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} +
 (1-\epsilon)\tilde{\mathbf{x}}$, for $\epsilon \sim U[0,1]$, $\mathbf{x} \sim
@@ -260,21 +265,21 @@ optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
 \begin{equation}
-    \min_{\bftheta \in \bftheta} f(\bftheta) \leq \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta)] = U(\bfpsi),
+    \min_{\bftheta \in {\Theta}} f(\bftheta) \leq \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta)] = U(\bfpsi),
 \end{equation}
 where $q(\bftheta|\bfpsi)$ is a proposal distribution with parameters $\bfpsi$ over input values $\bftheta$.
 That is, the minimum of a set of function values is always less than or equal
 to any of their average. Provided that the proposal is flexible enough, the parameters $\bfpsi$
-can be updated to place its mass arbitrarily tight around the optimum $\bftheta^* = \min_{\bftheta \in \bftheta} f(\bftheta)$.
+can be updated to place its mass arbitrarily tight around the optimum $\bftheta^* = \min_{\bftheta \in \Theta} f(\bftheta)$.
 
 Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound
 $U(\bfpsi)$ is differentiable with respect to $\bfpsi$, and using the log-likelihood
-trick it comes:
+trick it can be rewritten as:
 \begin{align}\label{eqn:approx-grad}
     \nabla_\bfpsi U(\bfpsi) &= \nabla_\bfpsi \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta)] \nonumber \\
     %&= \nabla_\bfpsi \int f(\bftheta)  q(\bftheta|\bfpsi)  d\bftheta \nonumber \\
-    &= \int f(\bftheta) \nabla_\bfpsi q(\bftheta|\bfpsi)  d\bftheta \nonumber \\
-    &= \int \left[ f(\bftheta) \nabla_\bfpsi \log q(\bftheta|\bfpsi) \right]  q(\bftheta|\bfpsi) d\bftheta \nonumber \\
+ %   &= \int f(\bftheta) \nabla_\bfpsi q(\bftheta|\bfpsi)  d\bftheta \nonumber \\
+   % &= \int \left[ f(\bftheta) \nabla_\bfpsi \log q(\bftheta|\bfpsi) \right]  q(\bftheta|\bfpsi) d\bftheta \nonumber \\
     &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta) \nabla_\bfpsi \log q(\bftheta|\bfpsi)]
 \end{align}
 Effectively, this means that provided that the score function $\nabla_\bfpsi \log
@@ -300,7 +305,7 @@ robustness to noisy gradients).
 % \end{equation}
 % where $\mathbf{F}(\bfpsi)$ is the Fisher information matrix
 % \begin{equation}
-%     \mathbf{F}(\bfpsi) = \mathbb{E}_{\bftheta \sim q_\phi}[ \nabla_\bfpsi \log q_\bfpsi(\bftheta) \nabla_\bfpsi \log q_\bfpsi(\bftheta)^{\top} ]
+%     \mathbf{F}(\bfpsi) = \mathbb{E}_{\bftheta \sim q_\bfphi}[ \nabla_\bfpsi \log q_\bfpsi(\bftheta) \nabla_\bfpsi \log q_\bfpsi(\bftheta)^{\top} ]
 % \end{equation}
 % and can be estimated from samples, in particular by reusing the derivatives $\nabla_\bfpsi \log q_\bfpsi(\bftheta)$ already
 % evaluated to form $\nabla_\bfpsi U(\bfpsi)$.
@@ -331,9 +336,9 @@ robustness to noisy gradients).
                 \For{$m=1$ to $M$}
                     \State{$\tilde{\mathbf{x}}_m \leftarrow g(\bfz_m; \bftheta_m)$}
                     \State{$\hat{\mathbf{x}}_m \leftarrow \epsilon_m \mathbf{x}_m + (1 - \epsilon_m) \tilde{\mathbf{x}}_m$}
-                    \State{$U_d^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \phi) - d(\mathbf{x}_m; \phi) + \lambda (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \phi) ||_2 - 1)^2 $}
+                    \State{$U_d^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \bfphi) - d(\mathbf{x}_m; \bfphi) + \lambda (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \bfphi) ||_2 - 1)^2 $}
                 \EndFor
-                \State{$\phi \leftarrow \text{Adam}(\nabla_\phi \tfrac{1}{M} \sum_{m=1}^M U_d^{(m)})$}
+                \State{$\bfphi \leftarrow \text{Adam}(\nabla_\bfphi \tfrac{1}{M} \sum_{m=1}^M U_d^{(m)})$}
             \EndFor
             \State{Sample a mini-batch $\{ \bftheta_m \sim q(\bftheta|\bfpsi),  \bfz_m \sim p(\bfz|\bftheta_m) \}_{m=1}^M$.}  \Comment{Update $q(\bftheta|\bfpsi)$}
             \State{$\nabla_\bfpsi U_g \leftarrow \tfrac{1}{M} \sum_{m=1}^M -d(g(\bfz_m; \bftheta_m)) \nabla_\bfpsi \log q_\bfpsi(\bftheta_m)$}
@@ -348,34 +353,40 @@ robustness to noisy gradients).
 
 The alternating stochastic gradient descent on ${\cal L}_d$ and ${\cal L}_g$ in
 GANs (Section~\ref{sec:gans}) inherently assumes that the generator $g$ is a differentiable function. In
-the setting where we are interested in the inference of the parameters of a
+the setting where we are interested in estimating the parameters of a
 fixed non-differentiable simulator (Section~\ref{sec:problem}),
 rather than in learning the generative model itself,
-gradients $\nabla_\bftheta g$ either do not exist or cannot be accessed. As a
+gradients $\nabla_\bftheta g$ either do not exist or are inaccessible. As a
 result, gradients $\nabla_\bftheta {\cal L}_g$ cannot be constructed and the
 optimization procedure cannot be carried out.
 
 In this work, we propose to rely on variational optimization to minimize ${\cal
 L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
 specifically, we consider a proposal distribution $q(\bftheta|\bfpsi)$ over the
-parameters of $g$ and $p(\mathbf{x}|\bftheta)$ and minimize in alternation the variational upper bounds
+parameters of $g$ and $p(\mathbf{x}|\bftheta)$ and alternately minimize the variational upper bounds
 \begin{align}
     U_d &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_d ] \label{eqn:vo-ud} \\
     U_g &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] \label{eqn:vo-ug}
-\end{align} respectively over $\phi$ and $\bfpsi$.
+\end{align} respectively over $\bfphi$ and $\bfpsi$.
 When updating
-$\phi$, unbiased estimates of $\nabla_\phi U_d$ can be obtained by
-evaluating the exact and known gradient of $U_d$ over mini-batches of true and
-generated data, as ordinarily done in stochastic gradient descent. When updating
-$\bfpsi$, estimates of $\nabla_\bfpsi U_g$ can be derived with forward
-simulations, as described in the previous section.
+$\bfphi$, unbiased estimates of $\nabla_\bfphi U_d$ can be obtained by
+directly evaluating the gradient of $U_d$ over mini-batches of real and
+generated data, as is ordinarily done in stochastic gradient descent. When updating
+$\bfpsi$, $\nabla_\bfpsi U_g$ can be estimated as described in the previous section.
 That is,
+%\begin{equation}\label{eqn:grad-ug-approx}
+%   \nabla_\bfpsi U_g = \mathbb{E}_{\subarray{l}{\bftheta \sim q(\bftheta|\bfpsi), \\ \hat{\bfx} \sim p(\bfx | \bftheta) }}  [-d( \hat{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
+%\end{equation} 
 \begin{equation}\label{eqn:grad-ug-approx}
-    \nabla_\bfpsi U_g = \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta)}  [-d(g(\bfz;\bftheta);\phi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
-\end{equation} which we can approximate with mini-batches of
+   \nabla_\bfpsi U_g = \mathbb{E}_{\substack{\bftheta \sim q(\bftheta|\bfpsi), \\ \hat{\bfx} \sim p(\bfx | \bftheta)}}  [-d( \hat{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
+\end{equation} 
+%\begin{equation}\label{eqn:grad-ug-approx}
+%    \nabla_\bfpsi U_g = \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta)}  [-d(g(\bfz;\bftheta);\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
+%\end{equation} 
+which we can approximate with mini-batches of
 generated data
 \begin{equation}
-    \nabla_\bfpsi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\bfz_m; \bftheta_m); \phi) \nabla_\bfpsi \log q(\bftheta_m|\bfpsi)
+    \nabla_\bfpsi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\bfz_m; \bftheta_m); \bfphi) \nabla_\bfpsi \log q(\bftheta_m|\bfpsi)
 \end{equation}
 for $\bftheta_m \sim q(\bftheta|\bfpsi)$ and $\bfz_m \sim p(\bfz|\bftheta_m)$.
 For completeness, Algorithm~\ref{alg:avo} outlines the proposed adversarial variational
@@ -383,25 +394,46 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 Obviously, the variational relaxation could similarly be coupled with
 other variants of GANs and/or of evolution strategies.
 
-Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
+%Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
+%have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
+%a distribution parameterized in terms of $\bfpsi$:
+%\begin{equation}\label{eqn:p_psi}
+%    \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
+%\end{equation}
+%Intuitively, this corresponds to a family of simulators, each configured
+%with randomly sampled parameters $\bftheta \sim q(\bftheta|\bfpsi)$, whose joint collection
+%of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
+%More formally, the learned model  therefore corresponds to the marginal distribution
+%of the generated data. That is,
+%\begin{equation}
+%    \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
+%\end{equation}
+%Intuitively, this corresponds to a family of simulators, each configured
+%with randomly sampled parameters $\bftheta \sim q(\bftheta|\bfpsi)$, whose joint collection
+%of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
+
+The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
-a distribution parameterized in terms of $\bfpsi$:
-\begin{equation}\label{eqn:p_psi}
-    \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
-\end{equation}
-Intuitively, this corresponds to a family of simulators, each configured
-with randomly sampled parameters $\bftheta \sim q(\bftheta|\bfpsi)$, whose joint collection
-of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
-More formally, the learned model  therefore corresponds to the marginal distribution
-of the generated data. That is,
+the marginal distribution parameterized by $\bfpsi$
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
+Operationally, we sample from this marginal model via
+\begin{equation}\label{eqn:p_psi}
+    \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
+\end{equation}
+Effectively, we are optimizing a variational posterior $q(\bftheta | \psi)$ by minimizing the 
+divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$. 
+%Effectively, we are performing variational inference through model criticism~\citep{box1980sampling}.
+Consequently, the proposed algorithm is a form of variational Bayesian inference through model criticism~\citep{box1980sampling}. 
 
-In consequence, the proposed inference algorithm does not necessarily guarantee that the
-proposal distribution $q(\bftheta|\bfpsi)$ will place its mass arbitrarily tight
-around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
-For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
+%Consequently, the proposed inference algorithm does not necessarily guarantee that the
+%proposal distribution $q(\bftheta|\bfpsi)$ will place its mass arbitrarily tight
+%around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
+%For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
+
+
+If instead, one is interested in point estimates $\bftheta^*$, then we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
 the proposal distribution. That is,
 \begin{equation}
@@ -410,49 +442,13 @@ the proposal distribution. That is,
 where $\gamma \in \mathbb{R}^+$ is a hyper-parameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
 For small values of $\gamma$,
-proposal distributions with large entropy are not penalized, which may result
-in learning a smeared variation of the original simulator. On the other hand,
-for large values of $\gamma$, the procedure is constrained to fit a proposal
+proposal distributions with large entropy are not penalized, which results
+in learning a smeared variation of the original simulator corresponding to the posterior predictive model. On the other hand,
+for large values of $\gamma$, the procedure is encouraged to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
-tightly around one or a few $\bftheta$ values. A too large penalty may however
+tightly around one or a few $\bftheta$ values. Very large penalties may 
 eventually make the optimization unstable, as the variance of $\nabla_\bfpsi \log q(\bftheta_m|\bfpsi)$
-typically increases as the entropy of the proposal decreases.
-
-\subsection{Operator Variational Optimization}
-
-Original OPVI  \citep{2016arXiv161009033R}
-
-\begin{eqnarray}
-\lambda^* = \inf_\lambda \sup_\phi \mathbb{E}_{ z \sim q( z | \lambda)} [ (O^{p,q} f_\lambda) ] 
-\end{eqnarray}
-with
-\begin{equation}
-(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}
-\end{equation}
-
-
-%This is natural here, but not quite OPVI formalism:
-%\begin{equation}
-%\bfpsi^* = \inf_\bfpsi \sup_\phi \mathbb{E}_{ \bftheta \sim q(\bftheta | \bfpsi)} [ (O^{p,q} f_\phi) ]
-%\end{equation}
-%
-%\begin{equation}
-%(O^{p,q} f) = W(p,q) = \sup_f \mathbb{E}_{x\sim p}[f(x)] - \mathbb{E}_{x \sim q}[f(x)]
-%\end{equation}
-%The expectation should be $x \sim p(x|\bfpsi)$ and here $(O^{p,q} f)$ is a scalar and not a function of $x$
-
-To get into OPVI formalism
-
-\begin{eqnarray}
-\bfpsi^* &=& \inf_\bfpsi \sup_\phi\mathbb{E}_{x\sim p_r(x)}[f(x)] - \mathbb{E}_{x \sim p(x|\bfpsi)}[f(x)] \\
-&=&  \inf_\bfpsi \sup_\phi \mathbb{E}_{ x \sim p( x | \bfpsi)} [ (O^{p_r,p_\bfpsi} f_\phi) ] 
-\end{eqnarray}
-with
-\begin{equation}
-(O^{p,q} f) = \left( \frac{p_r(x)}{p(x|\bfpsi)}  -1 \right) f(x)
-\end{equation}
-
-We can think of $p(x|\bfpsi)$ as a \textit{variational program} as described in ~\citep{2016arXiv161009033R}, though more complicated than the a simple reparametrization of normally distributed noise $\epsilon$ through a differentiable function $R(\epsilon, \bfpsi)$. In our case, the variational program is a marginalized non-differentiable simulator simulator.  Nevertheless, it can generate samples for $x$, is differentiable with respect to $\phi$, and its density is be intractable.
+typically increases as the entropy of the proposal decreases. \kcnote{maybe, but not obvious why}
 
 
 
@@ -505,8 +501,8 @@ model.  The bottom plot of Figure~\ref{fig:poisson} shows empirical estimates
 of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=5$,
 the curves quickly fall towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)}
-[d(\tilde{\mathbf{x}};\phi)] \approx \mathbb{E}_{\mathbf{x} \sim
-p_r(\mathbf{x})} [d(\mathbf{x};\phi)]$ and that the critic cannot distinguish
+[d(\tilde{\mathbf{x}};\bfphi)] \approx \mathbb{E}_{\mathbf{x} \sim
+p_r(\mathbf{x})} [d(\mathbf{x};\bfphi)]$ and that the critic cannot distinguish
 between true and model data. Despite the discreteness and the
 non-differentiability of the underlying generator, this confirms that inference
 with adversarial variational optimization works.
@@ -644,6 +640,7 @@ a summary statistics for approximate Bayesian computation.
 
 \citep{meeds2015hamiltonian}
 
+
 In this context, the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative} to
 non-differentiable simulators. It also constitutes an approximate gradient
@@ -651,12 +648,48 @@ descent alternative to likelihood-free inference based on bayesian optimization 
 ratios~\citep{cranmer2015approximating,cranmer2016experiments} or to classifier
 ABC~\citep{gutmann2017likelihood}.
 
-This work has many connections to variational inference, in which the goal is to optimize the recognition model $q(\bftheta|\bfpsi)$ so that it is close to the true posterior $p(\bftheta|x)$. This is slighty different from variational optimization (or variational learning), where the toal is to find $\bftheta^*$ such that $p(x|\bftheta^*) \approx p_r(x)$.  Typically in variational inference the model $p(x|\bftheta)$ admits a density, so that the likelihood is known. Thus, assuming the prior also admits a density, it is tractable to evaluate the posterior is (up to a constant factor). In Adversarial Variational Bayes \citep{DBLP:journals/corr/MeschederNG17} and , equivalently, the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H}), the authors use an adversarial setup, but assume a known density $p(x|\bftheta)$ that is differentiable with respect to $\bftheta$. 
+This work has many connections to variational inference, in which the goal is to optimize the recognition model $q(\bftheta|\bfpsi)$ so that it is close to the true posterior $p(\bftheta|x)$. This is slighty different from variational optimization (or variational learning), where the toal is to find $\bftheta^*$ such that $p(\bfx|\bftheta^*) \approx p_r(\bfx)$.  Typically in variational inference the model $p(\bfx|\bftheta)$ admits a density, so that the likelihood is known. Thus, assuming the prior also admits a density, it is tractable to evaluate the posterior is (up to a constant factor). In Adversarial Variational Bayes \citep{DBLP:journals/corr/MeschederNG17} and , equivalently, the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H}), the authors use an adversarial setup, but assume a known density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$. 
 
-In \citep{tran2017variational}, the authors consider Variational Bayes with an intractable likelihood. In that approach "The only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of most simulators it is not clear how one would obtain the unbiased estimator $\hat{p}(x|\bftheta)$.
+In \citep{tran2017variational}, the authors consider Variational Bayes with an intractable likelihood. In that approach "The only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of most simulators it is not clear how one would obtain the unbiased estimator $\hat{p}(\bfx|\bftheta)$.
 
 
 In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. The  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''.
+
+\subsection{Operator Variational Optimization}
+
+Original OPVI  \citep{2016arXiv161009033R}
+
+\begin{eqnarray}
+\lambda^* = \inf_\lambda \sup_\bfphi \mathbb{E}_{ z \sim q( z | \lambda)} [ (O^{p,q} f_\lambda) ] 
+\end{eqnarray}
+with
+\begin{equation}
+(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}
+\end{equation}
+
+
+%This is natural here, but not quite OPVI formalism:
+%\begin{equation}
+%\bfpsi^* = \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bftheta \sim q(\bftheta | \bfpsi)} [ (O^{p,q} f_\bfphi) ]
+%\end{equation}
+%
+%\begin{equation}
+%(O^{p,q} f) = W(p,q) = \sup_f \mathbb{E}_{x\sim p}[f(x)] - \mathbb{E}_{x \sim q}[f(x)]
+%\end{equation}
+%The expectation should be $x \sim p(x|\bfpsi)$ and here $(O^{p,q} f)$ is a scalar and not a function of $x$
+
+To get into OPVI formalism
+
+\begin{eqnarray}
+\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi\mathbb{E}_{x\sim p_r(x)}[f(x)] - \mathbb{E}_{x \sim p(x|\bfpsi)}[f(x)] \\
+&=&  \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ x \sim p( x | \bfpsi)} [ (O^{p_r,p_\bfpsi} f_\bfphi) ] 
+\end{eqnarray}
+with
+\begin{equation}
+(O^{p,q} f) = \left( \frac{p_r(x)}{p(x|\bfpsi)}  -1 \right) f(x)
+\end{equation}
+
+We can think of $p(\bfx|\bfpsi)$ as a \textit{variational program} as described in ~\citep{2016arXiv161009033R}, though more complicated than the a simple reparametrization of normally distributed noise $\epsilon$ through a differentiable function $R(\epsilon, \bfpsi)$. In our case, the variational program is a marginalized non-differentiable simulator simulator.  Nevertheless, it can generate samples for $x$, is differentiable with respect to $\bfphi$, and its density is be intractable.
 
 
 

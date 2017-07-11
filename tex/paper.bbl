@@ -93,6 +93,12 @@ D.~P. {Kingma} and J.~{Ba}.
 \newblock {Adam: A Method for Stochastic Optimization}.
 \newblock {\em ArXiv e-prints}, December 2014, 1412.6980.
 
+\bibitem{box1980sampling}
+George~EP Box.
+\newblock Sampling and bayes' inference in scientific modelling and robustness.
+\newblock {\em Journal of the Royal Statistical Society. Series A (General)},
+  pages 383--430, 1980.
+
 \bibitem{2016arXiv161009033R}
 R.~{Ranganath}, J.~{Altosaar}, D.~{Tran}, and D.~M. {Blei}.
 \newblock {Operator Variational Inference}.
