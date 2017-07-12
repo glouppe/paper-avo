@@ -234,14 +234,15 @@ setup in order to minimize the Wasserstein-1 distance $W(p_r(\mathbf{x}), p(\mat
 replacing the adversarial classifier with a 1-Lipschitz adversarial critic
 $d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$. 
 \begin{align}
-W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) = \sup_{d} \mathbb{E}_{p(\tilde{\mathbf{x}}|\bftheta)} [d(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [d(\mathbf{x})]
+W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) =& \sup_{\bfphi} \mathbb{E}_{p(\tilde{\mathbf{x}}|\bftheta)} [d(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [d(\mathbf{x})] \\
+\equiv& \sup_{\bfphi} \mathcal{L}_W
 \end{align}
 Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
 for stabilizing the optimization procedure,
 training $d$ and $g$ results in alternating gradient updates on $\bfphi$ and $\bftheta$ in order to respectively minimize
 \begin{align}
-    {\cal L}_d =\,&  W(p_r, p_\theta) + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
-    {\cal L}_g =\,& - W(p_r, p_\theta)
+    {\cal L}_d =\,&  \mathcal{L}_W + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
+    {\cal L}_g =\,& - \mathcal{L}_W
 \end{align}
 %
 %\begin{align}
@@ -286,10 +287,11 @@ Effectively, this means that provided that the score function $\nabla_\bfpsi \lo
 q(\bftheta|\bfpsi)$ of the proposal is known and that one can evaluate
 $f(\mathbf{\bftheta})$ for any $\bftheta$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
-$U(\bfpsi)$ with stochastic gradient descent (or a variant thereof, like
-Adam~\cite{2014arXiv1412.6980K} or the Natural Evolution Strategy
-algorithm~\citep{2011arXiv1106.4487W}, for scaling invariance and
-robustness to noisy gradients).
+$U(\bfpsi)$ with stochastic gradient descent. We will use 
+Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to incorporate the Natural Evolution Strategy
+algorithm~\citep{2011arXiv1106.4487W} and variance reduction techniques~\citep{ranganath2014black}.
+%Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here as they are in black box variational inference~\citep{ranganath2014black}.
+
 
 % In this simple form, stochastic gradient descent based on
 % Eqn~\ref{eqn:approx-grad} is known to suffer from premature convergence and lack
@@ -430,11 +432,12 @@ Operationally, we sample from this marginal model via
     \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
 \end{equation}
 
-Typically in variational inference one would has access to the posterior $p(\bfx | \bftheta)$ (or the joint density $p(\bfx,\bftheta)$), and after optimizing $q(\bftheta | \bfpsi)$ one would criticize the model through the the posterior predictive distribution as advocated by Box~\citep{box1980sampling}.   
+%Typically in variational inference one would has access to the posterior $p(\bftheta | \bfx )$ (or the joint density $p(\bfx,\bftheta)$), and after optimizing $q(\bftheta | \bfpsi)$ one would criticize the model through the the posterior predictive distribution as advocated by Box~\citep{box1980sampling}.   
+Typically in variational inference one starts with a tractable prior $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to approximate the posterior, one would criticize the model through the the posterior predictive distribution as advocated by Box~\citep{box1980sampling}.   
 Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by directly minimizing the 
-divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating the unknown posterior $p(\bfx | \bftheta)$ or joint density $p(\bfx,\bftheta)$. 
-Consequently, the proposed algorithm is a form of variational inference through model criticism~\citep{box1980sampling}, which we denote AVI-MC. 
+divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior. Consequently, the proposed algorithm is a form of variational inference through model criticism~\citep{box1980sampling}, which we denote AVI-MC. While the likelihood is intractable, it is fixed, thus one can view the optimization of $\bfpsi$ through the lens of emperical Bayes, though the prior family $p(\bftheta | \bfpsi)$ is not explicitly specified. 
 
+%\kcnote{where is the prior? comment}
 
 %Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by minimizing the 
 %divergence of the corresponding posterior predictive distribution $\qxpsi$ and the data distribution $p_r(\bfx)$. 
@@ -462,11 +465,12 @@ proposal distributions with large entropy are not penalized, which results
 in learning a smeared variation of the original simulator corresponding to the posterior predictive model. On the other hand,
 for large values of $\gamma$, the procedure is encouraged to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
-tightly around one or a few $\bftheta$ values. 
+tightly around one or a few $\bftheta$ values.  
 
 Very large penalties may 
 eventually make the optimization unstable, as the variance of $\nabla_\bfpsi \log q(\bftheta_m|\bfpsi)$
-typically increases as the entropy of the proposal decreases. \kcnote{maybe, but not obvious why}
+typically increases as the entropy of the proposal decreases. 
+%\kcnote{maybe, but not obvious why}
 
 %Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here analogous to their use in black box variational inference~\citep{ranganath2014black}.
 
@@ -474,7 +478,7 @@ typically increases as the entropy of the proposal decreases. \kcnote{maybe, but
 \kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVI-MC?}
 
 
-\newpage
+%\newpage
 % ==============================================================================
 
 \section{Experiments}
@@ -657,6 +661,31 @@ cannot distinguish from the true distribution.
 
 \section{Related work}
 
+This work sits at the intersection of several lines of work related to 
+likelihood-free inference, approximate Bayesian computation (ABC),
+implicit generative networks, and variational inference.  Our focus
+is on extending existing work to non-differentiable generative models
+that do not admit a tractable density.
+
+
+ 
+Viewed from the literature around implicit generative models based on neural networks, 
+the proposed method can be considered as a direct adaptation of
+generative adversarial networks~\citep{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
+non-differentiable simulators using variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization}.
+
+From the point of view of likelihood-free inference, the closest to our work are procedures that rely on a classifier to estimate the
+discrepancy between the observed data and the model distributions. For example,
+\citep{gutmann2012noise} uses non linear logistic regression for fitting
+unnormalized differentiable statistical models. In the likelihood-free
+setup, \citep{cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D} estimate likelihood
+ratios through supervised classification, which can in turn be used for
+parameter inference in combination with a gradient-free optimization algorithm.
+Similarly, \citep{gutmann2017likelihood} makes use of classification accuracy as
+a summary statistics for approximate Bayesian computation.
+
+
+
 As reviewed in \cite{2016arXiv161003483M}, likelihood-free inference is
 intimately tied to a class of algorithms that can be framed as density
 estimation-by-comparison. In most cases, these inference algorithms are
@@ -664,34 +693,21 @@ formulated as an iterative two-step process where the model distribution is
 first compared to the true data distribution and then updated to make it more
 comparable to the latter.
 
-Closest to our work are procedures that rely on a classifier to estimate the
-discrepancy between the true and the model distributions. For example,
-\citep{gutmann2012noise} uses non linear logistic regression for fitting
-unnormalized differentiable statistical models, while
-\citep{goodfellow2014generative} exploits an adversarial neural network for
-learning a differentiable implicit generative model. In the likelihood-free
-setup, \citep{cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D} estimate likelihood
-ratios through supervised classification, which can in turn be used for
-parameter inference in combination with a gradient-free optimization algorithm.
-Similarly, \citep{gutmann2017likelihood} makes use of classification accuracy as
-a summary statistics for approximate Bayesian computation.
 
-\citep{meeds2015hamiltonian}
-
-
-In this context, the proposed method can be considered as a direct adaptation of
-generative adversarial networks~\citep{goodfellow2014generative} to
-non-differentiable simulators. It also constitutes an approximate gradient
+%In this context, the proposed method can be considered as a direct adaptation of
+%generative adversarial networks~\citep{goodfellow2014generative} to
+%non-differentiable simulators. 
+It also constitutes an approximate gradient
 descent alternative to likelihood-free inference based on bayesian optimization and approximated density
 ratios~\citep{cranmer2015approximating,cranmer2016experiments} or to classifier
 ABC~\citep{gutmann2017likelihood}.
 
-This work has many connections to variational inference, in which the goal is to optimize the recognition model $q(\bftheta|\bfpsi)$ so that it is close to the true posterior $p(\bftheta|x)$. This is slighty different from variational optimization (or variational learning), where the toal is to find $\bftheta^*$ such that $p(\bfx|\bftheta^*) \approx p_r(\bfx)$.  Typically in variational inference the model $p(\bfx|\bftheta)$ admits a density, so that the likelihood is known. Thus, assuming the prior also admits a density, it is tractable to evaluate the posterior is (up to a constant factor). In Adversarial Variational Bayes \citep{DBLP:journals/corr/MeschederNG17} and , equivalently, the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H}), the authors use an adversarial setup, but assume a known density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$. 
+This work has many connections to work on variational inference, in which the goal is to optimize the recognition model $q(\bftheta|\bfpsi)$ so that it is close to the true posterior $p(\bftheta|x)$. This is slightly different from variational optimization (or variational learning), where the goal is to find $\bftheta^*$ such that $p(\bfx|\bftheta^*) \approx p_r(\bfx)$.  Typically in variational inference the model $p(\bfx|\bftheta)$ admits a density, so that the likelihood is known. Thus, assuming the prior also admits a density, it is tractable to evaluate the posterior is (up to a constant factor). In Adversarial Variational Bayes \citep{DBLP:journals/corr/MeschederNG17} and, equivalently, the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H}), the authors use an adversarial setup, but assume a known density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$. 
 
-In \citep{tran2017variational}, the authors consider Variational Bayes with an intractable likelihood. In that approach "The only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of most simulators it is not clear how one would obtain the unbiased estimator $\hat{p}(\bfx|\bftheta)$.
+There have been efforts to extend variational inference to intractable likelihoods; however, they require restrictive assumptions. 
+In \citep{tran2017variational}, the authors consider Variational Bayes with an intractable likelihood. In that approach "the only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of many simulators it is not clear how one would obtain the unbiased estimator $\hat{p}(\bfx|\bftheta)$. In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. Furthermore, the  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''. Lastly, in \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which applies in the likelihood-free setting, and they estimate gradients 
 
-
-In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. The  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''.
+\kcnote{F.H. Implicit model is differentiable. Is what we are doing JC-Adv with our variational program}
 
 \subsection{Operator Variational Optimization}
 
