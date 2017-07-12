@@ -121,6 +121,28 @@ S.~Agostinelli et~al.
 \newblock {GEANT4: A Simulation toolkit}.
 \newblock {\em Nucl. Instrum. Meth.}, A506:250--303, 2003.
 
+\bibitem{dumoulin2016adversarially}
+Vincent Dumoulin, Ishmael Belghazi, Ben Poole, Alex Lamb, Martin Arjovsky,
+  Olivier Mastropietro, and Aaron Courville.
+\newblock Adversarially learned inference.
+\newblock {\em arXiv preprint arXiv:1606.00704}, 2016.
+
+\bibitem{donahue2016adversarial}
+Jeff Donahue, Philipp Kr{\"a}henb{\"u}hl, and Trevor Darrell.
+\newblock Adversarial feature learning.
+\newblock {\em arXiv preprint arXiv:1605.09782}, 2016.
+
+\bibitem{DBLP:journals/corr/MeschederNG17}
+Lars~M. Mescheder, Sebastian Nowozin, and Andreas Geiger.
+\newblock Adversarial variational bayes: Unifying variational autoencoders and
+  generative adversarial networks.
+\newblock {\em CoRR}, abs/1701.04722, 2017.
+
+\bibitem{2017arXiv170208235H}
+F.~{Husz{\'a}r}.
+\newblock {Variational Inference using Implicit Distributions}.
+\newblock {\em ArXiv e-prints}, February 2017, 1702.08235.
+
 \bibitem{gutmann2012noise}
 Michael~U Gutmann and Aapo Hyv{\"a}rinen.
 \newblock Noise-contrastive estimation of unnormalized statistical models, with
@@ -144,26 +166,20 @@ Michael~U Gutmann, Ritabrata Dutta, Samuel Kaski, and Jukka Corander.
 \newblock Likelihood-free inference via classification.
 \newblock {\em Statistics and Computing}, pages 1--15, 2017.
 
-\bibitem{meeds2015hamiltonian}
-Edward Meeds, Robert Leenders, and Max Welling.
-\newblock Hamiltonian abc.
-\newblock {\em arXiv preprint arXiv:1503.01916}, 2015.
-
-\bibitem{DBLP:journals/corr/MeschederNG17}
-Lars~M. Mescheder, Sebastian Nowozin, and Andreas Geiger.
-\newblock Adversarial variational bayes: Unifying variational autoencoders and
-  generative adversarial networks.
-\newblock {\em CoRR}, abs/1701.04722, 2017.
-
-\bibitem{2017arXiv170208235H}
-F.~{Husz{\'a}r}.
-\newblock {Variational Inference using Implicit Distributions}.
-\newblock {\em ArXiv e-prints}, February 2017, 1702.08235.
+\bibitem{bernton2017inference}
+Espen Bernton, Pierre~E Jacob, Mathieu Gerber, and Christian~P Robert.
+\newblock Inference in generative models using the wasserstein distance.
+\newblock {\em arXiv preprint arXiv:1701.05146}, 2017.
 
 \bibitem{tran2017variational}
 Minh-Ngoc Tran, David~J Nott, and Robert Kohn.
 \newblock Variational bayes with intractable likelihood.
 \newblock {\em Journal of Computational and Graphical Statistics},
   (just-accepted), 2017, 1503.08621.
+
+\bibitem{meeds2015hamiltonian}
+Edward Meeds, Robert Leenders, and Max Welling.
+\newblock Hamiltonian abc.
+\newblock {\em arXiv preprint arXiv:1503.01916}, 2015.
 
 \end{thebibliography}

@@ -22,7 +22,7 @@ rng = check_random_state(seed)
 
 def_batch_size = 256
 n_epochs = 300+1
-n_epochs = 100+1
+#n_epochs = 100+1
 lambda_gp = 0.025
 
 true_theta = np.array([np.log(7)])
@@ -44,7 +44,7 @@ n_features = X_obs.shape[1]
 # Critic
 
 #gammas = [0.0, 5.0]
-gammas = [0.0, 0.0] #, 0.0, 0.0]
+gammas = [0.0, 0.0, 0.0, 0.0]
 colors = ["C1", "C2", "C3","C4"]
 batch_sizes = [16, 64, 256, 1024]
 
