@@ -52,8 +52,8 @@ generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely admit a tractable density or likelihood
 function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
-inference algorithm for fitting a non-differentiable generative model to
-continuous or discrete  data. \kcnote{empirical variational bayes}. We adapt the training procedure of generative
+inference algorithm for fitting a non-differentiable generative model or to perform empirical Bayes through variational inference. 
+We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
 domain-specific simulator. We solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the two adversarial objectives.
@@ -230,7 +230,8 @@ where $\rho$ is some distance or divergence.
 %~\citep{bernton2017inference}.
 %For many choices of divergence $\rho$, this is asymptotically equivalent to a maximum likelihood estimate if $ \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta^*)) \to 0$.
 
-%By plugging Wp in place of D in Eqs. (1) and (2), we obtain the minimum Wasserstein estimator (MWE) and minimum expected Wasserstein estimator (MEWE) of order p, denoted ??n and ??n,m respectively. Some properties of the MWE have been studied in Bassetti et al. (2006), for well-specified models and i.i.d. data; we propose new results in Section 4. Intuitively, under some conditions we can expect ??n to converge to ??, in the sense that Wp(??n,??) ? 0. Consequently, the minimum of ?  ? Wp(??n,??) might converge to the minimum of ?  ? Wp(??,??), denoted by ??, assuming its existence and unicity. In the well-specified case, ?? coincides with the data-generating parameter. In the misspecified case, ?? is typically different from the limit of the maximum likelihood estimator (MLE), which is the minimizer of KL(??|??).
+
+%By plugging Wp in place of D in Eqs. (1) and (2), we obtain the minimum Wasserstein estimator (MWE) and minimum expected Wasserstein estimator (MEWE) of order p, denoted ??n and ??n,m respectively. Some properties of the MWE have been studied in Bassetti et al. (2006), for well-specified models and i.i.d. data; we propose new results in Section 4. Intuitively, under some conditions we can expect ??n to converge to ??, in the sense that Wp(??n,??) ? 0. Consequently, the minimum of ?  ? Wp(??n,??) might converge to the minimum of ?  ? Wp(??,??), denoted by ??, assuming its existence and unicity. In the well-specified case, ?? coincides with the data-generating parameter. In the misspecified case, ?? is typically different from the limit of the maximum likelihood estimator (MLE), which is the minimizer of KL(??|??).
 
 % ==============================================================================
 
@@ -449,8 +450,7 @@ in many problems. Variance reduction techniques such as Rao-Blackwellization,
 Control Variates, and quasi-Monte Carlo can be applied here as they are in black
 box variational inference~\citep{ranganath2014black}.
 
-\subsection{Adversarial variational inference\\
-            through model criticism}
+\subsection{Empirical Bayes through Adversarial Variational Inference}
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
@@ -476,7 +476,7 @@ directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
-model criticism~\citep{box1980sampling}, which we denote AVI-MC. While the
+model criticism~\citep{box1980sampling}, which we denote AVO-EB. While the
 likelihood is intractable, it is fixed, thus one can view the optimization of
 $\bfpsi$ through the lens of empirical Bayes, though the prior family
 $p(\bftheta | \bfpsi)$ is not explicitly specified.
@@ -493,7 +493,7 @@ $p(\bftheta | \bfpsi)$ is not explicitly specified.
 %around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
-\kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVI-MC?}
+\kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVO-EB?}
 
 
 \subsection{Point estimates}
@@ -514,6 +514,7 @@ proposal distribution $q(\bftheta | \bfpsi)$. That is,
 \end{equation}
 where $\gamma \in \mathbb{R}^+$ is a hyper-parameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
+We refer to the algorithm with $\gamma>0$ as AVO-MWE.
 For small values of $\gamma$,
 proposal distributions with large entropy are not penalized, which results
 in learning a smeared variation of the original simulator corresponding to the posterior predictive model. On the other hand,
@@ -829,7 +830,8 @@ the ABC likelihood for high-dimensional data and small $\epsilon$.
 
 %\kcnote{do we keep JC-Adv  notes? Should say something about Hamiltonian ABC}
 %In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. Furthermore, the  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''.
-%``Unfortunately, none of the algorithms presented here allow for fully variational learning%of model parameters $\bftheta$ when $p_\bftheta(\bfx|\bfz)$ is implicit.''
+%``Unfortunately, none of the algorithms presented here allow for fully variational learning
+%of model parameters $\bftheta$ when $p_\bftheta(\bfx|\bfz)$ is implicit.''
 %%JC-Adv doesn't let you optimize theta, theta is fixed and you get variational inference on z. Need a recognition model for latents
 
 In \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which
