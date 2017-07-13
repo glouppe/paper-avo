@@ -495,7 +495,7 @@ $p(\bftheta | \bfpsi)$ is not explicitly specified.
 %around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
-\kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVO-EB?}
+\kcnote{Clarify hierarchical models and iid data x. Factor of $N/M$ for AVO-EB?}
 
 
 \subsection{Point estimates}
@@ -921,16 +921,15 @@ which reinforces the link to density ratio estimation and inference with implici
 
 \section{Summary}
 
-In this note, we develop a likelihood-free inference algorithm for fitting a
-forward non-differentiable simulator to continuous or discrete observed data.
-The algorithm combines adversarial training  with variational optimization to
+In this note, we develop likelihood-free inference algorithms for non-differentiable, implicit generative models.
+The algorithms combine adversarial training  with variational optimization to
 minimize variational upper bounds  on the otherwise non-differentiable
 adversarial objectives.
-Effectively, the procedure results in learning an arbitrarily tight proposal
-distribution over the simulator parameters, such that corresponding the marginal
-distribution of the generated data matches the observations. Preliminary results
-with non-differentiable discrete or continuous simulators validate the proposed method.
+The AVO-EB algorithm enables empirical Bayesian through variational inference in the likelihood free setting.
+This approach does not incur the inefficiencies of an ABC-like rejection sampler. The AVO-MWE algorithm
+provides point estimates for the generative model, which asymptotically correspond to the data generating parameter when the model is well-specified. Both algorithms work on continuous or discrete observed data.
 
+Preliminary results on toy problems with discrete and continuous data validate the proposed method.
 While the obtained results are encouraging, the complete validation of the
 method remains to be carried out in real conditions on a full fledged scientific
 simulator -- which we plan to achieve for a next version of this work.
@@ -939,11 +938,14 @@ First, we need to better study the interplay between the entropy penalty and the
 Second, we should better understand the dynamics of the optimization
 procedure, in particular when combined with momentum-based optimizers like Adam.
 Third, we need to consider whether less noisy estimates of the gradients
-$\nabla_\bfpsi U_g$ can be computed, in particular by exploiting the fact in the composition $d(g(\bfz;\bftheta); \bfpsi)$
-the derivatives of $d$ are known exactly.
+$\nabla_\bfpsi U_g$ can be computed.
+%, in particular by exploiting the fact in the composition $d(g(\bfz;\bftheta); \bfpsi)$
+%the derivatives of $d$ are known exactly.
 
+%We note that the technique can be used either to fit a generative model to an observed data distribution 
+%or to fit a fast simulator to a slower, higher-fidelity simulator.
 
-\kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
+%\kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
 
 %\kcnote{proposal distribution $\to$ variational distribution}
 
