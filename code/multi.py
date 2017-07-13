@@ -20,6 +20,7 @@ from proposals import grad_gaussian_logpdf
 from proposals import grad_gaussian_entropy
 
 from sklearn.utils import check_random_state
+from scipy.spatial.distance import mahalanobis
 
 # Global params
 
@@ -184,16 +185,22 @@ for i in range(n_epochs):
             x = np.arange(0.0, 2.0, delta)
             y = np.arange(-2.0, 0.0, delta)
             X, Y = np.meshgrid(x, y)
-            Z = [gaussian_logpdf(params_proposal, theta)
-                 for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
-            Z = np.exp(np.array(Z).reshape(X.shape))
 
-            CS = plt.contour(X, Y, Z, label=r"$q(\theta|\psi)$")
-            plt.clabel(CS)
+            mu = params_proposal["mu"]
+            sigma = np.diag(np.exp(params_proposal["log_sigma"])) ** 2.0
+            sigma_inv = np.linalg.inv(sigma)
+
+            Z = [mahalanobis(theta, mu, sigma_inv)
+                 for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
+            Z = np.array(Z).reshape(X.shape)
+
+            CS = plt.contour(X, Y, Z, [1.0, 2.0, 3.0], colors="C1")
+            fmt = {l:s for l, s in zip(CS.levels, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])}
+            plt.clabel(CS, fmt=fmt)
+
+            plt.scatter(mu[0], mu[1], c="C1", marker="+")
             plt.scatter(true_theta[0], true_theta[1],
-                        c="C0",
-                        label=r"$\theta^* = (%d, %d)$" % (true_theta[0],
-                                                          true_theta[1]))
+                        c="C0")
             plt.xlabel(r"$\alpha$")
             plt.ylabel(r"$\beta$")
             plt.yticks([-1.5, -1.0, -0.5])
@@ -206,12 +213,20 @@ for i in range(n_epochs):
             x = np.arange(0.0, 2.0, delta)
             y = np.arange(-2.0, 0.0, delta)
             X, Y = np.meshgrid(x, y)
-            Z = [gaussian_logpdf(params_proposal, theta)
-                 for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
-            Z = np.exp(np.array(Z).reshape(X.shape))
 
-            CS = plt.contour(X, Y, Z, label=r"$q(\theta|\psi)$")
-            plt.clabel(CS)
+            mu = params_proposal["mu"]
+            sigma = np.diag(np.exp(params_proposal["log_sigma"])) ** 2.0
+            sigma_inv = np.linalg.inv(sigma)
+
+            Z = [mahalanobis(theta, mu, sigma_inv)
+                 for theta in np.hstack([X.reshape(-1, 1), Y.reshape(-1, 1)])]
+            Z = np.array(Z).reshape(X.shape)
+
+            CS = plt.contour(X, Y, Z, [1.0, 2.0, 3.0], colors="C1")
+            fmt = {l:s for l, s in zip(CS.levels, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])}
+            plt.clabel(CS, fmt=fmt)
+
+            plt.scatter(mu[0], mu[1], c="C1", marker="+")
             plt.scatter(true_theta[0], true_theta[1],
                         c="C0",
                         label=r"$\theta^* = (%d, %d)$" % (true_theta[0],
@@ -219,12 +234,12 @@ for i in range(n_epochs):
             plt.legend(loc="upper right")
             plt.xlabel(r"$\alpha$")
             plt.ylabel(r"$\beta$")
-            plt.yticks([-2.0, -1.5, -1.0, -0.5, 0.0])
-            plt.xticks([0, 0.5, 1.0, 1.5, 2.0])
+            plt.yticks([-1.5, -1.0, -0.5])
+            plt.xticks([0.5, 1.0, 1.5])
 
             plt.tight_layout()
 
             if i == n_epochs - 1:
-                plt.savefig("figs/multi.pdf")
+                plt.savefig("figs/multi-%d.pdf" % seed)
 
             plt.close()

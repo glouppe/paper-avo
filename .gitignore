@@ -10,3 +10,8 @@ tex/paper.aux
 tex/paper.blg
 
 tex/paper.synctex.gz
+
+tex/paperNotes.bib
+
+tex/*bbl
+tex/*out
