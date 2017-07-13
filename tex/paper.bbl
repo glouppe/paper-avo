@@ -143,6 +143,23 @@ F.~{Husz{\'a}r}.
 \newblock {Variational Inference using Implicit Distributions}.
 \newblock {\em ArXiv e-prints}, February 2017, 1702.08235.
 
+\bibitem{rosca2017variational}
+Mihaela Rosca, Balaji Lakshminarayanan, David Warde-Farley, and Shakir Mohamed.
+\newblock Variational approaches for auto-encoding generative adversarial
+  networks.
+\newblock {\em arXiv preprint arXiv:1706.04987}, 2017.
+
+\bibitem{bernton2017inference}
+Espen Bernton, Pierre~E Jacob, Mathieu Gerber, and Christian~P Robert.
+\newblock Inference in generative models using the wasserstein distance.
+\newblock {\em arXiv preprint arXiv:1701.05146}, 2017.
+
+\bibitem{montavon2016wasserstein}
+Gr{\'e}goire Montavon, Klaus-Robert M{\"u}ller, and Marco Cuturi.
+\newblock Wasserstein training of restricted boltzmann machines.
+\newblock In {\em Advances in Neural Information Processing Systems}, pages
+  3718--3726, 2016.
+
 \bibitem{gutmann2012noise}
 Michael~U Gutmann and Aapo Hyv{\"a}rinen.
 \newblock Noise-contrastive estimation of unnormalized statistical models, with
@@ -165,11 +182,6 @@ R.~{Dutta}, J.~{Corander}, S.~{Kaski}, and M.~U. {Gutmann}.
 Michael~U Gutmann, Ritabrata Dutta, Samuel Kaski, and Jukka Corander.
 \newblock Likelihood-free inference via classification.
 \newblock {\em Statistics and Computing}, pages 1--15, 2017.
-
-\bibitem{bernton2017inference}
-Espen Bernton, Pierre~E Jacob, Mathieu Gerber, and Christian~P Robert.
-\newblock Inference in generative models using the wasserstein distance.
-\newblock {\em arXiv preprint arXiv:1701.05146}, 2017.
 
 \bibitem{tran2017variational}
 Minh-Ngoc Tran, David~J Nott, and Robert Kohn.
