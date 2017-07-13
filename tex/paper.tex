@@ -256,12 +256,13 @@ As thoroughly explored in \citep{2017arXiv170104862A}, GANs remain remarkably
 difficult to train because of vanishing gradients as $d$ saturates, or because of
 unreliable updates when the training procedure is relaxed. As a remedy,
 Wasserstein GANs~\citep{2017arXiv170107875A} reformulate the adversarial
-setup in order to minimize the Wasserstein-1 distance $W(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta))$ by
-replacing the adversarial classifier with a 1-Lipschitz adversarial critic
-$d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$.
+setup in order to minimize the Wasserstein-1 distance $W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  )$
+by replacing the adversarial classifier with a 1-Lipschitz adversarial critic
+$d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$, and where
 \begin{align}
-W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) =& \sup_{\bfphi} \mathbb{E}_{p(\tilde{\mathbf{x}}|\bftheta)} [d(\tilde{\mathbf{x}})] - \mathbb{E}_{p_r(\mathbf{x})} [d(\mathbf{x})] \\
-\equiv& \sup_{\bfphi} \mathcal{L}_W
+& W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) \nonumber \\
+&= \sup_{\bfphi}  \mathbb{E}_{\tilde{\mathbf{x}}\sim p(\mathbf{x}|\bftheta)} [d(\tilde{\mathbf{x}}; \bfphi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x}; \bfphi)] \nonumber \\
+&\equiv \sup_{\bfphi} \mathcal{L}_W.
 \end{align}
 Under the WGAN-GP formulation of \cite{2017arXiv170400028G}
 for stabilizing the optimization procedure,
@@ -448,7 +449,8 @@ in many problems. Variance reduction techniques such as Rao-Blackwellization,
 Control Variates, and quasi-Monte Carlo can be applied here as they are in black
 box variational inference~\citep{ranganath2014black}.
 
-\subsection{Adversarial variational inference through model criticism}
+\subsection{Adversarial variational inference\\
+            through model criticism}
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
@@ -633,6 +635,16 @@ MLE setting would otherwise be difficult to construct.
 
 \subsection{Electron--positron annihilation}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
+    \caption{Electron--positron annihilation.
+    ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization. The density of the penalized distribution ($\gamma=5$) is here highly concentrated, resulting in the green mass near $\bftheta^*$.
+    ({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their respective proposal distributions, both models closely match the observed data.
+    ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+             }\label{fig:weinberg}
+\end{figure}
+
 As a more realistic example, we now consider a (simplified) simulator from
 particle physics for electron--positron collisions resulting in muon--antimuon
 pairs ($e^+e^- \rightarrow \mu^+\mu^-$). The simulator approximates the
@@ -696,16 +708,6 @@ cannot distinguish from the true distribution.
 %and the parameters $\bftheta$, this example demonstrates the efficacy
 %of AVO for parameter inference on a black box
 %simulator.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
-    \caption{Electron--positron annihilation.
-    ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization. The density of the penalized distribution ($\gamma=5$) is here highly concentrated, resulting in the green mass near $\bftheta^*$.
-    ({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their respective proposal distributions, both models closely match the observed data.
-    ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
-             }\label{fig:weinberg}
-\end{figure}
 
 
 % ==============================================================================
