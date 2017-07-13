@@ -26,6 +26,7 @@
 \newcommand{\bftheta}{{\bm \theta}}
 \newcommand{\bfpsi}{{\bm \psi}}
 \newcommand{\bfphi}{{\bm \phi}}
+\newcommand{\bflambda}{{\bm \lambda}}
 \newcommand{\bfx}{\mathbf{x}}
 \newcommand{\bfz}{\mathbf{z}}
 
@@ -674,7 +675,8 @@ the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
 non-differentiable simulators using variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization}.
 
-Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially}, Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial}, Adversarial Variational Bayes (AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H})  are a recent extension to GANs that add an inference network to the generative model.  Each of these assume a tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density $q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a recognition model $q(\bfz | \bftheta, \bfx)$ as the latent space $\mathcal{Z}$ of many real-world simulators is complicated and not amenable to neural a recognition model. One similarity of our work to AVB is that the ELBO is rewritten such that the intractable term $\log p(\bfz) ? \log q_\bfphi(\bfz | \bfx)$ is replaced with an optimized neural network $T(x,z)$, which structurally similar to the role of the critic $d$ in the Kantorovich-Rubinstein dual description of the WGAN.
+Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially}, Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial}, Adversarial Variational Bayes (AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H})  are a recent extension to GANs that add an inference network to the generative model.  Each of these assume a tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density $q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a recognition model $q(\bfz | \bftheta, \bfx)$ as the latent space $\mathcal{Z}$ of many real-world simulators is complicated and not amenable to neural a recognition model. 
+%One similarity of our work to AVB is that the ELBO is rewritten such that the intractable term $\log p(\bfz) - \log q_\bfphi(\bfz | \bfx)$ is replaced with an optimized neural network $T(x,z)$, which structurally similar to the role of the critic $d$ in the Kantorovich-Rubinstein dual description of the WGAN.
 
 \kcnote{does \citep{rosca2017variational} go in the above paragraph?}
 
@@ -683,6 +685,7 @@ From the point of view of likelihood-free inference, where  non-differentiable s
 %Fourthly, the AVL algorithm is not a Bayesian inference algorithm, but instead provides point estimates $\bftheta^*$.
 
 Perhaps the closest to our work is~\cite{bernton2017inference}, which uses Wasserstein distance both to find point estimates $\bftheta^*$ and as a part of a rejection sampler in an ABC-like setup (as opposed to variational inference).  They emphasize that this approach allows one to eliminate the summary statistics typically used in ABC and calculate the Wasserstein distance explicitly without use Kantorovich-Rubinstein duality and the critic $d$. For high-dimensional data, they note that this is computationally expensive and introduce an approximation based on projection of the data onto Hilbert space-filling curves. Their Remark 5.1 points out that~\citep{montavon2016wasserstein} proposed an approximation of the gradient of an entropy-regularized Wasserstein distance, which uses a similar duality. They note that ``Unfortunately, it is not applicable in the setting of purely generative models, as it involves point-wise evaluations of the derivative of the log-likelihood.'' \kcnote{Can we evaluate their Eq. 6 with our Eq. 9} Thus, our contribution is to provide gradients of an approximate MEWE by taking expectations with the variational program $q(\bfx | \bf\theta)$. This paired with the critic Kantorovich-Rubinstein dual formulation of the Wasserstein distance using the critic $d$ allows us to work in high dimensions without summary statistics and optimize $\bfpsi$ with stochastic gradient descent.
+\kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
 
 
 %\kcnote{Could we actually replace the optimization of the critic with a direct Wasserstein distance calculation in fewer dimensions. If the data is drawn from the variational program, it would still be differentiable with respect to $\bfpsi$. No, because it still requires $\nabla_\psi \log p(\bfx | \bfpsi)$}
@@ -722,52 +725,83 @@ comparable to the latter. Relevant work in this direction includes \citep{gutman
 
 
 This work has many connections to work on variational inference, in which the goal is to optimize the recognition model $q(\bfz, \bftheta|\bfpsi)$ so that it is close to the true posterior $p(\bfz, \bftheta |x)$. There have been efforts to extend variational inference to intractable likelihoods; however, they require restrictive assumptions. 
-In \citep{tran2017variational}, the authors consider Variational Bayes with an Intractable Likelihood (VBIL). In that approach "the only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of simulators, they propose to use the ABC-likelihood with an $\epsilon$ kernel. \kcnote{Is this an unbiased estimator if $\epsilon > 0$?} This approach 
-This approach 
-n the case of many simulators it is not clear how one would obtain the unbiased estimator $\hat{p}(\bfx|\bftheta)$.
-\kcnote{They suggest to use ABC likelihood... is this only unbiased as $\epsilon \to 0$?} Thus this method inherits the drawbacks of the ABC-likelihood including the choice of summary statistics and the inefficiency in evaluating the ABC likelihood for high-dimensional data and small $\epsilon$.
+In \citep{tran2017variational}, the authors consider Variational Bayes with an Intractable Likelihood (VBIL). In that approach "the only requirement is that the intractable likelihood can be estimated unbiasedly.'' In the case of simulators, they propose to use the ABC-likelihood with an $\epsilon$ kernel. The ABC likelihood is only unbiased as $\epsilon > 0$,  
+thus this method inherits the drawbacks of the ABC-likelihood including the choice of summary statistics and the inefficiency in evaluating the ABC likelihood for high-dimensional data and small $\epsilon$.
 
-\kcnote{do we keep JC-Adv  notes? Should say something about Hamiltonian ABC}
-In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. Furthermore, the  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''. Lastly, in \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which applies in the likelihood-free setting, and they estimate gradients  \kcnote{todo}
+%\kcnote{do we keep JC-Adv  notes? Should say something about Hamiltonian ABC}
+%In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. Furthermore, the  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''. 
+%``Unfortunately, none of the algorithms presented here allow for fully variational learning%of model parameters $\bftheta$ when $p_\bftheta(\bfx|\bfz)$ is implicit.''
+%%JC-Adv doesn't let you optimize theta, theta is fixed and you get variational inference on z. Need a recognition model for latents
+
+In \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which applies in the likelihood-free setting, and they estimate gradients ... \kcnote{todo}
 
 %\kcnote{F.H. Implicit model is differentiable. Is what we are doing JC-Adv with our variational program}
 
-\subsection{Operator Variational Optimization}
+%\subsection{Operator Variational Optimization}
 
-\kcnote{to do}
+%Lastly, we make a connection to Operator Variational Inference (OPVI)~\citep{2016arXiv161009033R}, 
+%which is a generalization of variational inference formulated as the following optimization problem
+%\begin{eqnarray}
+%\bflambda^* = \inf_\bfpsi \sup_\bflambda \mathbb{E}_{ \bfz \sim q( \bfz | \bflambda)} [ (O^{p,q} f_\bfphi) ] \, .
+%\end{eqnarray}
+%In traditional VI with the KL distance, this corresponds to $(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}$.
+%AVO can be cast into a similar form with expectations over $\bfx$ instead of $\bfz$ and
+%\begin{eqnarray} \label{eq:opvi_avo}
+%\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi\mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx)] \\
+%\label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \;.
+%\end{eqnarray}
+%Rewriting Eq.~\ref{eq:opvi_avo} as Eq.~\ref{eq:opvi_avo2} is possible through importance sampling
+%and reinforces the link to density ratio estimation as this corresponds to the operator
+%\begin{equation}
+%(O^{p,q} d) = \left( \frac{p_r(\bfx)}{q(\bfx|\bfpsi)}  -1 \right) d(\bfx) \, .
+%\end{equation}
 
-Original OPVI  \citep{2016arXiv161009033R}
-
+Lastly, we make a connection to Operator Variational Inference (OPVI)~\citep{2016arXiv161009033R}, 
+which is a generalization of variational inference formulated as the following optimization problem
 \begin{eqnarray}
-\lambda^* = \inf_\lambda \sup_\bfphi \mathbb{E}_{ z \sim q( z | \lambda)} [ (O^{p,q} f_\lambda) ] 
+\bflambda^* = \inf_\bflambda \sup_\bfphi \mathbb{E}_{ \bfz \sim q( \bfz | \bflambda)} [ (O^{p,q} f_\bfphi) ] \, .
 \end{eqnarray}
-and variational inference with the KL distance corresponds to $(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}$.
-
-%\begin{equation}
-%(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}
-%\end{equation}
-
-
-%This is natural here, but not quite OPVI formalism:
-%\begin{equation}
-%\bfpsi^* = \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bftheta \sim q(\bftheta | \bfpsi)} [ (O^{p,q} f_\bfphi) ]
-%\end{equation}
-%
-%\begin{equation}
-%(O^{p,q} f) = W(p,q) = \sup_f \mathbb{E}_{x\sim p}[f(x)] - \mathbb{E}_{x \sim q}[f(x)]
-%\end{equation}
-%The expectation should be $x \sim p(x|\bfpsi)$ and here $(O^{p,q} f)$ is a scalar and not a function of $x$
-
-To get into OPVI formalism
-
-\begin{eqnarray}
-\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi\mathbb{E}_{x\sim p_r(x)}[f(x)] - \mathbb{E}_{x \sim p(x|\bfpsi)}[f(x)] \\
-&=&  \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ x \sim p( x | \bfpsi)} [ (O^{p_r,p_\bfpsi} f_\bfphi) ] 
+In traditional VI with the KL distance, this corresponds to $(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}$.
+AVO can be cast into a similar form with expectations over $\bfx$ instead of $\bfz$ and
+\begin{eqnarray} \label{eq:opvi_avo}
+\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \\\
+\label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi\mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx)] \, .
 \end{eqnarray}
-with
+Rewriting Eq.~\ref{eq:opvi_avo} as Eq.~\ref{eq:opvi_avo2} is possible through importance sampling, 
+corresponding to an implicit form of the operator
 \begin{equation}
-(O^{p,q} f) = \left( \frac{p_r(x)}{p(x|\bfpsi)}  -1 \right) f(x)
+(O^{p,q} d) = \left( \frac{p_r(\bfx)}{q(\bfx|\bfpsi)}  -1 \right) d(\bfx) \, ,
 \end{equation}
+which reinforces the link to density ratio estimation and inference with implicit models.
+
+
+
+%
+%%\begin{equation}
+%%(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}
+%%\end{equation}
+%
+%
+%%This is natural here, but not quite OPVI formalism:
+%%\begin{equation}
+%%\bfpsi^* = \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bftheta \sim q(\bftheta | \bfpsi)} [ (O^{p,q} f_\bfphi) ]
+%%\end{equation}
+%%
+%%\begin{equation}
+%%(O^{p,q} f) = W(p,q) = \sup_f \mathbb{E}_{x\sim p}[f(x)] - \mathbb{E}_{x \sim q}[f(x)]
+%%\end{equation}
+%%The expectation should be $x \sim p(x|\bfpsi)$ and here $(O^{p,q} f)$ is a scalar and not a function of $x$
+%
+%To get into OPVI formalism
+%
+%\begin{eqnarray}
+%\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi\mathbb{E}_{x\sim p_r(x)}[f(x)] - \mathbb{E}_{x \sim p(x|\bfpsi)}[f(x)] \\
+%&=&  \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ x \sim p( x | \bfpsi)} [ (O^{p_r,p_\bfpsi} f_\bfphi) ] 
+%\end{eqnarray}
+%with
+%\begin{equation}
+%(O^{p,q} f) = \left( \frac{p_r(x)}{p(x|\bfpsi)}  -1 \right) f(x)
+%\end{equation}
 
 %We can think of $p(\bfx|\bfpsi)$ as a \textit{variational program} as described in ~\citep{2016arXiv161009033R}, though more complicated than the a simple reparametrization of normally distributed noise $\epsilon$ through a differentiable function $R(\epsilon, \bfpsi)$. In our case, the variational program is a marginalized non-differentiable simulator simulator.  Nevertheless, it can generate samples for $x$, is differentiable with respect to $\bfphi$, and its density is be intractable.
 
