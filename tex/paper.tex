@@ -729,7 +729,7 @@ Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially},
 Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial},
 $\alpha$-GAN~\citep{rosca2017variational}, Adversarial Variational Bayes
 (AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv}
-algorithm of  \citep{2017arXiv170208235H})  are a recent extension to GANs that
+algorithm of  \citep{2017arXiv170208235H}  are a recent extension to GANs that
 add an inference network to the generative model.  Each of these assume a
 tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to
 $\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting
@@ -760,8 +760,8 @@ Perhaps the closest to our work is~\cite{bernton2017inference}, which uses
 Wasserstein distance both to find point estimates $\bftheta^*$ and as a part of
 a rejection sampler in an ABC-like setup (as opposed to variational inference).
 They emphasize that this approach allows one to eliminate the summary statistics
-typically used in ABC and calculate the Wasserstein distance explicitly without
-use Kantorovich-Rubinstein duality and the critic $d$. For high-dimensional
+typically used in ABC and calculate the Wasserstein distance explicitly, without
+making use of the Kantorovich-Rubinstein duality and of a critic $d$. For high-dimensional
 data, they note that this is computationally expensive and introduce an
 approximation based on projection of the data onto Hilbert space-filling curves.
 Their Remark 5.1 points out that~\citep{montavon2016wasserstein} proposed an
@@ -770,9 +770,9 @@ which uses a similar duality. They note that ``Unfortunately, it is not
 applicable in the setting of purely generative models, as it involves point-wise
 evaluations of the derivative of the log-likelihood.'' Thus, our contribution is
 to provide gradients of an approximate MEWE by taking expectations with the
-variational program $q(\bfx | \bf\theta)$. This paired with the critic
-Kantorovich-Rubinstein dual formulation of the Wasserstein distance using the
-critic $d$ allows us to work in high dimensions without summary statistics and
+variational program $q(\bfx | \bfpsi)$. This paired with the critic
+Kantorovich-Rubinstein dual formulation of the Wasserstein distance
+allows us to work in high dimensions without summary statistics and
 optimize $\bfpsi$ with stochastic gradient descent.
 \kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
 
@@ -814,13 +814,13 @@ comparable to the latter. Relevant work in this direction includes
 %This is slightly different from variational optimization (or variational learning), where the goal is to find $\bftheta^*$ such that $p(\bfx|\bftheta^*) \approx p_r(\bfx)$.  Typically in variational inference the model $p(\bfx|\bftheta)$ admits a density, so that the likelihood is known. Thus, assuming the prior also admits a density, it is tractable to evaluate the posterior is (up to a constant factor). In Adversarial Variational Bayes \citep{DBLP:journals/corr/MeschederNG17} and, equivalently, the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H}), the authors use an adversarial setup, but assume a known density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$.
 
 
-This work has many connections to work on variational inference, in which the
+This work has also many connections to work on variational inference, in which the
 goal is to optimize the recognition model $q(\bfz, \bftheta|\bfpsi)$ so that it
-is close to the true posterior $p(\bfz, \bftheta |x)$. There have been efforts
+is close to the true posterior $p(\bfz, \bftheta |\mathbf{x})$. There have been efforts
 to extend variational inference to intractable likelihoods; however, they
 require restrictive assumptions.  In \citep{tran2017variational}, the authors
 consider Variational Bayes with an Intractable Likelihood (VBIL). In that
-approach "the only requirement is that the intractable likelihood can be
+approach ``the only requirement is that the intractable likelihood can be
 estimated unbiasedly.'' In the case of simulators, they propose to use the
 ABC-likelihood with an $\epsilon$ kernel. The ABC likelihood is only unbiased as
 $\epsilon > 0$,   thus this method inherits the drawbacks of the ABC-likelihood
@@ -864,7 +864,7 @@ which is a generalization of variational inference formulated as the following o
 \begin{eqnarray}
 \bflambda^* = \inf_\bflambda \sup_\bfphi \mathbb{E}_{ \bfz \sim q( \bfz | \bflambda)} [ (O^{p,q} f_\bfphi) ] \, .
 \end{eqnarray}
-In traditional VI with the KL distance, this corresponds to $(O^{p,q} f) = \log q(z) - \log p(z|x) \, \forall f \in \mathcal{F}$.
+In traditional VI with the KL distance, this corresponds to $(O^{p,q} f) = \log q(\bfz) - \log p(\bfz|\bfx) \, \forall f \in \mathcal{F}$.
 AVO can be cast into a similar form with expectations over $\bfx$ instead of $\bfz$ and
 \begin{eqnarray} \label{eq:opvi_avo}
 \bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \\\
@@ -956,5 +956,6 @@ supported through PHY-1505463 and PHY-1205376.
 %\bibliographystyle{hacm}
 \bibliographystyle{hunsrt}
 \bibliography{bibliography.bib}
+
 
 \end{document}
