@@ -53,7 +53,7 @@ experimental observations. Inference in this setup is often
 difficult, as simulators rarely admit a tractable density or likelihood
 function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
 inference algorithm for fitting a non-differentiable generative model to
-continuous or discrete  data. \kcnote{emperical variational bayes}. We adapt the training procedure of generative
+continuous or discrete  data. \kcnote{empirical variational bayes}. We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
 domain-specific simulator. We solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the two adversarial objectives.
@@ -77,7 +77,7 @@ In many fields of science such as particle physics, epidemiology,  and populatio
 genetics, computer simulators are used to describe complex data generation processes. These simulators relate
 observations $\bfx$ to the parameters $\bftheta$ of an underlying theory or mechanistic model.
 In most cases, these simulators are specified as procedural implementations of forward, stochastic processes involving latent variables $\bfz$.
-% and may generate either discrete or continuous data. 
+% and may generate either discrete or continuous data.
 Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx |
 \bftheta)$. The prevalence and significance of this problem has motivated an
 active research effort in so-called \textit{likelihood-free inference}
@@ -96,7 +96,7 @@ precludes approaches such as Ref.~\citep{2016arXiv160507826G}.
 %Often the simulation code involves control-flow that leads to models such that even $p(\bfx | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
 
 In parallel, with the introduction of variational
-autoencoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial
+auto-encoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial
 networks~\cite{goodfellow2014generative}, there has been a vibrant research
 program around implicit generative models based on neural
 networks~\citep{2016arXiv161003483M}.  While these implicit generative networks
@@ -170,7 +170,7 @@ marginal distribution of the generated data matches the observations.
 \section{Problem statement}
 \label{sec:problem}
 
-We consider a family of parameterized densities $p(\mathbf{x}|\bftheta)$
+We consider a family of parametrized densities $p(\mathbf{x}|\bftheta)$
 defined implicitly through the simulation of a stochastic generative process,
 where $\mathbf{x} \in \mathbb{R}^d$ is the data and $\bftheta$ are the
 parameters of interest. The simulation may involve some complicated latent
@@ -186,10 +186,10 @@ where $\bfz \in {\cal Z}$ is a latent variable providing an external
 source of randomness.
 Unlike implicit generative models defined by neural networks, we do not assume
 $\bfz$ to be a fixed-size vector with a simple density. Instead, the
-dimensionality of $\bfz$ and the nature of its components (uniform, normal,
+dimension of $\bfz$ and the nature of its components (uniform, normal,
 discrete, continuous, etc.) are inherited from the control flow of the
 simulation code and may depend on $\bftheta$ in some intricate way. Moreover,
-the dimensionality of $\bfz$ may be much larger than the dimensionality of
+the dimension of $\bfz$ may be much larger than the dimension of
 $\bfx$. Thus we do not attempt to learn a recognition model $q(\bfz | \bfx)$.
 
 %Unlike implicit generative models defined by neural networks, we do not assume $\bfz$ to
@@ -452,7 +452,7 @@ box variational inference~\citep{ranganath2014black}.
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
-the marginal distribution parameterized by $\bfpsi$
+the marginal distribution parametrized by $\bfpsi$
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
@@ -476,7 +476,7 @@ the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
 model criticism~\citep{box1980sampling}, which we denote AVI-MC. While the
 likelihood is intractable, it is fixed, thus one can view the optimization of
-$\bfpsi$ through the lens of emperical Bayes, though the prior family
+$\bfpsi$ through the lens of empirical Bayes, though the prior family
 $p(\bftheta | \bfpsi)$ is not explicitly specified.
 
 %\kcnote{where is the prior? comment}
@@ -498,7 +498,7 @@ $p(\bftheta | \bfpsi)$ is not explicitly specified.
 
 %\kcnote{connect to MWE and MEWE here?}
 
-When $\rho$ is the Wasserstein distance, $\bftheta^*$ is refered to as the
+When $\rho$ is the Wasserstein distance, $\bftheta^*$ is referred to as the
 minimum Wasserstein estimator. When the model is well specified, $\bftheta^*$
 coincides with the true data-generating parameter; however, if the model is
 misspecified, $\bftheta^*$ is typically different from the maximum likelihood
@@ -538,7 +538,7 @@ typically increases as the entropy of the proposal decreases.
 
 As a first illustrative experiment, we evaluate inference for a discrete Poisson
 distribution with unknown mean $\lambda$. We artificially consider
-the distribution as a parameterized simulator, from which we can only
+the distribution as a parametrized simulator, from which we can only
 generate data.
 
 The observed data is sampled from a Poisson with mean $\lambda^* = 7$.
@@ -626,7 +626,7 @@ MLE setting would otherwise be difficult to construct.
     \includegraphics[width=0.48\textwidth]{figures/multi.pdf}
     \caption{Multidimensional continuous data.
              ({\it Left}) Density $q(\bftheta|\bfpsi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
-             ({\it Right}) Density $q(\bftheta|\bfpsi)$ after adversarial variational optimization ($\gamma=10$). The proposal density correctly converges towards a distributon whose density concentrates around $\bftheta^* = (1, -1)$.
+             ({\it Right}) Density $q(\bftheta|\bfpsi)$ after adversarial variational optimization ($\gamma=10$). The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta^* = (1, -1)$.
              }\label{fig:multi}
 \end{figure}
 
@@ -668,7 +668,7 @@ this process is highly non-trivial as is the space of latent variables $\mathcal
 %density  $p(\bfz|\bftheta)$ may depend on $\bftheta$ in some complicated way
 %(Section~\ref{sec:problem}).
 
-In this example, we consider observed data generated with the simplified generator of Eq.~\ref{eq:simple_weinberg}
+In this example, we consider observed data generated with the simplified generator of Eqn.~\ref{eq:simple_weinberg}
 using $\bftheta^* = (E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
 factored (mean field) Gaussian variational distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
 q(G_f|\bfpsi)$, where each component is respectively initialized with mean $45$
@@ -851,7 +851,7 @@ randomness used for the latent variable $\bfz$.
 %\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi\mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx)] \\
 %\label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \;.
 %\end{eqnarray}
-%Rewriting Eq.~\ref{eq:opvi_avo} as Eq.~\ref{eq:opvi_avo2} is possible through importance sampling
+%Rewriting Eqn.~\ref{eq:opvi_avo} as Eqn.~\ref{eq:opvi_avo2} is possible through importance sampling
 %and reinforces the link to density ratio estimation as this corresponds to the operator
 %\begin{equation}
 %(O^{p,q} d) = \left( \frac{p_r(\bfx)}{q(\bfx|\bfpsi)}  -1 \right) d(\bfx) \, .
@@ -868,7 +868,7 @@ AVO can be cast into a similar form with expectations over $\bfx$ instead of $\b
 \bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \\\
 \label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi\mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx)] \, .
 \end{eqnarray}
-Rewriting Eq.~\ref{eq:opvi_avo} as Eq.~\ref{eq:opvi_avo2} is possible through importance sampling,
+Rewriting Eqn.~\ref{eq:opvi_avo} as Eqn.~\ref{eq:opvi_avo2} is possible through importance sampling,
 corresponding to an implicit form of the operator
 \begin{equation}
 (O^{p,q} d) = \left( \frac{p_r(\bfx)}{q(\bfx|\bfpsi)}  -1 \right) d(\bfx) \, ,
