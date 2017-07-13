@@ -51,9 +51,9 @@ Complex computer simulators are increasingly used across fields of science as
 generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely admit a tractable density or likelihood
-function. In this note, we develop Adversarial Variational Optimization (AVO), a likelihood-free
+function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
 inference algorithm for fitting a non-differentiable generative model to
-continuous or discrete  data. We adapt the training procedure of generative
+continuous or discrete  data. \kcnote{emperical variational bayes}. We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
 domain-specific simulator. We solve the resulting non-differentiable
 minimax problem by minimizing variational upper bounds of the two adversarial objectives.
@@ -120,7 +120,7 @@ In parallel, with the introduction of variational autoencoders~\citep{DBLP:journ
 %algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
 %or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
-Generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In contrast, scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters that are endowed with some level of interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
+Generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In contrast, scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters and they are endowed with some level of interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$. 
 
 In this note, we develop an unsupervised learning algorithm for the point
 estimation of the parameters $\bftheta$ of a non-differentiable, implicit
@@ -168,7 +168,7 @@ process
 where $\bfz \in {\cal Z}$ is a latent variable providing an external
 source of randomness. 
 Unlike implicit generative models defined by neural networks, we do not assume $\bfz$ to
-be a fixed-size vector with a simple density. Instead, the dimensionality of $z$ and the nature of it's components (uniform, normal, discrete, continuous, etc.) are inherited from the control flow of the simulation code and may depend on $\bftheta$ in some intricate way. Moreover, the dimensionality of $\bfz$ may be much larger than the dimensionality of $\bfx$.
+be a fixed-size vector with a simple density. Instead, the dimensionality of $\bfz$ and the nature of its components (uniform, normal, discrete, continuous, etc.) are inherited from the control flow of the simulation code and may depend on $\bftheta$ in some intricate way. Moreover, the dimensionality of $\bfz$ may be much larger than the dimensionality of $\bfx$. Thus we do not attempt to learn a recognition model $q(\bfz | \bfx)$.
 
 %Unlike implicit generative models defined by neural networks, we do not assume $\bfz$ to
 %be a fixed-size vector (e.g., it can be a sequence of variable length) and its
@@ -182,7 +182,7 @@ specified through a non-differentiable deterministic function $g(\cdot; \bftheta
     \mathbf{x} \sim p(\mathbf{x}|\bftheta) \equiv \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta)
 \end{equation}
 such that the density $p(\mathbf{x}|\bftheta)$ can be 
-rewritten as
+written as
 %considered as a non-differentiable reparameterization of the random variable $\bfz$
 %\begin{equation}\label{eqn:p_x_sim}
 %    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g_i(\bfz;\bftheta) \leq x_i\}} p(\bfz|\bftheta) \mu(d\bfz),
@@ -204,8 +204,11 @@ the implicit model $p(\mathbf{x}|\bftheta)$. That is,
 \begin{equation}
     \bftheta^* = \arg \min_{\bftheta \in \bftheta} \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta)),
 \end{equation}
-where $\rho$ is some distance or divergence. For many choices of divergence $\rho$, this is asymptotically equivalent to a maximum likelihood estimate.
+where $\rho$ is some distance or divergence.
+%~\citep{bernton2017inference}. 
+%For many choices of divergence $\rho$, this is asymptotically equivalent to a maximum likelihood estimate if $ \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta^*)) \to 0$.
 
+%By plugging Wp in place of D in Eqs. (1) and (2), we obtain the minimum Wasserstein estimator (MWE) and minimum expected Wasserstein estimator (MEWE) of order p, denoted ??n and ??n,m respectively. Some properties of the MWE have been studied in Bassetti et al. (2006), for well-specified models and i.i.d. data; we propose new results in Section 4. Intuitively, under some conditions we can expect ??n to converge to ??, in the sense that Wp(??n,??) ? 0. Consequently, the minimum of ?  ? Wp(??n,??) might converge to the minimum of ?  ? Wp(??,??), denoted by ??, assuming its existence and unicity. In the well-specified case, ?? coincides with the data-generating parameter. In the misspecified case, ?? is typically different from the limit of the maximum likelihood estimator (MLE), which is the minimizer of KL(??|??).
 
 % ==============================================================================
 
@@ -450,12 +453,14 @@ divergence of the corresponding posterior predictive distribution $\qxpsi$ and t
 %around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
+\kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVI-MC?}
 
-\subsection{Adversarial variational learning}
 
-\kcnote{connect to MWE and MEWE here?}
+\subsection{Point estimates}
 
-In order to target point estimates $\bftheta^*$, we augment Eqn.~\ref{eqn:vo-ug}
+%\kcnote{connect to MWE and MEWE here?}
+
+When $\rho$ is the Wasserstein distance, $\bftheta^*$ is refered to as the minimum Wasserstein estimator. When the model is well specified, $\bftheta^*$ coincides with the true data-generating parameter; however, if the model is misspecified, $\bftheta^*$ is typically different from the maximum likelihood estimator (MLE), which is the minimizer of $KL(p_r(\bfx) | p(\bfx | \bftheta)$~\citep{bernton2017inference}. In order to more effectively target point estimates $\bftheta^*$, we augment Eqn.~\ref{eqn:vo-ug}
 with a regularization term corresponding to the differential entropy $H$ of
 the proposal distribution $q(\bftheta | \bfpsi)$. That is,
 \begin{equation}
@@ -478,7 +483,6 @@ typically increases as the entropy of the proposal decreases.
 %Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here analogous to their use in black box variational inference~\citep{ranganath2014black}.
 
 
-\kcnote{Discuss hierarchical models and iid data x. Factor of $N/M$ for AVI-MC?}
 
 
 %\newpage
@@ -675,7 +679,7 @@ the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
 non-differentiable simulators using variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization}.
 
-Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially}, Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial}, Adversarial Variational Bayes (AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H})  are a recent extension to GANs that add an inference network to the generative model.  Each of these assume a tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density $q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a recognition model $q(\bfz | \bftheta, \bfx)$ as the latent space $\mathcal{Z}$ of many real-world simulators is complicated and not amenable to neural a recognition model. 
+Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially}, Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial}, $\alpha$-GAN~\citep{rosca2017variational}, Adversarial Variational Bayes (AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv} algorithm of  \citep{2017arXiv170208235H})  are a recent extension to GANs that add an inference network to the generative model.  Each of these assume a tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to $\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density $q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a recognition model $q(\bfz | \bftheta, \bfx)$ as the latent space $\mathcal{Z}$ of many real-world simulators is complicated and not amenable to neural a recognition model. 
 %One similarity of our work to AVB is that the ELBO is rewritten such that the intractable term $\log p(\bfz) - \log q_\bfphi(\bfz | \bfx)$ is replaced with an optimized neural network $T(x,z)$, which structurally similar to the role of the critic $d$ in the Kantorovich-Rubinstein dual description of the WGAN.
 
 \kcnote{does \citep{rosca2017variational} go in the above paragraph?}
@@ -684,7 +688,7 @@ From the point of view of likelihood-free inference, where  non-differentiable s
 
 %Fourthly, the AVL algorithm is not a Bayesian inference algorithm, but instead provides point estimates $\bftheta^*$.
 
-Perhaps the closest to our work is~\cite{bernton2017inference}, which uses Wasserstein distance both to find point estimates $\bftheta^*$ and as a part of a rejection sampler in an ABC-like setup (as opposed to variational inference).  They emphasize that this approach allows one to eliminate the summary statistics typically used in ABC and calculate the Wasserstein distance explicitly without use Kantorovich-Rubinstein duality and the critic $d$. For high-dimensional data, they note that this is computationally expensive and introduce an approximation based on projection of the data onto Hilbert space-filling curves. Their Remark 5.1 points out that~\citep{montavon2016wasserstein} proposed an approximation of the gradient of an entropy-regularized Wasserstein distance, which uses a similar duality. They note that ``Unfortunately, it is not applicable in the setting of purely generative models, as it involves point-wise evaluations of the derivative of the log-likelihood.'' \kcnote{Can we evaluate their Eq. 6 with our Eq. 9} Thus, our contribution is to provide gradients of an approximate MEWE by taking expectations with the variational program $q(\bfx | \bf\theta)$. This paired with the critic Kantorovich-Rubinstein dual formulation of the Wasserstein distance using the critic $d$ allows us to work in high dimensions without summary statistics and optimize $\bfpsi$ with stochastic gradient descent.
+Perhaps the closest to our work is~\cite{bernton2017inference}, which uses Wasserstein distance both to find point estimates $\bftheta^*$ and as a part of a rejection sampler in an ABC-like setup (as opposed to variational inference).  They emphasize that this approach allows one to eliminate the summary statistics typically used in ABC and calculate the Wasserstein distance explicitly without use Kantorovich-Rubinstein duality and the critic $d$. For high-dimensional data, they note that this is computationally expensive and introduce an approximation based on projection of the data onto Hilbert space-filling curves. Their Remark 5.1 points out that~\citep{montavon2016wasserstein} proposed an approximation of the gradient of an entropy-regularized Wasserstein distance, which uses a similar duality. They note that ``Unfortunately, it is not applicable in the setting of purely generative models, as it involves point-wise evaluations of the derivative of the log-likelihood.'' Thus, our contribution is to provide gradients of an approximate MEWE by taking expectations with the variational program $q(\bfx | \bf\theta)$. This paired with the critic Kantorovich-Rubinstein dual formulation of the Wasserstein distance using the critic $d$ allows us to work in high dimensions without summary statistics and optimize $\bfpsi$ with stochastic gradient descent.
 \kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
 
 
@@ -709,7 +713,7 @@ intimately tied to a class of algorithms that can be framed as density
 estimation-by-comparison. In most cases, these inference algorithms are
 formulated as an iterative two-step process where the model distribution is
 first compared to the true data distribution and then updated to make it more
-comparable to the latter. Relevant work in this direction includes \citep{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood}.
+comparable to the latter. Relevant work in this direction includes \citep{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}.
 
 
 %%In this context, the proposed method can be considered as a direct adaptation of
@@ -733,7 +737,7 @@ thus this method inherits the drawbacks of the ABC-likelihood including the choi
 %``Unfortunately, none of the algorithms presented here allow for fully variational learning%of model parameters $\bftheta$ when $p_\bftheta(\bfx|\bfz)$ is implicit.''
 %%JC-Adv doesn't let you optimize theta, theta is fixed and you get variational inference on z. Need a recognition model for latents
 
-In \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which applies in the likelihood-free setting, and they estimate gradients ... \kcnote{todo}
+In \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which applies in the likelihood-free setting, and they estimate gradients with respect to $\bftheta$ through finite differences from multiple forward passes of the simulator with variance reduction strategies based on controlling the source of randomness used for the latent variable $\bfz$.
 
 %\kcnote{F.H. Implicit model is differentiable. Is what we are doing JC-Adv with our variational program}
 
