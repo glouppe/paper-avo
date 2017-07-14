@@ -445,19 +445,12 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 %of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
 
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
-variance of the noisy estimator of the gradients may be too large to be useful
-<<<<<<< HEAD
-in many problems. Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
+variance of the noisy estimator of the gradients may be too large to be useful in many problems. Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
 Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}. 
-Similarly, various fast 
-=======
-in many problems. Variance reduction techniques such as Rao-Blackwellization,
-Control Variates, and quasi-Monte Carlo can be applied here~\citep{ranganath2014black, tran2017variational}.
-Similarly, various fast
->>>>>>> origin/master
-algorithms for calculating the exact (entropically regularized) Wasserstein distance on
+Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
 empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}. 
 Similarly, the algorithm could be adopted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
+
 
 
 \subsection{Empirical Bayes through Adversarial Variational Inference}
@@ -492,7 +485,6 @@ directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
-<<<<<<< HEAD
 model criticism~\citep{box1980sampling}. 
 
 We can also view the optimization  through the lens of empirical Bayes (EB),
@@ -505,20 +497,14 @@ as an intermediate step to computing $\bfpsi^*$. In our case, the likelihood is 
 specified a prior family. However, the procedure corresponds to empirical Bayes if we identify 
 $q(\bftheta | \bfpsi^*) = p(\bftheta | \bfx , \bfpsi)$. Thus we call our method AVO-EB and note that it is applicable even outside of the likelihood-free context.
 
+Algorithm~\ref{alg:avo}, can be easily modified to have different mini-batch $M_r$ for the observed data and $M_g$ for the simulator. 
+When $M_g \gg M_r$, then the variance of $\bftheta^*$ goes like $M_r$~\citep{bernton2017inference}. A final $\sqrt{N/M}$ scaling to the log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of the data.
 
 %While the
 %likelihood is intractable, it is fixed, thus one can view the optimization of
 %$\bfpsi$ through the lens of empirical Bayes, though the prior family
 %$p(\bftheta | \bfpsi)$ is not explicitly specified, 
 %ie. $q(\bftheta | \bfpsi^*) = p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) / \int d\bftheta p(\bfx | \bftheta) p(\theta | \bfpsi^*)$.
-=======
-model criticism~\citep{box1980sampling}, which we denote AVO-EB. While the
-likelihood is intractable, it is fixed, thus one can view the optimization of
-$\bfpsi$ through the lens of empirical Bayes, though the prior family
-$p(\bftheta | \bfpsi)$ is not explicitly specified.
-\glnote{Need to smooth this paragraph out.}
-\kcnote{Clarify hierarchical models and iid data x. Factor of $N/M$ for AVO-EB?}
->>>>>>> origin/master
 
 %\kcnote{where is the prior? comment}
 
