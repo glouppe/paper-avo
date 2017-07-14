@@ -52,7 +52,7 @@ generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely admit a tractable density or likelihood
 function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
-inference algorithm for fitting a non-differentiable generative model or to perform empirical Bayes through variational inference. 
+inference algorithm for fitting a non-differentiable generative model or to perform empirical Bayes through variational inference.
 We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
 domain-specific simulator. We solve the resulting non-differentiable
@@ -447,8 +447,8 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
 variance of the noisy estimator of the gradients may be too large to be useful
 in many problems. Variance reduction techniques such as Rao-Blackwellization,
-Control Variates, and quasi-Monte Carlo can be applied here~\citep{ranganath2014black, tran2017variational}. 
-Similarly, various fast 
+Control Variates, and quasi-Monte Carlo can be applied here~\citep{ranganath2014black, tran2017variational}.
+Similarly, various fast
 algorithms for calculating the exact (entropically regularized) Wasserstein distance on
 empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
 
@@ -460,7 +460,13 @@ the marginal distribution parametrized by $\bfpsi$
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
-We can think of $p(\bfx|\bfpsi)$ as a \textit{variational program} as described in \citep{2016arXiv161009033R}, though more complicated than a simple reparameterization of normally distributed noise $\bfz$ through a differentiable function $g(\bfz, \bfpsi)$. In our case, the variational program is a marginalized, non-differentiable  simulator.  Its density is  intractable; nevertheless, it can generate samples for $\bfx$ and is differentiable with respect to $\bfpsi$ and $\bfphi$.
+We can think of $q(\bfx|\bfpsi)$ as a \textit{variational program} as described
+in \citep{2016arXiv161009033R}, though more complicated than a simple
+reparameterization of normally distributed noise $\bfz$ through a differentiable
+function $g(\bfz, \bfpsi)$. In our case, the variational program is a
+marginalized, non-differentiable  simulator.  Its density is  intractable;
+nevertheless, it can generate samples for $\bfx$ and is differentiable with
+respect to $\bfpsi$.
 Operationally, we sample from this marginal model via
 \begin{equation}\label{eqn:p_psi}
     \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
@@ -473,7 +479,7 @@ $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the
 posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to
 approximate the posterior, one would criticize the model through the the
 posterior predictive distribution as advocated by Box~\citep{box1980sampling}.
-Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by
+Effectively, we are optimizing variational posterior $q(\bftheta | \bfpsi)$ by
 directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
@@ -777,7 +783,7 @@ variational program $q(\bfx | \bfpsi)$. This paired with the critic
 Kantorovich-Rubinstein dual formulation of the Wasserstein distance
 allows us to work in high dimensions without summary statistics and
 optimize $\bfpsi$ with stochastic gradient descent. Additionally,
-our our AVO-EB procedure avoids the inefficiencies of 
+our our AVO-EB procedure avoids the inefficiencies of
 their Wasserstein rejection sampler incurred from using the ABC-likelihood.
 
 %\kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
@@ -942,7 +948,7 @@ $\nabla_\bfpsi U_g$ can be computed.
 %, in particular by exploiting the fact in the composition $d(g(\bfz;\bftheta); \bfpsi)$
 %the derivatives of $d$ are known exactly.
 
-%We note that the technique can be used either to fit a generative model to an observed data distribution 
+%We note that the technique can be used either to fit a generative model to an observed data distribution
 %or to fit a fast simulator to a slower, higher-fidelity simulator.
 
 %\kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
