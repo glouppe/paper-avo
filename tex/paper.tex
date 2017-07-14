@@ -449,11 +449,11 @@ variance of the noisy estimator of the gradients may be too large to be useful i
 Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}. 
 Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
 empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}. 
-Similarly, the algorithm could be adopted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
+Moreover, the algorithm could be adopted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
 
 
 
-\subsection{Empirical Bayes through Adversarial Variational Inference}
+\subsection{Empirical Bayes through  Variational Inference}
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
@@ -466,7 +466,7 @@ in \citep{2016arXiv161009033R}, though more complicated than a simple
 reparameterization of normally distributed noise $\bfz$ through a differentiable
 function. In our case, the variational program is a
 marginalized, non-differentiable  simulator.  Its density is  intractable;
-nevertheless, it can generate samples for $\bfx$ and is differentiable with
+nevertheless, it can generate samples for $\bfx$ whose expectations are differentiable with
 respect to $\bfpsi$.
 Operationally, we sample from this marginal model via
 \begin{equation}\label{eqn:p_psi}
@@ -492,13 +492,13 @@ where one specifies a family of priors and $p(\bftheta | \bfpsi)$ and then estim
 %In our case, we find the $\bfpsi^*$ that minimizes the Wasserstein distance between the data distribution and the 
 %posterior predictive distribution. 
 Traditionally, we would have access to the likelihood and optimize with respect to the family of posteriors
- $p(\bftheta | \bfx, \bfpsi) = p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) / \int p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) d\bftheta $
+ $p(\bftheta | \bfx, \bfpsi) = p(\bfx | \bftheta) p(\bftheta | \bfpsi) / \int p(\bfx | \bftheta) p(\bftheta | \bfpsi) d\bftheta $
 as an intermediate step to computing $\bfpsi^*$. In our case, the likelihood is intractable and we have not explicitly 
 specified a prior family. However, the procedure corresponds to empirical Bayes if we identify 
 $q(\bftheta | \bfpsi^*) = p(\bftheta | \bfx , \bfpsi)$. Thus we call our method AVO-EB and note that it is applicable even outside of the likelihood-free context.
 
 Algorithm~\ref{alg:avo}, can be easily modified to have different mini-batch $M_r$ for the observed data and $M_g$ for the simulator. 
-When $M_g \gg M_r$, then the variance of $\bftheta^*$ goes like $M_r$~\citep{bernton2017inference}. A final $\sqrt{N/M}$ scaling to the log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of the data.
+When $M_g \gg M_r$, then the variance of $\bftheta^*$ scales ad $\sqrt{M_r}$~\citep{bernton2017inference}. A final $\sqrt{N/M}$ scaling to the log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of the data.
 
 %While the
 %likelihood is intractable, it is fixed, thus one can view the optimization of
