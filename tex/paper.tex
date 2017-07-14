@@ -52,7 +52,7 @@ generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often
 difficult, as simulators rarely admit a tractable density or likelihood
 function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
-inference algorithm for fitting a non-differentiable generative model or to perform empirical Bayes through variational inference. 
+inference algorithm for fitting a non-differentiable generative model or to perform empirical Bayes through variational inference.
 We adapt the training procedure of generative
 adversarial networks by replacing the differentiable generative network with a
 domain-specific simulator. We solve the resulting non-differentiable
@@ -446,21 +446,35 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
 variance of the noisy estimator of the gradients may be too large to be useful
-in many problems. Variance reduction techniques such as Rao-Blackwellization,
-Control Variates, and quasi-Monte Carlo can be applied here~\citep{ranganath2014black, tran2017variational}. 
+<<<<<<< HEAD
+in many problems. Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
+Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}. 
 Similarly, various fast 
+=======
+in many problems. Variance reduction techniques such as Rao-Blackwellization,
+Control Variates, and quasi-Monte Carlo can be applied here~\citep{ranganath2014black, tran2017variational}.
+Similarly, various fast
+>>>>>>> origin/master
 algorithms for calculating the exact (entropically regularized) Wasserstein distance on
-empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
+empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}. 
+Similarly, the algorithm could be adopted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
+
 
 \subsection{Empirical Bayes through Adversarial Variational Inference}
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
-the marginal distribution parametrized by $\bfpsi$
+the parameterized marginal distribution of the generated data
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
-We can think of $p(\bfx|\bfpsi)$ as a \textit{variational program} as described in \citep{2016arXiv161009033R}, though more complicated than a simple reparameterization of normally distributed noise $\bfz$ through a differentiable function $g(\bfz, \bfpsi)$. In our case, the variational program is a marginalized, non-differentiable  simulator.  Its density is  intractable; nevertheless, it can generate samples for $\bfx$ and is differentiable with respect to $\bfpsi$ and $\bfphi$.
+We can think of $q(\bfx|\bfpsi)$ as a \textit{variational program} as described
+in \citep{2016arXiv161009033R}, though more complicated than a simple
+reparameterization of normally distributed noise $\bfz$ through a differentiable
+function. In our case, the variational program is a
+marginalized, non-differentiable  simulator.  Its density is  intractable;
+nevertheless, it can generate samples for $\bfx$ and is differentiable with
+respect to $\bfpsi$.
 Operationally, we sample from this marginal model via
 \begin{equation}\label{eqn:p_psi}
     \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
@@ -473,15 +487,38 @@ $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the
 posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to
 approximate the posterior, one would criticize the model through the the
 posterior predictive distribution as advocated by Box~\citep{box1980sampling}.
-Effectively, we are optimizing variational posterior $q(\bftheta | \psi)$ by
+Effectively, we are optimizing the variational posterior $q(\bftheta | \bfpsi)$ by
 directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
+<<<<<<< HEAD
+model criticism~\citep{box1980sampling}. 
+
+We can also view the optimization  through the lens of empirical Bayes (EB),
+where one specifies a family of priors and $p(\bftheta | \bfpsi)$ and then estimates $\bfpsi^*$ using the data.
+%In our case, we find the $\bfpsi^*$ that minimizes the Wasserstein distance between the data distribution and the 
+%posterior predictive distribution. 
+Traditionally, we would have access to the likelihood and optimize with respect to the family of posteriors
+ $p(\bftheta | \bfx, \bfpsi) = p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) / \int p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) d\bftheta $
+as an intermediate step to computing $\bfpsi^*$. In our case, the likelihood is intractable and we have not explicitly 
+specified a prior family. However, the procedure corresponds to empirical Bayes if we identify 
+$q(\bftheta | \bfpsi^*) = p(\bftheta | \bfx , \bfpsi)$. Thus we call our method AVO-EB and note that it is applicable even outside of the likelihood-free context.
+
+
+%While the
+%likelihood is intractable, it is fixed, thus one can view the optimization of
+%$\bfpsi$ through the lens of empirical Bayes, though the prior family
+%$p(\bftheta | \bfpsi)$ is not explicitly specified, 
+%ie. $q(\bftheta | \bfpsi^*) = p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) / \int d\bftheta p(\bfx | \bftheta) p(\theta | \bfpsi^*)$.
+=======
 model criticism~\citep{box1980sampling}, which we denote AVO-EB. While the
 likelihood is intractable, it is fixed, thus one can view the optimization of
 $\bfpsi$ through the lens of empirical Bayes, though the prior family
 $p(\bftheta | \bfpsi)$ is not explicitly specified.
+\glnote{Need to smooth this paragraph out.}
+\kcnote{Clarify hierarchical models and iid data x. Factor of $N/M$ for AVO-EB?}
+>>>>>>> origin/master
 
 %\kcnote{where is the prior? comment}
 
@@ -495,7 +532,7 @@ $p(\bftheta | \bfpsi)$ is not explicitly specified.
 %around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
-\kcnote{Clarify hierarchical models and iid data x. Factor of $N/M$ for AVO-EB?}
+
 
 
 \subsection{Point estimates}
@@ -777,7 +814,7 @@ variational program $q(\bfx | \bfpsi)$. This paired with the critic
 Kantorovich-Rubinstein dual formulation of the Wasserstein distance
 allows us to work in high dimensions without summary statistics and
 optimize $\bfpsi$ with stochastic gradient descent. Additionally,
-our our AVO-EB procedure avoids the inefficiencies of 
+our our AVO-EB procedure avoids the inefficiencies of
 their Wasserstein rejection sampler incurred from using the ABC-likelihood.
 
 %\kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
@@ -942,7 +979,7 @@ $\nabla_\bfpsi U_g$ can be computed.
 %, in particular by exploiting the fact in the composition $d(g(\bfz;\bftheta); \bfpsi)$
 %the derivatives of $d$ are known exactly.
 
-%We note that the technique can be used either to fit a generative model to an observed data distribution 
+%We note that the technique can be used either to fit a generative model to an observed data distribution
 %or to fit a fast simulator to a slower, higher-fidelity simulator.
 
 %\kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
