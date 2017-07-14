@@ -456,14 +456,14 @@ empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay20
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
-the marginal distribution parametrized by $\bfpsi$
+the parameterized marginal distribution of the generated data
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
 We can think of $q(\bfx|\bfpsi)$ as a \textit{variational program} as described
 in \citep{2016arXiv161009033R}, though more complicated than a simple
 reparameterization of normally distributed noise $\bfz$ through a differentiable
-function $g(\bfz, \bfpsi)$. In our case, the variational program is a
+function. In our case, the variational program is a
 marginalized, non-differentiable  simulator.  Its density is  intractable;
 nevertheless, it can generate samples for $\bfx$ and is differentiable with
 respect to $\bfpsi$.
@@ -479,7 +479,7 @@ $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the
 posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to
 approximate the posterior, one would criticize the model through the the
 posterior predictive distribution as advocated by Box~\citep{box1980sampling}.
-Effectively, we are optimizing variational posterior $q(\bftheta | \bfpsi)$ by
+Effectively, we are optimizing the variational posterior $q(\bftheta | \bfpsi)$ by
 directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
