@@ -205,7 +205,7 @@ specified through a non-differentiable deterministic function $g(\cdot; \bftheta
 \end{equation}
 such that the density $p(\mathbf{x}|\bftheta)$ can be
 written as
-%considered as a non-differentiable reparameterization of the random variable $\bfz$
+%considered as a non-differentiable reparametrization of the random variable $\bfz$
 %\begin{equation}\label{eqn:p_x_sim}
 %    p(\mathbf{x}|\bftheta) = \frac{\partial}{\partial x_1} \dots \frac{\partial}{\partial x_d} \int_{\{\bfz:g_i(\bfz;\bftheta) \leq x_i\}} p(\bfz|\bftheta) \mu(d\bfz),
 %\end{equation}
@@ -323,7 +323,7 @@ algorithm~\citep{2011arXiv1106.4487W} and variance reduction techniques~\citep{r
 
 % In this simple form, stochastic gradient descent based on
 % Eqn~\ref{eqn:approx-grad} is known to suffer from premature convergence and lack
-% of scale invariance. To avoid the dependence on the parameterization of the
+% of scale invariance. To avoid the dependence on the parametrization of the
 % proposal distribution, natural gradients~\citep{amari1998natural} can be used
 % instead to point towards the steepest descent in the space of realizable
 % proposal distributions, rather than in the space of their parameters. Effectively,
@@ -428,7 +428,7 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 
 %Practically, the variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 %have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
-%a distribution parameterized in terms of $\bfpsi$:
+%a distribution parametrized in terms of $\bfpsi$:
 %\begin{equation}\label{eqn:p_psi}
 %    \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
 %\end{equation}
@@ -446,9 +446,9 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
 variance of the noisy estimator of the gradients may be too large to be useful in many problems. Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
-Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}. 
+Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
 Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
-empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}. 
+empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
 Moreover, the algorithm could be adopted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
 
 
@@ -457,13 +457,13 @@ Moreover, the algorithm could be adopted to use estimates to the KL distance~\ci
 
 The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
-the parameterized marginal distribution of the generated data
+the parametrized marginal distribution of the generated data
 \begin{equation}
     \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
 We can think of $q(\bfx|\bfpsi)$ as a \textit{variational program} as described
 in \citep{2016arXiv161009033R}, though more complicated than a simple
-reparameterization of normally distributed noise $\bfz$ through a differentiable
+reparametrization of normally distributed noise $\bfz$ through a differentiable
 function. In our case, the variational program is a
 marginalized, non-differentiable  simulator.  Its density is  intractable;
 nevertheless, it can generate samples for $\bfx$ whose expectations are differentiable with
@@ -485,25 +485,25 @@ directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
-model criticism~\citep{box1980sampling}. 
+model criticism~\citep{box1980sampling}.
 
 We can also view the optimization  through the lens of empirical Bayes (EB),
 where one specifies a family of priors and $p(\bftheta | \bfpsi)$ and then estimates $\bfpsi^*$ using the data.
-%In our case, we find the $\bfpsi^*$ that minimizes the Wasserstein distance between the data distribution and the 
-%posterior predictive distribution. 
+%In our case, we find the $\bfpsi^*$ that minimizes the Wasserstein distance between the data distribution and the
+%posterior predictive distribution.
 Traditionally, we would have access to the likelihood and optimize with respect to the family of posteriors
  $p(\bftheta | \bfx, \bfpsi) = p(\bfx | \bftheta) p(\bftheta | \bfpsi) / \int p(\bfx | \bftheta) p(\bftheta | \bfpsi) d\bftheta $
-as an intermediate step to computing $\bfpsi^*$. In our case, the likelihood is intractable and we have not explicitly 
-specified a prior family. However, the procedure corresponds to empirical Bayes if we identify 
+as an intermediate step to computing $\bfpsi^*$. In our case, the likelihood is intractable and we have not explicitly
+specified a prior family. However, the procedure corresponds to empirical Bayes if we identify
 $q(\bftheta | \bfpsi^*) = p(\bftheta | \bfx , \bfpsi)$. Thus we call our method AVO-EB and note that it is applicable even outside of the likelihood-free context.
 
-Algorithm~\ref{alg:avo}, can be easily modified to have different mini-batch $M_r$ for the observed data and $M_g$ for the simulator. 
+Algorithm~\ref{alg:avo}, can be easily modified to have different mini-batch $M_r$ for the observed data and $M_g$ for the simulator.
 When $M_g \gg M_r$, then the variance of $\bftheta^*$ scales ad $\sqrt{M_r}$~\citep{bernton2017inference}. A final $\sqrt{N/M}$ scaling to the log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of the data.
 
 %While the
 %likelihood is intractable, it is fixed, thus one can view the optimization of
 %$\bfpsi$ through the lens of empirical Bayes, though the prior family
-%$p(\bftheta | \bfpsi)$ is not explicitly specified, 
+%$p(\bftheta | \bfpsi)$ is not explicitly specified,
 %ie. $q(\bftheta | \bfpsi^*) = p(\bfx | \bftheta) p(\bftheta | \bfpsi^*) / \int d\bftheta p(\bfx | \bftheta) p(\theta | \bfpsi^*)$.
 
 %\kcnote{where is the prior? comment}
@@ -576,7 +576,7 @@ hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
 $n_\text{critic}=100$ iterations with a step size $\alpha=0.01$, decay rates
 $\beta_1=\beta_2=0.5$ and its inner first and second moment vectors reset at
 each outer epoch in order to avoid building momentum in staled directions.  For
-estimating $\lambda^*$, we parameterize $\bftheta$ as $\log(\lambda)$ and use a univariate Gaussian proposal distribution
+estimating $\lambda^*$, we parametrize $\bftheta$ as $\log(\lambda)$ and use a univariate Gaussian proposal distribution
 $q(\bftheta|\bfpsi)$ initialized with a mean at $\log(5)$ and unit variance. At
 each epoch, parameters $\bfpsi$ are updated by taking one Adam step, with
 $\alpha=0.01$ and $\beta_1=\beta_2=0.5$. The gradient penalty coefficient is set to
@@ -588,7 +588,7 @@ $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\g
     \caption{Discrete Poisson model with unknown mean.
              ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
                         the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density.
-             ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parameterizations of the simulator closely reproduce the true distribution.
+             ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
              ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
              }\label{fig:poisson}
 \end{figure}
@@ -897,7 +897,7 @@ which is a generalization of variational inference formulated as the following o
 In traditional VI with the KL distance, this corresponds to $(O^{p,q} f) = \log q(\bfz) - \log p(\bfz|\bfx) \, \forall f \in \mathcal{F}$.
 AVO can be cast into a similar form with expectations over $\bfx$ instead of $\bfz$ and
 \begin{eqnarray} \label{eq:opvi_avo}
-\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \\\
+\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \nonumber \\
 \label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi\mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx)] \, .
 \end{eqnarray}
 Rewriting Eqn.~\ref{eq:opvi_avo} as Eqn.~\ref{eq:opvi_avo2} is possible through importance sampling,
