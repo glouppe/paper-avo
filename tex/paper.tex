@@ -630,14 +630,14 @@ generative process:
     semi-positive definite $5 \times 5$ matrix defining a fixed projection
     of $\bfz$ into the observed space.
 \end{itemize}
-Again, the AVO algorithm does not have access to the density or its gradient, only samples from the generative model
+Again, the AVO algorithm does not have access to the density or its gradient, only samples from the generative model.
 We consider observed data generated at the nominal values $\bftheta^* = (\alpha^*=1,\beta^*=-1)$.
 The simulator parameters are modeled with a factored  (mean field) Gaussian
 variational distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
 initialized with zero mean and unit variance.
 Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
 Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
-The network architecture of the critic is the same as in the previous example.
+The architecture of the critic is the same as in the previous example.
 
 
 Starting with a proposal distribution $q(\bftheta|\bfpsi)$ largely spread over
@@ -763,7 +763,7 @@ of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational
 program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations
 with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density
 $q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a
-recognition model $q(\bfz | \bftheta, \bfx)$ as the latent space $\mathcal{Z}$
+recognition model  $q(\bfz, \bftheta|\bfpsi)$ as the latent space $\mathcal{Z}$
 of many real-world simulators is complicated and not amenable to neural a
 recognition model.
 %One similarity of our work to AVB is that the ELBO is rewritten such that the intractable term $\log p(\bfz) - \log q_\bfphi(\bfz | \bfx)$ is replaced with an optimized neural network $T(x,z)$, which structurally similar to the role of the critic $d$ in the Kantorovich-Rubinstein dual description of the WGAN.
@@ -772,12 +772,12 @@ recognition model.
 
 From the point of view of likelihood-free inference, where  non-differentiable
 simulators are the norm, our contributions are threefold. First is the process
-of lifting expectations with respect to the non-differentiable simulator
+of lifting the expectation with respect to the non-differentiable simulator
 $\mathbb{E}_{\tilde{\bfx} \sim p(\bfx | \bftheta)}$ to a differentiable
-expectations with respect to the variational program $\mathbb{E}_{\tilde{\bfx}
+expectation with respect to the variational program $\mathbb{E}_{\tilde{\bfx}
 \sim q(\bfx | \bfpsi)}$. Secondly, is the introduction of a novel form of
 variational inference that works in a likelihood-free setting. Thirdly, the
-AVI-MC algorithm can be viewed as a form of empirical Bayes where the prior is
+AVO-EB algorithm can be viewed as a form of empirical Bayes where the prior is
 optimized based on the data.
 
 %Fourthly, the AVL algorithm is not a Bayesian inference algorithm, but instead provides point estimates $\bftheta^*$.
@@ -792,7 +792,7 @@ data, they note that this is computationally expensive and introduce an
 approximation based on projection of the data onto Hilbert space-filling curves.
 Their Remark 5.1 points out that~\citep{montavon2016wasserstein} proposed an
 approximation of the gradient of an entropy-regularized Wasserstein distance,
-which uses a similar duality. They note that ``Unfortunately, it is not
+which uses a similar duality. They note that ``unfortunately, it is not
 applicable in the setting of purely generative models, as it involves point-wise
 evaluations of the derivative of the log-likelihood.'' Thus, our contribution is
 to provide gradients of an approximate MWE by taking expectations with the
@@ -800,7 +800,7 @@ variational program $q(\bfx | \bfpsi)$. This paired with the critic
 Kantorovich-Rubinstein dual formulation of the Wasserstein distance
 allows us to work in high dimensions without summary statistics and
 optimize $\bfpsi$ with stochastic gradient descent. Additionally,
-our our AVO-EB procedure avoids the inefficiencies of
+our AVO-EB procedure avoids the inefficiencies of
 their Wasserstein rejection sampler incurred from using the ABC-likelihood.
 
 %\kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
@@ -852,7 +852,7 @@ consider Variational Bayes with an Intractable Likelihood (VBIL). In that
 approach ``the only requirement is that the intractable likelihood can be
 estimated unbiasedly.'' In the case of simulators, they propose to use the
 ABC-likelihood with an $\epsilon$ kernel. The ABC likelihood is only unbiased as
-$\epsilon > 0$,   thus this method inherits the drawbacks of the ABC-likelihood
+$\epsilon \to 0$,   thus this method inherits the drawbacks of the ABC-likelihood
 including the choice of summary statistics and the inefficiency in evaluating
 the ABC likelihood for high-dimensional data and small $\epsilon$.
 
@@ -890,20 +890,20 @@ randomness used for the latent variable $\bfz$.
 %\end{equation}
 
 Lastly, we make a connection to Operator Variational Inference (OPVI)~\citep{2016arXiv161009033R},
-which is a generalization of variational inference formulated as the following optimization problem
+which is a generalization of variational inference formulated as the following optimization problem:
 \begin{eqnarray}
 \bflambda^* = \inf_\bflambda \sup_\bfphi \mathbb{E}_{ \bfz \sim q( \bfz | \bflambda)} [ (O^{p,q} f_\bfphi) ] \, .
 \end{eqnarray}
-In traditional VI with the KL distance, this corresponds to $(O^{p,q} f) = \log q(\bfz) - \log p(\bfz|\bfx) \, \forall f \in \mathcal{F}$.
+In traditional VI with the KL distance, we have $(O^{p,q} f) = \log q(\bfz) - \log p(\bfz|\bfx) \, \forall f \in \mathcal{F}$.
 AVO can be cast into a similar form with expectations over $\bfx$ instead of $\bfz$ and
 \begin{eqnarray} \label{eq:opvi_avo}
-\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,p_\bfpsi} d_\bfphi) ] \nonumber \\
-\label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi\mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx)] \, .
+\bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,q_\bfpsi} d_\bfphi) ] \\
+\label{eq:opvi_avo2} &=&  \inf_\bfpsi \sup_\bfphi \mathbb{E}_{\bfx\sim p_r(\bfx)}[d(\bfx; \bfphi)] - \mathbb{E}_{\bfx \sim q(\bfx|\bfpsi)}[d(\bfx; \bfphi)] \nonumber \, .
 \end{eqnarray}
-Rewriting Eqn.~\ref{eq:opvi_avo} as Eqn.~\ref{eq:opvi_avo2} is possible through importance sampling,
+Rewriting Eqn.~\ref{eq:opvi_avo} as above is possible through importance sampling,
 corresponding to an implicit form of the operator
 \begin{equation}
-(O^{p,q} d) = \left( \frac{p_r(\bfx)}{q(\bfx|\bfpsi)}  -1 \right) d(\bfx) \, ,
+(O^{p_r,q_\bfpsi} d_\bfphi)(\bfx) = \left( \frac{p_r(\bfx)}{q(\bfx|\bfpsi)}  -1 \right) d(\bfx; \bfphi) \, ,
 \end{equation}
 which reinforces the link to density ratio estimation and inference with implicit models.
 
@@ -948,7 +948,7 @@ In this note, we develop likelihood-free inference algorithms for non-differenti
 The algorithms combine adversarial training  with variational optimization to
 minimize variational upper bounds  on the otherwise non-differentiable
 adversarial objectives.
-The AVO-EB algorithm enables empirical Bayesian through variational inference in the likelihood free setting.
+The AVO-EB algorithm enables empirical Bayes through variational inference in the likelihood-free setting.
 This approach does not incur the inefficiencies of an ABC-like rejection sampler. The AVO-MWE algorithm
 provides point estimates for the generative model, which asymptotically correspond to the data generating parameter when the model is well-specified. Both algorithms work on continuous or discrete observed data.
 
@@ -974,11 +974,11 @@ $\nabla_\bfpsi U_g$ can be computed.
 
 % ==============================================================================
 
-\section*{Acknowledgments}
+\vspace{0.25cm}
+\subsection*{Acknowledgments}
 
 We would like to thank Lukas Heinrich for helpful comments regarding
 the electron--positron annihilation simulation.
-
 GL and KL are both supported through NSF ACI-1450310, additionally KC is
 supported through PHY-1505463 and PHY-1205376.
 
