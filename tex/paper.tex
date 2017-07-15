@@ -894,7 +894,7 @@ which is a generalization of variational inference formulated as the following o
 \begin{eqnarray}
 \bflambda^* = \inf_\bflambda \sup_\bfphi \mathbb{E}_{ \bfz \sim q( \bfz | \bflambda)} [ (O^{p,q} f_\bfphi) ] \, .
 \end{eqnarray}
-In traditional VI with the KL distance, we have $(O^{p,q} f) = \log q(\bfz) - \log p(\bfz|\bfx) \, \forall f \in \mathcal{F}$.
+In traditional VI with the KL distance, this corresponds to $(O^{p,q} f)(\bfz) = \log q(\bfz) - \log p(\bfz|\bfx) \, \forall f \in \mathcal{F}$.
 AVO can be cast into a similar form with expectations over $\bfx$ instead of $\bfz$ and
 \begin{eqnarray} \label{eq:opvi_avo}
 \bfpsi^* &=& \inf_\bfpsi \sup_\bfphi \mathbb{E}_{ \bfx \sim q( \bfx | \bfpsi)} [ (O^{p_r,q_\bfpsi} d_\bfphi) ] \\
@@ -974,8 +974,8 @@ $\nabla_\bfpsi U_g$ can be computed.
 
 % ==============================================================================
 
-\vspace{0.25cm}
-\subsection*{Acknowledgments}
+\vspace{0.4cm}
+\section*{Acknowledgments}
 
 We would like to thank Lukas Heinrich for helpful comments regarding
 the electron--positron annihilation simulation.
@@ -984,6 +984,8 @@ supported through PHY-1505463 and PHY-1205376.
 
 
 % ==============================================================================
+
+\vspace{2cm}
 
 %\bibliographystyle{hacm}
 \bibliographystyle{hunsrt}
