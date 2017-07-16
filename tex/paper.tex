@@ -190,7 +190,8 @@ dimension of $\bfz$ and the nature of its components (uniform, normal,
 discrete, continuous, etc.) are inherited from the control flow of the
 simulation code and may depend on $\bftheta$ in some intricate way. Moreover,
 the dimension of $\bfz$ may be much larger than the dimension of
-$\bfx$. Thus we do not attempt to learn a recognition model $q(\bfz | \bfx)$.
+$\bfx$.
+%Thus we do not attempt to learn a recognition model $q(\bfz | \bfx)$.
 
 %Unlike implicit generative models defined by neural networks, we do not assume $\bfz$ to
 %be a fixed-size vector (e.g., it can be a sequence of variable length) and its
@@ -394,7 +395,7 @@ optimization procedure cannot be carried out.
 In this work, we propose to rely on variational optimization to minimize ${\cal
 L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
 specifically, we consider a proposal distribution $q(\bftheta|\bfpsi)$ over the
-parameters of $g$ and $p(\mathbf{x}|\bftheta)$ and alternately minimize the variational upper bounds
+parameters of $g$ and alternately minimize the variational upper bounds
 \begin{align}
     U_d &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_d ] \label{eqn:vo-ud} \\
     U_g &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] \label{eqn:vo-ug}
@@ -449,7 +450,7 @@ variance of the noisy estimator of the gradients may be too large to be useful i
 Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
 Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
 empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
-Moreover, the algorithm could be adopted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
+Moreover, the algorithm could be adapted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
 
 
 
@@ -488,7 +489,7 @@ Consequently, the proposed algorithm is a form of variational inference through
 model criticism~\citep{box1980sampling}.
 
 We can also view the optimization  through the lens of empirical Bayes (EB),
-where one specifies a family of priors and $p(\bftheta | \bfpsi)$ and then estimates $\bfpsi^*$ using the data.
+where one specifies a family of priors $p(\bftheta | \bfpsi)$ and then estimates $\bfpsi^*$ using the data.
 %In our case, we find the $\bfpsi^*$ that minimizes the Wasserstein distance between the data distribution and the
 %posterior predictive distribution.
 Traditionally, we would have access to the likelihood and optimize with respect to the family of posteriors
@@ -497,8 +498,12 @@ as an intermediate step to computing $\bfpsi^*$. In our case, the likelihood is 
 specified a prior family. However, the procedure corresponds to empirical Bayes if we identify
 $q(\bftheta | \bfpsi^*) = p(\bftheta | \bfx , \bfpsi)$. Thus we call our method AVO-EB and note that it is applicable even outside of the likelihood-free context.
 
-Algorithm~\ref{alg:avo}, can be easily modified to have different mini-batch $M_r$ for the observed data and $M_g$ for the simulator.
-When $M_g \gg M_r$, then the variance of $\bftheta^*$ scales ad $\sqrt{M_r}$~\citep{bernton2017inference}. A final $\sqrt{N/M}$ scaling to the log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of the data.
+Algorithm~\ref{alg:avo}, can be easily modified to have different sizes of mini-batches,
+$M_r$ for the observed data and $M_g$ for the simulator. When $M_g \gg M_r$,
+then the variance of $\bftheta^*$ scales as
+$\sqrt{M_r}$~\citep{bernton2017inference}. A final $\sqrt{N/M}$ scaling to the
+log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of
+the data.
 
 %While the
 %likelihood is intractable, it is fixed, thus one can view the optimization of
