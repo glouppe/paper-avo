@@ -139,17 +139,38 @@ relatively few parameters and they are endowed with some level of
 interpretation. In this setting, inference on the model parameters $\bftheta$ is
 often of more interest than the latent variables $\bfz$.
 
-In this note, we develop an unsupervised learning algorithm for the point
-estimation of the parameters $\bftheta$ of a non-differentiable, implicit
-generative model. We adapt the adversarial
+
+In this note, we develop a likelihood-free inference algorithms 
+non-differentiable, implicit generative mode. The first allows us 
+to perform empirical Bayes through variational inference, and the 
+second provides a point estimator of the parameters $\bftheta$. 
+We adapt the adversarial
 training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
 non-differentiable minimax problem by minimizing variational upper
 bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
-objectives. The procedure results in learning an arbitrarily tight
-proposal distribution over simulator parameters, such that the corresponding
-marginal distribution of the generated data matches the observations.
+objectives. 
+The objective of both algorithms is to match marginal distribution of 
+the generated data to the empirical distribution of the observations.
+
+%The procedure results in learning an arbitrarily tight
+%proposal distribution over simulator parameters, such that the corresponding
+%marginal distribution of the generated data matches the observations.
+
+
+%In this note, we develop an unsupervised learning algorithm for the point
+%estimation of the parameters $\bftheta$ of a non-differentiable, implicit
+%generative model. We adapt the adversarial
+%training procedure of generative adversarial
+%networks~\cite{goodfellow2014generative} by replacing the implicit generative
+%network with a domain-based scientific simulator, and solve the resulting
+%non-differentiable minimax problem by minimizing variational upper
+%bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
+%objectives. 
+%The procedure results in learning an arbitrarily tight
+%proposal distribution over simulator parameters, such that the corresponding
+%marginal distribution of the generated data matches the observations.
 
 
 %In this note, we develop a likelihood-free inference algorithm for the point
