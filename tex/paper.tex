@@ -82,11 +82,12 @@ Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx |
 \bftheta)$. The prevalence and significance of this problem has motivated an
 active research effort in so-called \textit{likelihood-free inference}
 algorithms such as Approximate Bayesian Computation
-(ABC)~\cite{beaumont2002approximate, marjoram2003markov, sisson2007sequential,
-sisson2011likelihood, marin2012approximate, cranmer2015approximating}.  Often
-the simulation code involves control-flow that implies the dependence of $\bfx$
-on $\bfz$ is non-differentiable, making inference even more difficult and
-precludes approaches such as Ref.~\citep{2016arXiv160507826G}.
+(ABC) and density estimation-by-comparison algorithms~\cite{beaumont2002approximate, marjoram2003markov, sisson2007sequential,
+sisson2011likelihood, marin2012approximate, cranmer2015approximating}.
+% Often
+% the simulation code involves control-flow that implies the dependence of $\bfx$
+% on $\bfz$ is non-differentiable, making inference even more difficult and
+% precludes approaches such as Ref.~\citep{2016arXiv160507826G}.
 
 %\kcnote{HMC https://arxiv.org/pdf/1503.01916.pdf}
 
@@ -101,7 +102,12 @@ networks~\cite{goodfellow2014generative}, there has been a vibrant research
 program around implicit generative models based on neural
 networks~\citep{2016arXiv161003483M}.  While these implicit generative networks
 also do not admit a tractable density, they are differentiable.
-
+Generative models based on neural networks are highly parametrized and the model
+parameters have no obvious interpretation. In contrast, scientific simulators
+can be thought of as highly regularized generative models as they typically have
+relatively few parameters and they are endowed with some level of
+interpretation. In this setting, inference on the model parameters $\bftheta$ is
+often of more interest than the latent variables $\bfz$.
 
 %%In contrast, scientific simulators involve control-flow that leads to models such that $p(\bfx, \bfz | \bftheta)$ is non-differentiable with respect to $\bftheta$, making inference even more difficult and precluding approaches such as Ref.~\citep{2016arXiv160507826G}.
 %Scientific simulators can be thought of as highly regularized generative models as they typically have relatively few parameters  endowed with some level of interpretation. In contrast, generative models based on neural networks are highly parametrized and the model parameters have no obvious interpretation. In this setting, inference on the model parameters $\bftheta$ is often of more interest than the latent variables $\bfz$.
@@ -132,26 +138,20 @@ also do not admit a tractable density, they are differentiable.
 %algorithms relying e.g. on the simulator being a function with computable derivatives~\citep{2016arXiv160507826G}
 %or being a controllable probabilistic program~\citep{2016arXiv161009900L}.
 
-Generative models based on neural networks are highly parametrized and the model
-parameters have no obvious interpretation. In contrast, scientific simulators
-can be thought of as highly regularized generative models as they typically have
-relatively few parameters and they are endowed with some level of
-interpretation. In this setting, inference on the model parameters $\bftheta$ is
-often of more interest than the latent variables $\bfz$.
 
 
-In this note, we develop a likelihood-free inference algorithms 
-non-differentiable, implicit generative mode. The first allows us 
-to perform empirical Bayes through variational inference, and the 
-second provides a point estimator of the parameters $\bftheta$. 
+In this note, we develop two likelihood-free inference algorithms
+for non-differentiable, implicit generative models. The first allows us
+to perform empirical Bayes through variational inference, and the
+second provides a point estimator of the parameters $\bftheta$.
 We adapt the adversarial
 training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
 non-differentiable minimax problem by minimizing variational upper
 bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
-objectives. 
-The objective of both algorithms is to match marginal distribution of 
+objectives.
+The objective of both algorithms is to match marginal distribution of
 the generated data to the empirical distribution of the observations.
 
 %The procedure results in learning an arbitrarily tight
@@ -167,7 +167,7 @@ the generated data to the empirical distribution of the observations.
 %network with a domain-based scientific simulator, and solve the resulting
 %non-differentiable minimax problem by minimizing variational upper
 %bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
-%objectives. 
+%objectives.
 %The procedure results in learning an arbitrarily tight
 %proposal distribution over simulator parameters, such that the corresponding
 %marginal distribution of the generated data matches the observations.
@@ -246,7 +246,7 @@ Given some observed data $\{ \mathbf{x}_i | i=1, \dots, N \}$ drawn from the
 $\bftheta^*$ that minimize the divergence between $p_r(\mathbf{x})$ and
 the implicit model $p(\mathbf{x}|\bftheta)$. That is,
 \begin{equation}
-    \bftheta^* = \arg \min_{\bftheta \in \bftheta} \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta)),
+    \bftheta^* = \arg \min_{\bftheta} \rho(p_r(\mathbf{x}), p(\mathbf{x}|\bftheta)),
 \end{equation}
 where $\rho$ is some distance or divergence.
 %~\citep{bernton2017inference}.
@@ -281,7 +281,7 @@ unreliable updates when the training procedure is relaxed. As a remedy,
 Wasserstein GANs~\citep{2017arXiv170107875A} reformulate the adversarial
 setup in order to minimize the Wasserstein-1 distance $W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  )$
 by replacing the adversarial classifier with a 1-Lipschitz adversarial critic
-$d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$, and where
+$d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$, with
 \begin{align}
 & W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  ) \nonumber \\
 &= \sup_{\bfphi}  \mathbb{E}_{\tilde{\mathbf{x}}\sim p(\mathbf{x}|\bftheta)} [d(\tilde{\mathbf{x}}; \bfphi)] - \mathbb{E}_{\mathbf{x} \sim p_r(\mathbf{x})} [d(\mathbf{x}; \bfphi)] \nonumber \\
@@ -316,16 +316,16 @@ optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
 \begin{equation}
-    \min_{\bftheta \in {\Theta}} f(\bftheta) \leq \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta)] = U(\bfpsi),
+    \min_{\bftheta} f(\bftheta) \leq \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta)] = U(\bfpsi),
 \end{equation}
 where $q(\bftheta|\bfpsi)$ is a proposal distribution with parameters $\bfpsi$ over input values $\bftheta$.
 That is, the minimum of a set of function values is always less than or equal
-to any of their average. Provided that the proposal is flexible enough, the parameters $\bfpsi$
+to any of their average. Provided that the proposal distribution is flexible enough, the parameters $\bfpsi$
 can be updated to place its mass arbitrarily tight around the optimum $\bftheta^* = \min_{\bftheta \in \Theta} f(\bftheta)$.
 
 Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound
 $U(\bfpsi)$ is differentiable with respect to $\bfpsi$, and using the log-likelihood
-trick it can be rewritten as:
+trick its gradient can be rewritten as:
 \begin{align}\label{eqn:approx-grad}
     \nabla_\bfpsi U(\bfpsi) &= \nabla_\bfpsi \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [f(\bftheta)] \nonumber \\
     %&= \nabla_\bfpsi \int f(\bftheta)  q(\bftheta|\bfpsi)  d\bftheta \nonumber \\
@@ -338,8 +338,8 @@ q(\bftheta|\bfpsi)$ of the proposal is known and that one can evaluate
 $f(\mathbf{\bftheta})$ for any $\bftheta$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
 $U(\bfpsi)$ with stochastic gradient descent. We will use
-Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to incorporate the Natural Evolution Strategy
-algorithm~\citep{2011arXiv1106.4487W} and variance reduction techniques~\citep{ranganath2014black}.
+Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to make  use instead of the Natural Evolution Strategy
+algorithm~\citep{2011arXiv1106.4487W} or of variance reduction techniques~\citep{ranganath2014black}.
 %Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here as they are in black box variational inference~\citep{ranganath2014black}.
 
 
@@ -468,10 +468,11 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
 variance of the noisy estimator of the gradients may be too large to be useful in many problems. Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
-Control Variates, and quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
+Control Variates, or quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
 Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
 empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
-Moreover, the algorithm could be adapted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic. These variants may be particularly useful for small $N$.
+%Moreover, the algorithm could be adapted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic.
+These variants may be particularly useful for small $N$.
 
 
 
@@ -500,11 +501,11 @@ Operationally, we sample from this marginal model via
 Typically in variational inference one starts with a tractable prior
 $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the
 posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to
-approximate the posterior, one would criticize the model through the the
+approximate the posterior, one would criticize the model through the
 posterior predictive distribution as advocated by Box~\citep{box1980sampling}.
 Effectively, we are optimizing the variational posterior $q(\bftheta | \bfpsi)$ by
 directly minimizing the  divergence of the corresponding posterior predictive
-distribution $\qxpsi$ and the data distribution $p_r(\bfx)$ without evaluating
+distribution $\qxpsi$ and the data distribution $p_r(\bfx)$, without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
 model criticism~\citep{box1980sampling}.
@@ -573,7 +574,7 @@ for large values of $\gamma$, the procedure is encouraged to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
 tightly around one or a few $\bftheta$ values.
 
-Very large penalties may
+Finally, we note that very large penalties may
 eventually make the optimization unstable, as the variance of $\nabla_\bfpsi \log q(\bftheta_m|\bfpsi)$
 typically increases as the entropy of the proposal decreases.
 %\kcnote{maybe, but not obvious why}
@@ -659,7 +660,7 @@ generative process:
 Again, the AVO algorithm does not have access to the density or its gradient, only samples from the generative model.
 We consider observed data generated at the nominal values $\bftheta^* = (\alpha^*=1,\beta^*=-1)$.
 The simulator parameters are modeled with a factored  (mean field) Gaussian
-variational distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
+proposal distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
 initialized with zero mean and unit variance.
 Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
 Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
@@ -734,7 +735,7 @@ this process is highly non-trivial as is the space of latent variables $\mathcal
 
 In this example, we consider observed data generated with the simplified generator of Eqn.~\ref{eq:simple_weinberg}
 using $\bftheta^* = (E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
-factored (mean field) Gaussian variational distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
+factored (mean field) Gaussian proposal distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
 q(G_f|\bfpsi)$, where each component is respectively initialized with mean $45$
 and $1$ and variance $1$ and $0.01$. Hyper-parameters are set to $M=64$,
 $n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
@@ -777,25 +778,6 @@ the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\citep{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
 non-differentiable simulators using variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization}.
 
-Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially},
-Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial},
-$\alpha$-GAN~\citep{rosca2017variational}, Adversarial Variational Bayes
-(AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv}
-algorithm of  \citep{2017arXiv170208235H}  are a recent extension to GANs that
-add an inference network to the generative model.  Each of these assume a
-tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to
-$\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting
-of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational
-program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations
-with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density
-$q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a
-recognition model  $q(\bfz, \bftheta|\bfpsi)$ as the latent space $\mathcal{Z}$
-of many real-world simulators is complicated and not amenable to neural a
-recognition model.
-%One similarity of our work to AVB is that the ELBO is rewritten such that the intractable term $\log p(\bfz) - \log q_\bfphi(\bfz | \bfx)$ is replaced with an optimized neural network $T(x,z)$, which structurally similar to the role of the critic $d$ in the Kantorovich-Rubinstein dual description of the WGAN.
-
-%\kcnote{does \citep{rosca2017variational} go in the above paragraph?}
-
 From the point of view of likelihood-free inference, where  non-differentiable
 simulators are the norm, our contributions are threefold. First is the process
 of lifting the expectation with respect to the non-differentiable simulator
@@ -808,7 +790,7 @@ optimized based on the data.
 
 %Fourthly, the AVL algorithm is not a Bayesian inference algorithm, but instead provides point estimates $\bftheta^*$.
 
-Perhaps the closest to our work is~\cite{bernton2017inference}, which uses
+Perhaps the closest to our work is~\cite{bernton2017inference}, which uses the
 Wasserstein distance both to find point estimates $\bftheta^*$ and as a part of
 a rejection sampler in an ABC-like setup (as opposed to variational inference).
 They emphasize that this approach allows one to eliminate the summary statistics
@@ -824,17 +806,14 @@ evaluations of the derivative of the log-likelihood.'' Thus, our contribution is
 to provide gradients of an approximate MWE by taking expectations with the
 variational program $q(\bfx | \bfpsi)$. This paired with the critic
 Kantorovich-Rubinstein dual formulation of the Wasserstein distance
-allows us to work in high dimensions without summary statistics and
+allows us to work in high dimensions without summary statistics and to
 optimize $\bfpsi$ with stochastic gradient descent. Additionally,
 our AVO-EB procedure avoids the inefficiencies of
 their Wasserstein rejection sampler incurred from using the ABC-likelihood.
 
 %\kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
 
-
 %\kcnote{Could we actually replace the optimization of the critic with a direct Wasserstein distance calculation in fewer dimensions. If the data is drawn from the variational program, it would still be differentiable with respect to $\bfpsi$. No, because it still requires $\nabla_\psi \log p(\bfx | \bfpsi)$}
-
-
 
 %Within the literature on ABC and likelihood-free inference,
 %the closest to our work are procedures that rely on a classifier to estimate the
@@ -846,15 +825,38 @@ their Wasserstein rejection sampler incurred from using the ABC-likelihood.
 % makes use of classification accuracy as
 %a summary statistics for approximate Bayesian computation.
 
-
-
-As reviewed in \cite{2016arXiv161003483M}, likelihood-free inference is
-intimately tied to a class of algorithms that can be framed as density
-estimation-by-comparison. In most cases, these inference algorithms are
-formulated as an iterative two-step process where the model distribution is
-first compared to the true data distribution and then updated to make it more
-comparable to the latter. Relevant work in this direction includes
+More generally, likelihood-free
+inference is intimately tied to a class of algorithms that can be framed as
+density estimation-by-comparison, as reviewed in \cite{2016arXiv161003483M}. In most cases, these
+inference algorithms are formulated as an iterative two-step process where the
+model distribution is first compared to the true data distribution and then
+updated to make it more comparable to the latter. Relevant work in this
+direction includes those that rely on a classifier to estimate the discrepancy betwen the observed data and the model distributions
 \citep{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}.
+Also of direct relevance in the likelihood-free setup, Hamiltonian ABC~\citep{meeds2015hamiltonian}
+estimate gradients with respect
+to $\bftheta$ through finite differences from multiple forward passes of the
+simulator with variance reduction strategies based on controlling the source of
+randomness used for the latent variable $\bfz$.
+
+
+Likewise, AVO closely relates to recent extensions of GANs, such as
+Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially},
+Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial},
+$\alpha$-GAN~\citep{rosca2017variational}, Adversarial Variational Bayes
+(AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv}
+algorithm of  \citep{2017arXiv170208235H}, which
+add an inference network to the generative model.  Each of these assume a
+tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to
+$\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting
+of the non-differentiable simulator $p(\bfx|\bftheta)$ to the variational
+program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations
+with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density
+$q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a
+recognition model  $q(\bfz, \bftheta|\bfpsi)$ as the latent space $\mathcal{Z}$
+of many real-world simulators is complicated and not amenable to neural a
+recognition model.
+%One similarity of our work to AVB is that the ELBO is rewritten such that the intractable term $\log p(\bfz) - \log q_\bfphi(\bfz | \bfx)$ is replaced with an optimized neural network $T(x,z)$, which structurally similar to the role of the critic $d$ in the Kantorovich-Rubinstein dual description of the WGAN.
 
 
 %%In this context, the proposed method can be considered as a direct adaptation of
@@ -877,10 +879,12 @@ require restrictive assumptions.  In \citep{tran2017variational}, the authors
 consider Variational Bayes with an Intractable Likelihood (VBIL). In that
 approach ``the only requirement is that the intractable likelihood can be
 estimated unbiasedly.'' In the case of simulators, they propose to use the
-ABC-likelihood with an $\epsilon$ kernel. The ABC likelihood is only unbiased as
+ABC-likelihood with an $\epsilon$-kernel. The ABC likelihood is only unbiased as
 $\epsilon \to 0$,   thus this method inherits the drawbacks of the ABC-likelihood
 including the choice of summary statistics and the inefficiency in evaluating
 the ABC likelihood for high-dimensional data and small $\epsilon$.
+
+
 
 %\kcnote{do we keep JC-Adv  notes? Should say something about Hamiltonian ABC}
 %In \citep{2017arXiv170208235H} the author defines implicit distributions to be ``probability models whose probability density function may be intractable, but there is a way to 1) sample from them exactly and/or calculate and approximate expectations under them, and 2) calculate or estimate gradients of such expectations with respect to model parameters.'' This notion of implicit model does not include most scientific simulators as 2) is not satisfied. Furthermore, the  \texttt{JC-Adv} and \texttt{JC-Den} algorithm defined there applies to implicit models, but, as the author points out, is aimed at variational inference and ``does not provide a direct way to learn model parameters $\bftheta$''.
@@ -888,11 +892,7 @@ the ABC likelihood for high-dimensional data and small $\epsilon$.
 %of model parameters $\bftheta$ when $p_\bftheta(\bfx|\bfz)$ is implicit.''
 %%JC-Adv doesn't let you optimize theta, theta is fixed and you get variational inference on z. Need a recognition model for latents
 
-In \citep{meeds2015hamiltonian}, the authors introduce Hamiltonian ABC which
-applies in the likelihood-free setting, and they estimate gradients with respect
-to $\bftheta$ through finite differences from multiple forward passes of the
-simulator with variance reduction strategies based on controlling the source of
-randomness used for the latent variable $\bfz$.
+
 
 %\kcnote{F.H. Implicit model is differentiable. Is what we are doing JC-Adv with our variational program}
 
@@ -970,33 +970,30 @@ which reinforces the link to density ratio estimation and inference with implici
 
 \section{Summary}
 
-In this note, we develop likelihood-free inference algorithms for non-differentiable, implicit generative models.
-The algorithms combine adversarial training  with variational optimization to
-minimize variational upper bounds  on the otherwise non-differentiable
-adversarial objectives.
-The AVO-EB algorithm enables empirical Bayes through variational inference in the likelihood-free setting.
-This approach does not incur the inefficiencies of an ABC-like rejection sampler. The AVO-MWE algorithm
-provides point estimates for the generative model, which asymptotically correspond to the data generating parameter when the model is well-specified. Both algorithms work on continuous or discrete observed data.
+In this note, we develop likelihood-free inference algorithms for
+non-differentiable, implicit generative models. The algorithms combine
+adversarial training  with variational optimization to minimize variational
+upper bounds  on the otherwise non-differentiable adversarial objectives. The
+AVO-EB algorithm enables empirical Bayes through variational inference in the
+likelihood-free setting. This approach does not incur the inefficiencies of an
+ABC-like rejection sampler. The AVO-MWE algorithm provides point estimates for
+the generative model, which asymptotically corresponds to the data generating
+parameters when the model is well-specified. Both algorithms work on continuous
+or discrete observed data.
 
-Preliminary results on toy problems with discrete and continuous data validate the proposed method.
-While the obtained results are encouraging, the complete validation of the
-method remains to be carried out in real conditions on a full fledged scientific
-simulator -- which we plan to achieve for a next version of this work.
-In terms of method, several components need to be further investigated.
-First, we need to better study the interplay between the entropy penalty and the adversarial objectives.
-Second, we should better understand the dynamics of the optimization
-procedure, in particular when combined with momentum-based optimizers like Adam.
-Third, we need to consider whether less noisy estimates of the gradients
-$\nabla_\bfpsi U_g$ can be computed.
+Preliminary results on toy problems with discrete and continuous data validate
+the proposed method. While the obtained results are encouraging, the complete
+validation of the method remains to be carried out in real conditions on a full
+fledged scientific simulator -- which we plan to achieve for a next version of
+this work. In terms of method, several components need further investigation.
+First, we need to better study the interplay between the entropy penalty and the
+adversarial objectives. Second, we should better understand the dynamics of the
+optimization procedure, in particular when combined with momentum-based
+optimizers like Adam. Third, we need to consider whether less noisy estimates of
+the gradients $\nabla_\bfpsi U_g$ can be computed.
 %, in particular by exploiting the fact in the composition $d(g(\bfz;\bftheta); \bfpsi)$
 %the derivatives of $d$ are known exactly.
 
-%We note that the technique can be used either to fit a generative model to an observed data distribution
-%or to fit a fast simulator to a slower, higher-fidelity simulator.
-
-%\kcnote{could also use this to tune non-differentialble fast simulator to slower full simulator. Then fixed data size not an issue}
-
-%\kcnote{proposal distribution $\to$ variational distribution}
 
 % ==============================================================================
 
