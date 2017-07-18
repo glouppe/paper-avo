@@ -503,7 +503,8 @@ $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the
 posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to
 approximate the posterior, one would criticize the model through the
 posterior predictive distribution as advocated by Box~\citep{box1980sampling}.
-Effectively, we are optimizing the variational posterior $q(\bftheta | \bfpsi)$ by
+In our case, we can identify the proposal distribution with the variational posterior
+$q(\bftheta | \bfpsi)$, which we effectively optimize by
 directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$, without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
@@ -831,7 +832,7 @@ density estimation-by-comparison, as reviewed in \cite{2016arXiv161003483M}. In 
 inference algorithms are formulated as an iterative two-step process where the
 model distribution is first compared to the true data distribution and then
 updated to make it more comparable to the latter. Relevant work in this
-direction includes those that rely on a classifier to estimate the discrepancy betwen the observed data and the model distributions
+direction includes those that rely on a classifier to estimate the discrepancy between the observed data and the model distributions
 \citep{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}.
 Also of direct relevance in the likelihood-free setup, Hamiltonian ABC~\citep{meeds2015hamiltonian}
 estimate gradients with respect
