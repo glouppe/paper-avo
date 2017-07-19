@@ -337,10 +337,15 @@ Effectively, this means that provided that the score function $\nabla_\bfpsi \lo
 q(\bftheta|\bfpsi)$ of the proposal is known and that one can evaluate
 $f(\mathbf{\bftheta})$ for any $\bftheta$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
-$U(\bfpsi)$ with stochastic gradient descent. We will use
-Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to make  use instead of the Natural Evolution Strategy
-algorithm~\citep{2011arXiv1106.4487W} or of variance reduction techniques~\citep{ranganath2014black}.
-%Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here as they are in black box variational inference~\citep{ranganath2014black}.
+$U(\bfpsi)$ with stochastic gradient descent (or a variant thereof, robust to noise
+and parameter scaling).
+% We will use
+% Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to make  use instead of the Natural Evolution Strategy
+% algorithm~\citep{2011arXiv1106.4487W} or of variance reduction techniques
+% such as Rao-Blackwellization,
+% Control Variates, or quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
+%Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the variance of the noisy estimator of the
+%gradients may be too large to be useful in many problems. Variance reduction techniques such as Rao-Blackwellization and Control Variates can be applied here as they are in black box variational inference~\citep{ranganath2014black}.
 
 
 % In this simple form, stochastic gradient descent based on
@@ -466,13 +471,21 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 %with randomly sampled parameters $\bftheta \sim q(\bftheta|\bfpsi)$, whose joint collection
 %of generated samples is optimized with adversarial training to approach the real data distribution $p_r(\mathbf{x})$.
 
+% Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
+% variance of the noisy estimator of the gradients may be too large to be useful in many problems.
+% Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
+% Control Variates, or quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
+% Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
+% empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
+% %Moreover, the algorithm could be adapted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic.
+% These variants may be particularly useful for small $N$.
+
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
-variance of the noisy estimator of the gradients may be too large to be useful in many problems. Improvements are possible using variance reduction techniques such as Rao-Blackwellization,
+variance of the noisy estimator of the gradients may be too large to be useful in many problems.
+We use Adam~\cite{2014arXiv1412.6980K}, but note the opportunity use instead the Natural Evolution Strategy
+algorithm~\citep{2011arXiv1106.4487W} or variance reduction techniques
+such as Rao-Blackwellization,
 Control Variates, or quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
-Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
-empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
-%Moreover, the algorithm could be adapted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic.
-These variants may be particularly useful for small $N$.
 
 
 
@@ -557,7 +570,7 @@ When $\rho$ is the Wasserstein distance, $\bftheta^*$ is referred to as the
 minimum Wasserstein estimator (MWE). When the model is well specified, $\bftheta^*$
 coincides with the true data-generating parameter; however, if the model is
 misspecified, $\bftheta^*$ is typically different from the maximum likelihood
-estimator (MLE), which is the minimizer of $KL(p_r(\bfx) | p(\bfx |
+estimator (MLE), which is the minimizer of $\text{KL}(p_r(\bfx) \parallel p(\bfx |
 \bftheta))$~\citep{bernton2017inference}. In order to more effectively target
 point estimates $\bftheta^*$, we augment Eqn.~\ref{eqn:vo-ug} with a
 regularization term corresponding to the differential entropy $H$ of the
@@ -568,6 +581,7 @@ proposal distribution $q(\bftheta | \bfpsi)$. That is,
 where $\gamma \in \mathbb{R}^+$ is a hyper-parameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
 We refer to the algorithm with $\gamma>0$ as AVO-MWE.
+
 For small values of $\gamma$,
 proposal distributions with large entropy are not penalized, which results
 in learning a smeared variation of the original simulator corresponding to the posterior predictive model. On the other hand,
@@ -811,6 +825,14 @@ allows us to work in high dimensions without summary statistics and to
 optimize $\bfpsi$ with stochastic gradient descent. Additionally,
 our AVO-EB procedure avoids the inefficiencies of
 their Wasserstein rejection sampler incurred from using the ABC-likelihood.
+In the case of small $N$, we note however that fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
+empirical distributions~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}
+are alternatives to adversarial learning that are worth considering.
+
+% Similarly, various fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
+% empirical distributions are being developed~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}.
+% %Moreover, the algorithm could be adapted to use estimates to the KL distance~\citep{perez2009estimation} without the adversarial optimization for the critic.
+% These variants may be particularly useful for small $N$.
 
 %\kcnote{We don't use ABC-likelihood (more efficient?) used here and in VBIL. We also don't specify a prior b/c it's like implicit empirical bayes. They also don't specify a recognition model to latents. }
 
