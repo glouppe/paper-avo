@@ -696,7 +696,9 @@ MLE setting would otherwise be difficult to construct.
     \includegraphics[width=0.48\textwidth]{figures/multi.pdf}
     \caption{Multidimensional continuous data.
              ({\it Left}) Density $q(\bftheta|\bfpsi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
-             ({\it Right}) Density $q(\bftheta|\bfpsi)$ after adversarial variational optimization ($\gamma=10$). The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta^* = (1, -1)$.
+                          Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
+             ({\it Right}) Density $q(\bftheta|\bfpsi)$ after adversarial variational optimization ($\gamma=10$).
+                           The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta^* = (1, -1)$.
              }\label{fig:multi}
 \end{figure}
 
@@ -707,7 +709,9 @@ MLE setting would otherwise be difficult to construct.
     \centering
     \includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
     \caption{Electron--positron annihilation.
-    ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization. The density of the penalized distribution ($\gamma=5$) is here highly concentrated, resulting in the green mass near $\bftheta^*$.
+    ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization.
+                     Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
+                     The density of the penalized distribution ($\gamma=5$) is here highly concentrated, resulting in the green mass near $\bftheta^*$.
     ({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their respective proposal distributions, both models closely match the observed data.
     ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
              }\label{fig:weinberg}
