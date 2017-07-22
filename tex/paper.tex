@@ -100,9 +100,9 @@ In parallel, with the introduction of variational
 auto-encoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial
 networks~\cite{goodfellow2014generative}, there has been a vibrant research
 program around implicit generative models based on neural
-networks~\citep{2016arXiv161003483M}.  While these implicit generative networks
-also do not admit a tractable density, they are differentiable.
-Generative models based on neural networks are highly parametrized and the model
+networks~\citep{2016arXiv161003483M}.  While some of these models
+also do not admit a tractable density, they are all differentiable by construction.
+In addition, generative models based on neural networks are highly parametrized and the model
 parameters have no obvious interpretation. In contrast, scientific simulators
 can be thought of as highly regularized generative models as they typically have
 relatively few parameters and they are endowed with some level of
@@ -515,14 +515,14 @@ Typically in variational inference one starts with a tractable prior
 $p(\bftheta)$ and a tractable likelihood $p(\bfx |\bftheta )$, thus fixing the
 posterior $p(\bftheta | \bfx )$.   After optimizing $q(\bftheta | \bfpsi)$ to
 approximate the posterior, one would criticize the model through the
-posterior predictive distribution as advocated by Box~\citep{box1980sampling}.
+posterior predictive distribution~\citep{box1980sampling,rubin1984bayesianly}.
 In our case, we can identify the proposal distribution with the variational posterior
 $q(\bftheta | \bfpsi)$, which we effectively optimize by
 directly minimizing the  divergence of the corresponding posterior predictive
 distribution $\qxpsi$ and the data distribution $p_r(\bfx)$, without evaluating
 the intractable likelihood $p(\bfx | \bftheta )$ or specifying a prior.
 Consequently, the proposed algorithm is a form of variational inference through
-model criticism~\citep{box1980sampling}.
+model criticism.
 
 We can also view the optimization  through the lens of empirical Bayes (EB),
 where one specifies a family of priors $p(\bftheta | \bfpsi)$ and then estimates $\bfpsi^*$ using the data.
