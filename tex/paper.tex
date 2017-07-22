@@ -374,6 +374,8 @@ and parameter scaling).
 
 \section{Adversarial variational optimization}
 
+\subsection{Algorithm}
+
 
 \begin{figure*}
     \begin{minipage}{\linewidth}
@@ -573,7 +575,7 @@ Operationally, we sample from this marginal model via
 %around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
-We can view the optimization of the marginal likelihood $q(\bfx | \bfpsi)$ with respect to $\bfpsi$ through the lens of empirical Bayes (EB), where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\citep{rubin1984}.
+We can view the optimization of the marginal likelihood $q(\bfx | \bfpsi)$ with respect to $\bfpsi$ through the lens of empirical Bayes, where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\citep{rubin1984}.
 When $\rho$ is the Wasserstein distance, $\bfpsi^*$ is referred to as the
 minimum Wasserstein estimator (MWE).
 When the model is well specified, the MWE
