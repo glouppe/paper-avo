@@ -823,7 +823,7 @@ $\mathbb{E}_{\tilde{\bfx} \sim p(\bfx | \bftheta)}$ to a differentiable
 expectation with respect to the variational program $\mathbb{E}_{\tilde{\bfx}
 \sim q(\bfx | \bfpsi)}$. Secondly, is the introduction of a novel form of
 variational inference that works in a likelihood-free setting. Thirdly, the
-AVO-EB algorithm can be viewed as a form of empirical Bayes where the prior is
+AVO algorithm can be viewed as a form of empirical Bayes where the prior is
 optimized based on the data.
 
 %Fourthly, the AVL algorithm is not a Bayesian inference algorithm, but instead provides point estimates $\bftheta^*$.
@@ -1020,12 +1020,12 @@ In this note, we develop likelihood-free inference algorithms for
 non-differentiable, implicit generative models. The algorithms combine
 adversarial training  with variational optimization to minimize variational
 upper bounds  on the otherwise non-differentiable adversarial objectives. The
-AVO-EB algorithm enables empirical Bayes through variational inference in the
+AVO algorithm enables empirical Bayes through variational inference in the
 likelihood-free setting. This approach does not incur the inefficiencies of an
-ABC-like rejection sampler. The AVO-MWE algorithm provides point estimates for
+ABC-like rejection sampler. When the model is well-specified, the AVO algorithm 
+provides point estimates for
 the generative model, which asymptotically corresponds to the data generating
-parameters when the model is well-specified. Both algorithms work on continuous
-or discrete observed data.
+parameters. The algorithm works on continuous or discrete data.
 
 Preliminary results on toy problems with discrete and continuous data validate
 the proposed method. While the obtained results are encouraging, the complete
