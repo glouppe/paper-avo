@@ -100,9 +100,9 @@ In parallel, with the introduction of variational
 auto-encoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial
 networks~\cite{goodfellow2014generative}, there has been a vibrant research
 program around implicit generative models based on neural
-networks~\citep{2016arXiv161003483M}.  While these implicit generative networks
-also do not admit a tractable density, they are differentiable.
-Generative models based on neural networks are highly parametrized and the model
+networks~\citep{2016arXiv161003483M}.  While some of these models
+also do not admit a tractable density, they are all differentiable by construction.
+In addition, generative models based on neural networks are highly parametrized and the model
 parameters have no obvious interpretation. In contrast, scientific simulators
 can be thought of as highly regularized generative models as they typically have
 relatively few parameters and they are endowed with some level of
@@ -553,6 +553,7 @@ Operationally, we sample from this marginal model via
 %log-posterior $q(\bftheta | \bfpsi)$ is needed to reflect the full strength of
 %the data.
 
+
 %While the
 %likelihood is intractable, it is fixed, thus one can view the optimization of
 %$\bfpsi$ through the lens of empirical Bayes, though the prior family
@@ -571,14 +572,14 @@ Operationally, we sample from this marginal model via
 %around the parameters of interest, which might be an issue when one is rather interested in point estimates $\bftheta^*$.
 %For this purpose, we augment Eqn.~\ref{eqn:vo-ug}
 
-We can view the optimization of the marginal likelihood with respect to $\bfpsi$ through the lens of empirical Bayes (EB), where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\citep{rubin1984}.
+We can view the optimization of the marginal likelihood $q(\bfx | \bfpsi)$ with respect to $\bfpsi$ through the lens of empirical Bayes (EB), where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\citep{rubin1984}.
 When $\rho$ is the Wasserstein distance, $\bfpsi^*$ is referred to as the
 minimum Wasserstein estimator (MWE). 
 When the model is well specified, the MWE
 coincides with the true data-generating parameter; however, if the model is
 misspecified, the MWE is typically different from the maximum likelihood
 estimator (MLE).
-Moreover, if the simulator $p(\bfx |
+Thus, if the simulator $p(\bfx |
 \bftheta)$ is misspecified, $q(\bftheta | \bfpsi)$ will attempt to smear it so that the marginal
 model $q(\bfx | \bfpsi)$ is closer to $p_r(\bfx)$. However, if the simulator is well specified, 
 then $q(\bftheta | \bfpsi)$ will concentrate its mass around the true data-generating parameter.
