@@ -9,7 +9,6 @@ from nn import AdamOptimizer
 
 from proposals import make_gaussian_proposal
 from proposals import gaussian_draw
-from proposals import gaussian_logpdf
 from proposals import grad_gaussian_logpdf
 from proposals import grad_gaussian_entropy
 
@@ -47,6 +46,7 @@ def diffxsec(costheta, sqrtshalf, gf):
     norm = 2. * (1. + 1. / 3.)
     return ((1 + costheta ** 2) + a_fb(sqrtshalf, gf) * costheta) / norm
 
+
 def rej_sample_costheta(n_samples, theta, rng):
     sqrtshalf = theta[0] * (50-40) + 40
     gf = theta[1] * (1.5 - 0.5) + 0.5
@@ -67,6 +67,7 @@ def rej_sample_costheta(n_samples, theta, rng):
 
     return np.array(samples)
 
+
 def simulator(theta, n_samples, random_state=None):
     rng = check_random_state(random_state)
     samples = rej_sample_costheta(n_samples, theta, rng)
@@ -83,6 +84,7 @@ n_features = X_obs.shape[1]
 gammas = [0.0, 5.0]
 colors = ["C1", "C2"]
 
+
 def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
     params = {"W": [glorot_uniform(n_hidden, n_features, rng),
@@ -92,6 +94,7 @@ def make_critic(n_features, n_hidden, random_state=None):
                     np.zeros(n_hidden),
                     np.zeros(1)]}
     return params
+
 
 def predict(X, params):
     h = X
@@ -117,7 +120,8 @@ history = [{"gamma": gammas[i],
 
 for state in history:
     # WGAN + GP
-    def loss_critic(params_critic, i, lambda_gp=lambda_gp, batch_size=batch_size):
+    def loss_critic(params_critic, i, lambda_gp=lambda_gp,
+                    batch_size=batch_size):
         y_critic = np.zeros(batch_size)
         # y_critic[:batch_size // 2] = 0.0  # 0 == fake
         y_critic[batch_size // 2:] = 1.0
@@ -125,7 +129,8 @@ for state in history:
         rng = check_random_state(i)
 
         # WGAN loss
-        thetas = gaussian_draw(state["params_proposal"], batch_size // 2, random_state=rng)
+        thetas = gaussian_draw(state["params_proposal"],
+                               batch_size // 2, random_state=rng)
         _X_gen = np.zeros((batch_size // 2, n_features))
         for j, theta in enumerate(thetas):
             _X_gen[j, :] = simulator(theta, 1, random_state=rng).ravel()
