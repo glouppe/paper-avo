@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: sample_paper.aux
+The style file: hunsrt.bst
+Database file #1: bibliography.bib.bib
+Warning--there's a number but no volume in tran2017variational
+Warning--can't use both volume and number fields in cranmer2016experiments
+You've used 36 entries,
+            1829 wiz_defined-function locations,
+            655 strings with 9626 characters,
+and the built_in function-call counts, 8735 in all, are:
+= -- 748
+> -- 420
+< -- 10
++ -- 153
+- -- 117
+* -- 540
+:= -- 1350
+add.period$ -- 109
+call.type$ -- 36
+change.case$ -- 35
+chr.to.int$ -- 0
+cite$ -- 38
+duplicate$ -- 448
+empty$ -- 851
+format.name$ -- 117
+if$ -- 1991
+int.to.chr$ -- 0
+int.to.str$ -- 36
+missing$ -- 37
+newline$ -- 183
+num.names$ -- 36
+pop$ -- 136
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 235
+stack$ -- 0
+substring$ -- 459
+swap$ -- 130
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 73
+width$ -- 38
+write$ -- 396
+(There were 2 warnings)

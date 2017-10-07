@@ -1,6 +1,13 @@
-\documentclass[twocolumn,superscriptaddress,aps]{revtex4-1}
-
-\usepackage[utf8]{inputenc}
+\documentclass[twoside]{article}
+\usepackage{aistats2018}
+ % If your paper is accepted, change the options for the package
+% aistats2018 as follows:
+%
+%\usepackage[accepted]{aistats2018}
+%
+% This option will print headings for the title of your paper and
+% headings for the authors names, plus a copyright note at the end of
+% the first column of the first page.
 
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -14,7 +21,6 @@
 \usepackage{slashed}
 \usepackage{graphicx}
 \usepackage{color}
-\usepackage{hyperref}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{tikz}
@@ -36,36 +42,52 @@
 
 \begin{document}
 
+% If your paper is accepted and the title of your paper is very long,
+% the style will print as headings an error message. Use the following
+% command to supply a shorter title of your paper so that it can be
+% used as headings.
+%
+%\runningtitle{I use this title instead because the last one was very long}
 
-% ==============================================================================
+% If your paper is accepted and the number of authors is large, the
+% style will print as headings an error message. Use the following
+% command to supply a shorter version of the authors names so that
+% they can be used as headings (for example, use only the surnames)
+%
+%\runningauthor{Surname 1, Surname 2, Surname 3, ...., Surname n}
 
-\title{\Large{Adversarial Variational Optimization of Non-Differentiable Simulators}}
-\vspace{1cm}
-\author{\small{\bf Gilles Louppe}\thanks{\texttt{g.louppe@nyu.edu}}}
-\affiliation{New York University}
-\author{\small{\bf Kyle Cranmer}\thanks{\texttt{kyle.cranmer@nyu.edu}}}
-\affiliation{New York University}
+\twocolumn[
+
+\aistatstitle{Adversarial Variational Optimization of\\
+              Non-Differentiable Simulators}
+
+\aistatsauthor{Author 1 \And Author 2}
+\aistatsaddress{Institution 1 \And Institution 2}
+
+% \aistatsauthor{Gilles Louppe \And Kyle Cranmer}
+%
+% \aistatsaddress{New York University\\
+%                 \& University of Li{\`e}ge
+%                 \And New York University}
+                ]
 
 \begin{abstract}
-
-Complex computer simulators are increasingly used across fields of science as
-generative models tying parameters of an underlying theory to
-experimental observations. Inference in this setup is often
-difficult, as simulators rarely admit a tractable density or likelihood
-function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
-inference algorithm for fitting a non-differentiable generative model incorporating ideas from empirical Bayes and variational inference.
-We adapt the training procedure of generative
-adversarial networks by replacing the differentiable generative network with a
-domain-specific simulator. We solve the resulting non-differentiable
-minimax problem by minimizing variational upper bounds of the two adversarial objectives.
-Effectively, the procedure results in learning a
-proposal distribution over simulator parameters, such that the corresponding
-marginal distribution of the generated data matches the observations.
-We present results of the method with simulators producing both discrete and continuous data.
-
+    Complex computer simulators are increasingly used across fields of science as
+    generative models tying parameters of an underlying theory to
+    experimental observations. Inference in this setup is often
+    difficult, as simulators rarely admit a tractable density or likelihood
+    function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
+    inference algorithm for fitting a non-differentiable generative model incorporating ideas from empirical Bayes and variational inference.
+    We adapt the training procedure of generative
+    adversarial networks by replacing the differentiable generative network with a
+    domain-specific simulator. We solve the resulting non-differentiable
+    minimax problem by minimizing variational upper bounds of the two adversarial objectives.
+    Effectively, the procedure results in learning a
+    proposal distribution over simulator parameters, such that the corresponding
+    marginal distribution of the generated data matches the observations.
+    We present results of the method with simulators producing both discrete and continuous data.
 \end{abstract}
 
-\maketitle
 
 % ==============================================================================
 
@@ -83,10 +105,10 @@ algorithms such as Approximate Bayesian Computation
 sisson2011likelihood, marin2012approximate, cranmer2015approximating}.
 
 In parallel, with the introduction of variational
-auto-encoders~\citep{DBLP:journals/corr/KingmaW13} and generative adversarial
+auto-encoders~\cite{DBLP:journals/corr/KingmaW13} and generative adversarial
 networks~\cite{goodfellow2014generative}, there has been a vibrant research
 program around implicit generative models based on neural
-networks~\citep{2016arXiv161003483M}.  While some of these models
+networks~\cite{2016arXiv161003483M}.  While some of these models
 also do not admit a tractable density, they are all differentiable by construction.
 In addition, generative models based on neural networks are highly parametrized and the model
 parameters have no obvious interpretation. In contrast, scientific simulators
@@ -102,7 +124,7 @@ training procedure of generative adversarial
 networks~\cite{goodfellow2014generative} by replacing the implicit generative
 network with a domain-based scientific simulator, and solve the resulting
 non-differentiable minimax problem by minimizing variational upper
-bounds~\citep{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
+bounds~\cite{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
 objectives.
 The objective of both algorithms is to match marginal distribution of
 the generated data to the empirical distribution of the observations.
@@ -171,10 +193,10 @@ trained to optimality before each parameter update of the generator, it can
 be shown that the original adversarial learning procedure~\cite{goodfellow2014generative} amounts to minimizing
 the Jensen-Shannon divergence $\text{JSD}(p_r(\mathbf{x}) \parallel p(\mathbf{x}|\bftheta))$ between $p_r(\mathbf{x})$ and $p(\mathbf{x}|\bftheta)$.
 
-As thoroughly explored in \citep{2017arXiv170104862A}, GANs remain remarkably
+As thoroughly explored in \cite{2017arXiv170104862A}, GANs remain remarkably
 difficult to train because of vanishing gradients as $d$ saturates, or because of
 unreliable updates when the training procedure is relaxed. As a remedy,
-Wasserstein GANs~\citep{2017arXiv170107875A} reformulate the adversarial
+Wasserstein GANs~\cite{2017arXiv170107875A} reformulate the adversarial
 setup in order to minimize the Wasserstein-1 distance $W( p_r(\mathbf{x} ), p(\mathbf{x} | \bftheta)  )$
 by replacing the adversarial classifier with a 1-Lipschitz adversarial critic
 $d(\cdot; \bfphi) : \mathbb{R}^d \to \mathbb{R}$, such that
@@ -197,7 +219,7 @@ p_r(\mathbf{x})$ and $\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)$.
 
 \subsection{Variational optimization}
 
-Variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization} and evolution strategies~\citep{2011arXiv1106.4487W} are general
+Variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization} and evolution strategies~\cite{2011arXiv1106.4487W} are general
 optimization techniques that can be used to form a differentiable bound
 on the optima of a non-differentiable function. Given a function $f$ to minimize,
 these techniques are based on the simple fact that
@@ -209,7 +231,7 @@ That is, the minimum of a set of function values is always less than or equal
 to any of their average. Provided that the proposal distribution is flexible enough, the parameters $\bfpsi$
 can be updated to place its mass arbitrarily tight around the optimum $\bftheta^* = \min_{\bftheta \in \Theta} f(\bftheta)$.
 
-Under mild restrictions outlined in  \citep{2012arXiv1212.4507S}, the bound
+Under mild restrictions outlined in  \cite{2012arXiv1212.4507S}, the bound
 $U(\bfpsi)$ is differentiable with respect to $\bfpsi$, and using the log-likelihood
 trick its gradient can be rewritten as:
 \begin{align}\label{eqn:approx-grad}
@@ -225,7 +247,6 @@ $f(\mathbf{\bftheta})$ for any $\bftheta$, then one can construct empirical
 estimates of Eqn.~\ref{eqn:approx-grad}, which can in turn be used to minimize
 $U(\bfpsi)$ with stochastic gradient descent (or a variant thereof, robust to noise
 and parameter scaling).
-
 
 % ==============================================================================
 
@@ -282,8 +303,8 @@ L}_d$ and ${\cal L}_g$, thereby bypassing the non-differentiability of $g$. More
 specifically, we consider a proposal distribution $q(\bftheta|\bfpsi)$ over the
 parameters of $g$ and alternately minimize the variational upper bounds
 \begin{align}
-    U_d &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_d ] \label{eqn:vo-ud} \\
-    U_g &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] \label{eqn:vo-ug}
+U_d &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_d ] \label{eqn:vo-ud} \\
+U_g &= \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] \label{eqn:vo-ug}
 \end{align} respectively over $\bfphi$ and $\bfpsi$.
 When updating
 $\bfphi$, unbiased estimates of $\nabla_\bfphi U_d$ can be obtained by
@@ -292,12 +313,12 @@ generated data, as is ordinarily done in stochastic gradient descent. When updat
 $\bfpsi$, $\nabla_\bfpsi U_g$ can be estimated as described in the previous section.
 That is,
 \begin{equation}\label{eqn:grad-ug-approx}
-   \nabla_\bfpsi U_g = \mathbb{E}_{\substack{\bftheta \sim q(\bftheta|\bfpsi), \\ \tilde{\bfx} \sim p(\bfx | \bftheta)}}  [-d( \tilde{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
+\nabla_\bfpsi U_g = \mathbb{E}_{\substack{\bftheta \sim q(\bftheta|\bfpsi), \\ \tilde{\bfx} \sim p(\bfx | \bftheta)}}  [-d( \tilde{\bfx} ;\bfphi) \nabla_\bfpsi \log q(\bftheta|\bfpsi)],
 \end{equation}
 which we can approximate with mini-batches of
 generated data
 \begin{equation}
-    \nabla_\bfpsi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\bfz_m; \bftheta_m); \bfphi) \nabla_\bfpsi \log q(\bftheta_m|\bfpsi)
+\nabla_\bfpsi U_g \approx \frac{1}{M} \sum_{m=1}^M -d(g(\bfz_m; \bftheta_m); \bfphi) \nabla_\bfpsi \log q(\bftheta_m|\bfpsi)
 \end{equation}
 for $\bftheta_m \sim q(\bftheta|\bfpsi)$ and $\bfz_m \sim p(\bfz|\bftheta_m)$.
 For completeness, Algorithm~\ref{alg:avo} outlines the proposed adversarial variational
@@ -306,9 +327,9 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
 variance of the noisy estimator of the gradients may be too large to be useful in many problems.
 We use Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to use instead the Natural Evolution Strategy
-algorithm~\citep{2011arXiv1106.4487W} or variance reduction techniques
+algorithm~\cite{2011arXiv1106.4487W} or variance reduction techniques
 such as Rao-Blackwellization,
-Control Variates, or quasi-Monte Carlo~\citep{ranganath2014black, tran2017variational}.
+Control Variates, or quasi-Monte Carlo~\cite{ranganath2014black, tran2017variational}.
 
 
 \subsection{Point Estimates through Marginal Likelihood}
@@ -318,10 +339,10 @@ The variational objectives \ref{eqn:vo-ud}-\ref{eqn:vo-ug}
 have the effect of replacing the modeled data distribution of Eqn.~\ref{eqn:p_theta} with
 the parametrized marginal distribution of the generated data
 \begin{equation}\label{eq:marginal_likelihood}
-    \qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
+\qxpsi = \int  p(\mathbf{x}|\bftheta) q(\bftheta|\bfpsi) d\bftheta.
 \end{equation}
 We can think of $q(\bfx|\bfpsi)$ as a \textit{variational program} as described
-in \citep{2016arXiv161009033R}, though more complicated than a simple
+in \cite{2016arXiv161009033R}, though more complicated than a simple
 reparametrization of normally distributed noise $\bfz$ through a differentiable
 function. In our case, the variational program is a
 marginalized, non-differentiable  simulator.  Its density is  intractable;
@@ -329,10 +350,10 @@ nevertheless, it can generate samples for $\bfx$ whose expectations are differen
 respect to $\bfpsi$.
 Operationally, we sample from this marginal model via
 \begin{equation}\label{eqn:p_psi}
-    \mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
+\mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
 \end{equation}
 
-We can view the optimization of the marginal likelihood $q(\bfx | \bfpsi)$ with respect to $\bfpsi$ through the lens of empirical Bayes, where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\citep{rubin1984}.
+We can view the optimization of the marginal likelihood $q(\bfx | \bfpsi)$ with respect to $\bfpsi$ through the lens of empirical Bayes, where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\cite{rubin1984}.
 When $\rho$ is the Wasserstein distance, $\bfpsi^*$ is referred to as the
 minimum Wasserstein estimator (MWE).
 When the model is well specified, the MWE
@@ -349,7 +370,7 @@ point estimates $\bftheta^*$, we augment Eqn.~\ref{eqn:vo-ug} with a
 regularization term corresponding to the differential entropy $H$ of the
 proposal distribution $q(\bftheta | \bfpsi)$. That is,
 \begin{equation}
-    U_g = \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] + \gamma H(q(\bftheta|\bfpsi))
+U_g = \mathbb{E}_{\bftheta \sim q(\bftheta|\bfpsi)} [ {\cal L}_g ] + \gamma H(q(\bftheta|\bfpsi))
 \end{equation}
 where $\gamma \in \mathbb{R}^+$ is a hyper-parameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
@@ -390,17 +411,6 @@ each epoch, parameters $\bfpsi$ are updated by taking one Adam step, with
 $\alpha=0.01$ and $\beta_1=\beta_2=0.5$. The gradient penalty coefficient is set to
 $\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=5$.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
-    \caption{Discrete Poisson model with unknown mean.
-             ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
-                        the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density.
-             ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
-             ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
-             }\label{fig:poisson}
-\end{figure}
-
 The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
 distributions $q(\bftheta|\bfpsi)$ after AVO.  For
 both $\gamma=0$ and $\gamma=5$, the proposal distributions correctly concentrate
@@ -421,22 +431,34 @@ between true and model data. This confirms that adversarial variational optimiza
 works despite the discreteness of the data and lack of access to the
 density $p(\bfx | \bftheta)$ or its gradient.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
+\caption{Discrete Poisson model with unknown mean.
+ ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
+            the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density.
+ ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
+ ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+ }\label{fig:poisson}
+\end{figure}
+
+
 \subsection{Multidimensional continuous data}
 
 As a second toy example, we consider a generator producing
 5-dimensional continuous data, as originally specified in Section 4.2. of
-\citep{cranmer2015approximating}. More specifically, we consider the following
+\cite{cranmer2015approximating}. More specifically, we consider the following
 generative process:
 \begin{itemize}
-    \item $\bfz = (z_0, z_1, z_2, z_3, z_4)$, such that \\
-        $z_0 \sim {\cal N}(\mu=\alpha, \sigma=1)$,
-        $z_1 \sim {\cal N}(\mu=\beta, \sigma=3)$,
-        $z_2 \sim {\text{Mixture}}[\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \\  \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5)]$,
-        $z_3 \sim {\text{Exponential}(\lambda=3)}$, and
-        $z_4 \sim {\text{Exponential}(\lambda=0.5)}$;
-    \item $\mathbf{x} = R  \bfz$, where $R$ is a fixed
-    semi-positive definite $5 \times 5$ matrix defining a fixed projection
-    of $\bfz$ into the observed space.
+\item $\bfz = (z_0, z_1, z_2, z_3, z_4)$, such that \\
+$z_0 \sim {\cal N}(\mu=\alpha, \sigma=1)$,
+$z_1 \sim {\cal N}(\mu=\beta, \sigma=3)$,
+$z_2 \sim {\text{Mixture}}[\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \\  \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5)]$,
+$z_3 \sim {\text{Exponential}(\lambda=3)}$, and
+$z_4 \sim {\text{Exponential}(\lambda=0.5)}$;
+\item $\mathbf{x} = R  \bfz$, where $R$ is a fixed
+semi-positive definite $5 \times 5$ matrix defining a fixed projection
+of $\bfz$ into the observed space.
 \end{itemize}
 Again, the AVO algorithm does not have access to the density or its gradient, only samples from the generative model.
 We consider observed data generated at the nominal values $\bftheta^* = (\alpha^*=1,\beta^*=-1)$.
@@ -458,29 +480,29 @@ data, where reliable approximations of $p(\mathbf{x}|\bftheta)$ in a traditional
 MLE setting would otherwise be difficult to construct.
 
 \begin{figure}
-    \centering
-    \includegraphics[width=0.48\textwidth]{figures/multi.pdf}
-    \caption{Multidimensional continuous data.
-             ({\it Left}) Density $q(\bftheta|\bfpsi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
-                          Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
-             ({\it Right}) Density $q(\bftheta|\bfpsi)$ after adversarial variational optimization ($\gamma=10$).
-                           The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta^* = (1, -1)$.
-             }\label{fig:multi}
+\centering
+\includegraphics[width=0.48\textwidth]{figures/multi.pdf}
+\caption{Multidimensional continuous data.
+ ({\it Left}) Density $q(\bftheta|\bfpsi)$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance.
+              Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
+ ({\it Right}) Density $q(\bftheta|\bfpsi)$ after adversarial variational optimization ($\gamma=10$).
+               The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta^* = (1, -1)$.
+ }\label{fig:multi}
 \end{figure}
 
 
 \subsection{Electron--positron annihilation}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
-    \caption{Electron--positron annihilation.
-    ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization.
-                     Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
-                     The density of the penalized distribution ($\gamma=5$) is  highly concentrated, resulting in the green mass near $\bftheta^*$.
-    ({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their proposal distributions, both models closely match the observed data.
-    ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
-             }\label{fig:weinberg}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
+\caption{Electron--positron annihilation.
+({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization.
+         Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
+         The density of the penalized distribution ($\gamma=5$) is  highly concentrated, resulting in the green mass near $\bftheta^*$.
+({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their proposal distributions, both models closely match the observed data.
+({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+ }\label{fig:weinberg}
 \end{figure}
 
 As a more realistic example, we now consider a (simplified) simulator from
@@ -491,7 +513,7 @@ polar angle of the outgoing muon with respect  to the originally incoming
 electron. Neglecting measurement uncertainty induced from the particle detectors,
 this random variable is approximately distributed as
 \begin{equation}\label{eq:simple_weinberg}
-    p(\mathbf{x}|E_\text{beam}, G_f) = \frac{1}{Z} \left[ (1 + \mathbf{x}^2) + c(E_\text{beam}, G_f) \mathbf{x} \right]
+p(\mathbf{x}|E_\text{beam}, G_f) = \frac{1}{Z} \left[ (1 + \mathbf{x}^2) + c(E_\text{beam}, G_f) \mathbf{x} \right]
 \end{equation}
 where $Z$ is a known normalization constant and $c$ is an asymmetry coefficient
 function. Due to the linear term in the expression, the density $p(\mathbf{x} |
@@ -501,9 +523,9 @@ and $G_f$ (the Fermi constant) through the coefficient function $c$.
 
 A typical physics simulator for this process includes a more precise treatment of the
 quantum mechanical  $e^+e^- \rightarrow \mu^+\mu^-$ scattering
-using \texttt{MadGraph}~\citep{Alwall:2011uj},  ionization of matter in the
+using \texttt{MadGraph}~\cite{Alwall:2011uj},  ionization of matter in the
 detector due to the passage of the out-going $\mu^+\mu^-$ particles using
-\texttt{GEANT4}~\citep{Agostinelli:2002hh}, electronic noise and other details of the sensors
+\texttt{GEANT4}~\cite{Agostinelli:2002hh}, electronic noise and other details of the sensors
 that measure the ionization signal, and the deterministic algorithms that
 estimate the polar angle $A$ based on the sensor readouts. The simulation of
 this process is highly non-trivial as is the space of latent variables $\mathcal{Z}$.
@@ -542,7 +564,7 @@ likelihood-free inference, approximate Bayesian computation (ABC),
 implicit generative networks, and variational inference.
 Viewed from the literature around implicit generative models based on neural networks,
 the proposed method can be considered as a direct adaptation of
-generative adversarial networks~\citep{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
+generative adversarial networks~\cite{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
 non-differentiable simulators using variational optimization~\cite{2012arXiv1212.4507S,staines2013optimization}.
 
 From the point of view of likelihood-free inference, where  non-differentiable
@@ -563,7 +585,7 @@ typically used in ABC and calculate the Wasserstein distance explicitly, without
 making use of the Kantorovich-Rubinstein duality and of a critic $d$. For high-dimensional
 data, they note that this is computationally expensive and introduce an
 approximation based on projection of the data onto Hilbert space-filling curves.
-Their Remark 5.1 points out that~\citep{montavon2016wasserstein} proposed an
+Their Remark 5.1 points out that~\cite{montavon2016wasserstein} proposed an
 approximation of the gradient of an entropy-regularized Wasserstein distance,
 which uses a similar duality. They note that ``unfortunately, it is not
 applicable in the setting of purely generative models, as it involves point-wise
@@ -576,7 +598,7 @@ optimize $\bfpsi$ with stochastic gradient descent. Additionally,
 our procedure avoids the inefficiencies of
 their Wasserstein rejection sampler incurred from using the ABC-likelihood.
 In the case of small $N$, we note however that fast algorithms for calculating the exact (entropically regularized) Wasserstein distance on
-empirical distributions~\citep{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}
+empirical distributions~\cite{cuturi2013sinkhorn, genevay2016stochastic, montavon2016wasserstein}
 are alternatives to adversarial learning that are worth considering.
 
 More generally, likelihood-free
@@ -586,19 +608,19 @@ inference algorithms are formulated as an iterative two-step process where the
 model distribution is first compared to the true data distribution and then
 updated to make it more comparable to the latter. Relevant work in this
 direction includes those that rely on a classifier to estimate the discrepancy between the observed data and the model distributions
-\citep{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}.
-Also of direct relevance in the likelihood-free setup, Hamiltonian ABC~\citep{meeds2015hamiltonian}
+\cite{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}.
+Also of direct relevance in the likelihood-free setup, Hamiltonian ABC~\cite{meeds2015hamiltonian}
 estimate gradients with respect
 to $\bftheta$ through finite differences from multiple forward passes of the
 simulator with variance reduction strategies based on controlling the source of
 randomness used for the latent variable $\bfz$.
 
 Likewise, AVO closely relates to recent extensions of GANs, such as
-Adversarial Learned Inference (ALI)~\citep{dumoulin2016adversarially},
-Bidirectional GANs (BiGANs)~\citep{donahue2016adversarial},
-$\alpha$-GAN~\citep{rosca2017variational}, Adversarial Variational Bayes
-(AVB)~\citep{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv}
-algorithm of  \citep{2017arXiv170208235H}, which
+Adversarial Learned Inference (ALI)~\cite{dumoulin2016adversarially},
+Bidirectional GANs (BiGANs)~\cite{donahue2016adversarial},
+$\alpha$-GAN~\cite{rosca2017variational}, Adversarial Variational Bayes
+(AVB)~\cite{DBLP:journals/corr/MeschederNG17}, and the \texttt{PC-Adv}
+algorithm of  \cite{2017arXiv170208235H}, which
 add an inference network to the generative model.  Each of these assume a
 tractable density $p(\bfx|\bftheta)$ that is differentiable with respect to
 $\bftheta$, which is  not satisfied in the likelihood-free setting. Our lifting
@@ -614,7 +636,7 @@ This work has also many connections to work on variational inference, in which t
 goal is to optimize the recognition model $q(\bfz, \bftheta|\bfpsi)$ so that it
 is close to the true posterior $p(\bfz, \bftheta |\mathbf{x})$. There have been efforts
 to extend variational inference to intractable likelihoods; however, they
-require restrictive assumptions.  In \citep{tran2017variational}, the authors
+require restrictive assumptions.  In \cite{tran2017variational}, the authors
 consider Variational Bayes with an Intractable Likelihood (VBIL). In that
 approach ``the only requirement is that the intractable likelihood can be
 estimated unbiasedly.'' In the case of simulators, they propose to use the
@@ -623,7 +645,7 @@ $\epsilon \to 0$,   thus this method inherits the drawbacks of the ABC-likelihoo
 including the choice of summary statistics and the inefficiency in evaluating
 the ABC likelihood for high-dimensional data and small $\epsilon$.
 
-Lastly, we make a connection to Operator Variational Inference (OPVI)~\citep{2016arXiv161009033R},
+Lastly, we make a connection to Operator Variational Inference (OPVI)~\cite{2016arXiv161009033R},
 which is a generalization of variational inference formulated as the following optimization problem:
 \begin{eqnarray}
 \bflambda^* = \inf_\bflambda \sup_\bfphi \mathbb{E}_{ \bfz \sim q( \bfz | \bflambda)} [ (O^{p,q} f_\bfphi) ] \, .
@@ -671,23 +693,15 @@ the gradients $\nabla_\bfpsi U_g$ can be computed.
 
 % ==============================================================================
 
-\vspace{0.4cm}
-\section*{Acknowledgments}
+% \section*{Acknowledgements}
 
-We would like to thank Lukas Heinrich for helpful comments regarding
-the electron--positron annihilation simulation. We would also like to thank
-Rajesh Ranganath and Dustin Tran for enlightening discussions and feedback.
-GL and KL are both supported through NSF ACI-1450310, additionally KC is
-supported through PHY-1505463 and PHY-1205376.
+% We would like to thank Lukas Heinrich for helpful comments regarding
+% the electron--positron annihilation simulation. We would also like to thank
+% Rajesh Ranganath and Dustin Tran for enlightening discussions and feedback.
+% GL and KL are both supported through NSF ACI-1450310, additionally KC is
+% supported through PHY-1505463 and PHY-1205376.
 
-
-% ==============================================================================
-
-\vspace{2cm}
-
-%\bibliographystyle{hacm}
 \bibliographystyle{hunsrt}
 \bibliography{bibliography.bib}
-
 
 \end{document}
