@@ -1,0 +1,245 @@
+\begin{thebibliography}{36}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Agostinelli et~al.(2003)]{Agostinelli:2002hh}
+Agostinelli, S. et~al.
+\newblock {GEANT4: A Simulation toolkit}.
+\newblock \emph{Nucl. Instrum. Meth.}, A506:\penalty0 250--303, 2003.
+\newblock \doi{10.1016/S0168-9002(03)01368-8}.
+
+\bibitem[Alwall et~al.(2011)Alwall, Herquet, Maltoni, Mattelaer, and
+  Stelzer]{Alwall:2011uj}
+Alwall, Johan, Herquet, Michel, Maltoni, Fabio, Mattelaer, Olivier, and
+  Stelzer, Tim.
+\newblock {MadGraph 5 : Going Beyond}.
+\newblock \emph{JHEP}, 06:\penalty0 128, 2011.
+\newblock \doi{10.1007/JHEP06(2011)128}.
+
+\bibitem[{Arjovsky} \& {Bottou}(2017){Arjovsky} and
+  {Bottou}]{2017arXiv170104862A}
+{Arjovsky}, M. and {Bottou}, L.
+\newblock {Towards Principled Methods for Training Generative Adversarial
+  Networks}.
+\newblock \emph{ArXiv e-prints}, January 2017.
+
+\bibitem[{Arjovsky} et~al.(2017){Arjovsky}, {Chintala}, and
+  {Bottou}]{2017arXiv170107875A}
+{Arjovsky}, M., {Chintala}, S., and {Bottou}, L.
+\newblock {Wasserstein GAN}.
+\newblock \emph{ArXiv e-prints}, January 2017.
+
+\bibitem[Beaumont et~al.(2002)Beaumont, Zhang, and
+  Balding]{beaumont2002approximate}
+Beaumont, Mark~A, Zhang, Wenyang, and Balding, David~J.
+\newblock Approximate bayesian computation in population genetics.
+\newblock \emph{Genetics}, 162\penalty0 (4):\penalty0 2025--2035, 2002.
+
+\bibitem[Bernton et~al.(2017)Bernton, Jacob, Gerber, and
+  Robert]{bernton2017inference}
+Bernton, Espen, Jacob, Pierre~E, Gerber, Mathieu, and Robert, Christian~P.
+\newblock Inference in generative models using the wasserstein distance.
+\newblock \emph{arXiv preprint arXiv:1701.05146}, 2017.
+
+\bibitem[Cranmer et~al.(2016)Cranmer, Pavez, Louppe, and
+  Brooks]{cranmer2016experiments}
+Cranmer, K, Pavez, J, Louppe, G, and Brooks, WK.
+\newblock Experiments using machine learning to approximate likelihood ratios
+  for mixture models.
+\newblock In \emph{Journal of Physics: Conference Series}, volume 762, pp.\
+  012034. IOP Publishing, 2016.
+
+\bibitem[Cranmer et~al.(2015)Cranmer, Pavez, and
+  Louppe]{cranmer2015approximating}
+Cranmer, Kyle, Pavez, Juan, and Louppe, Gilles.
+\newblock Approximating likelihood ratios with calibrated discriminative
+  classifiers.
+\newblock \emph{arXiv preprint arXiv:1506.02169}, 2015.
+
+\bibitem[Cuturi(2013)]{cuturi2013sinkhorn}
+Cuturi, Marco.
+\newblock Sinkhorn distances: Lightspeed computation of optimal transport.
+\newblock In \emph{Advances in neural information processing systems}, pp.\
+  2292--2300, 2013.
+
+\bibitem[Donahue et~al.(2016)Donahue, Kr{\"a}henb{\"u}hl, and
+  Darrell]{donahue2016adversarial}
+Donahue, Jeff, Kr{\"a}henb{\"u}hl, Philipp, and Darrell, Trevor.
+\newblock Adversarial feature learning.
+\newblock \emph{arXiv preprint arXiv:1605.09782}, 2016.
+
+\bibitem[Dumoulin et~al.(2016)Dumoulin, Belghazi, Poole, Lamb, Arjovsky,
+  Mastropietro, and Courville]{dumoulin2016adversarially}
+Dumoulin, Vincent, Belghazi, Ishmael, Poole, Ben, Lamb, Alex, Arjovsky, Martin,
+  Mastropietro, Olivier, and Courville, Aaron.
+\newblock Adversarially learned inference.
+\newblock \emph{arXiv preprint arXiv:1606.00704}, 2016.
+
+\bibitem[{Dutta} et~al.(2016){Dutta}, {Corander}, {Kaski}, and
+  {Gutmann}]{2016arXiv161110242D}
+{Dutta}, R., {Corander}, J., {Kaski}, S., and {Gutmann}, M.~U.
+\newblock {Likelihood-free inference by ratio estimation}.
+\newblock \emph{ArXiv e-prints}, November 2016.
+
+\bibitem[Genevay et~al.(2016)Genevay, Cuturi, Peyr{\'e}, and
+  Bach]{genevay2016stochastic}
+Genevay, Aude, Cuturi, Marco, Peyr{\'e}, Gabriel, and Bach, Francis.
+\newblock Stochastic optimization for large-scale optimal transport.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  3440--3448, 2016.
+
+\bibitem[Goodfellow et~al.(2014)Goodfellow, Pouget-Abadie, Mirza, Xu,
+  Warde-Farley, Ozair, Courville, and Bengio]{goodfellow2014generative}
+Goodfellow, Ian, Pouget-Abadie, Jean, Mirza, Mehdi, Xu, Bing, Warde-Farley,
+  David, Ozair, Sherjil, Courville, Aaron, and Bengio, Yoshua.
+\newblock Generative adversarial nets.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  2672--2680, 2014.
+
+\bibitem[{Gulrajani} et~al.(2017){Gulrajani}, {Ahmed}, {Arjovsky}, {Dumoulin},
+  and {Courville}]{2017arXiv170400028G}
+{Gulrajani}, I., {Ahmed}, F., {Arjovsky}, M., {Dumoulin}, V., and {Courville},
+  A.
+\newblock {Improved Training of Wasserstein GANs}.
+\newblock \emph{ArXiv e-prints}, March 2017.
+
+\bibitem[Gutmann \& Hyv{\"a}rinen(2012)Gutmann and
+  Hyv{\"a}rinen]{gutmann2012noise}
+Gutmann, Michael~U and Hyv{\"a}rinen, Aapo.
+\newblock Noise-contrastive estimation of unnormalized statistical models, with
+  applications to natural image statistics.
+\newblock \emph{Journal of Machine Learning Research}, 13\penalty0
+  (Feb):\penalty0 307--361, 2012.
+
+\bibitem[Gutmann et~al.(2017)Gutmann, Dutta, Kaski, and
+  Corander]{gutmann2017likelihood}
+Gutmann, Michael~U, Dutta, Ritabrata, Kaski, Samuel, and Corander, Jukka.
+\newblock Likelihood-free inference via classification.
+\newblock \emph{Statistics and Computing}, pp.\  1--15, 2017.
+
+\bibitem[{Husz{\'a}r}(2017)]{2017arXiv170208235H}
+{Husz{\'a}r}, F.
+\newblock {Variational Inference using Implicit Distributions}.
+\newblock \emph{ArXiv e-prints}, February 2017.
+
+\bibitem[{Kingma} \& {Ba}(2014){Kingma} and {Ba}]{2014arXiv1412.6980K}
+{Kingma}, D.~P. and {Ba}, J.
+\newblock {Adam: A Method for Stochastic Optimization}.
+\newblock \emph{ArXiv e-prints}, December 2014.
+
+\bibitem[Kingma \& Welling(2013)Kingma and
+  Welling]{DBLP:journals/corr/KingmaW13}
+Kingma, Diederik~P. and Welling, Max.
+\newblock Auto-encoding variational bayes.
+\newblock \emph{CoRR}, abs/1312.6114, 2013.
+\newblock URL \url{http://arxiv.org/abs/1312.6114}.
+
+\bibitem[Marin et~al.(2012)Marin, Pudlo, Robert, and
+  Ryder]{marin2012approximate}
+Marin, Jean-Michel, Pudlo, Pierre, Robert, Christian~P, and Ryder, Robin~J.
+\newblock Approximate bayesian computational methods.
+\newblock \emph{Statistics and Computing}, pp.\  1--14, 2012.
+
+\bibitem[Marjoram et~al.(2003)Marjoram, Molitor, Plagnol, and
+  Tavar{\'e}]{marjoram2003markov}
+Marjoram, Paul, Molitor, John, Plagnol, Vincent, and Tavar{\'e}, Simon.
+\newblock Markov chain monte carlo without likelihoods.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 100\penalty0
+  (26):\penalty0 15324--15328, 2003.
+
+\bibitem[Meeds et~al.(2015)Meeds, Leenders, and Welling]{meeds2015hamiltonian}
+Meeds, Edward, Leenders, Robert, and Welling, Max.
+\newblock Hamiltonian abc.
+\newblock \emph{arXiv preprint arXiv:1503.01916}, 2015.
+
+\bibitem[Mescheder et~al.(2017)Mescheder, Nowozin, and
+  Geiger]{DBLP:journals/corr/MeschederNG17}
+Mescheder, Lars~M., Nowozin, Sebastian, and Geiger, Andreas.
+\newblock Adversarial variational bayes: Unifying variational autoencoders and
+  generative adversarial networks.
+\newblock \emph{CoRR}, abs/1701.04722, 2017.
+\newblock URL \url{http://arxiv.org/abs/1701.04722}.
+
+\bibitem[{Mohamed} \& {Lakshminarayanan}(2016){Mohamed} and
+  {Lakshminarayanan}]{2016arXiv161003483M}
+{Mohamed}, S. and {Lakshminarayanan}, B.
+\newblock {Learning in Implicit Generative Models}.
+\newblock \emph{ArXiv e-prints}, October 2016.
+
+\bibitem[Montavon et~al.(2016)Montavon, M{\"u}ller, and
+  Cuturi]{montavon2016wasserstein}
+Montavon, Gr{\'e}goire, M{\"u}ller, Klaus-Robert, and Cuturi, Marco.
+\newblock Wasserstein training of restricted boltzmann machines.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  3718--3726, 2016.
+
+\bibitem[{Ranganath} et~al.(2016){Ranganath}, {Altosaar}, {Tran}, and
+  {Blei}]{2016arXiv161009033R}
+{Ranganath}, R., {Altosaar}, J., {Tran}, D., and {Blei}, D.~M.
+\newblock {Operator Variational Inference}.
+\newblock \emph{ArXiv e-prints}, October 2016.
+
+\bibitem[Ranganath et~al.(2014)Ranganath, Gerrish, and
+  Blei]{ranganath2014black}
+Ranganath, Rajesh, Gerrish, Sean, and Blei, David.
+\newblock Black box variational inference.
+\newblock In \emph{Artificial Intelligence and Statistics}, pp.\  814--822,
+  2014.
+
+\bibitem[Rosca et~al.(2017)Rosca, Lakshminarayanan, Warde-Farley, and
+  Mohamed]{rosca2017variational}
+Rosca, Mihaela, Lakshminarayanan, Balaji, Warde-Farley, David, and Mohamed,
+  Shakir.
+\newblock Variational approaches for auto-encoding generative adversarial
+  networks.
+\newblock \emph{arXiv preprint arXiv:1706.04987}, 2017.
+
+\bibitem[Rubin(1984)]{rubin1984}
+Rubin, Donald~B.
+\newblock Bayesianly justifiable and relevant frequency calculations for the
+  applied statistician.
+\newblock \emph{Ann. Statist.}, 12\penalty0 (4):\penalty0 1151--1172, 12 1984.
+\newblock \doi{10.1214/aos/1176346785}.
+\newblock URL \url{http://dx.doi.org/10.1214/aos/1176346785}.
+
+\bibitem[Sisson \& Fan(2011)Sisson and Fan]{sisson2011likelihood}
+Sisson, Scott~A and Fan, Yanan.
+\newblock \emph{Likelihood-free MCMC}.
+\newblock Chapman \& Hall/CRC, New York.[839], 2011.
+
+\bibitem[Sisson et~al.(2007)Sisson, Fan, and Tanaka]{sisson2007sequential}
+Sisson, Scott~A, Fan, Yanan, and Tanaka, Mark~M.
+\newblock Sequential monte carlo without likelihoods.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 104\penalty0
+  (6):\penalty0 1760--1765, 2007.
+
+\bibitem[{Staines} \& {Barber}(2012){Staines} and
+  {Barber}]{2012arXiv1212.4507S}
+{Staines}, J. and {Barber}, D.
+\newblock {Variational Optimization}.
+\newblock \emph{ArXiv e-prints}, December 2012.
+
+\bibitem[Staines \& Barber(2013)Staines and Barber]{staines2013optimization}
+Staines, J and Barber, D.
+\newblock Optimization by variational bounding.
+\newblock In \emph{ESANN 2013 proceedings, 21st European Symposium on
+  Artificial Neural Networks, Computational Intelligence and Machine Learning},
+  pp.\  473--478, 2013.
+
+\bibitem[Tran et~al.(2017)Tran, Nott, and Kohn]{tran2017variational}
+Tran, Minh-Ngoc, Nott, David~J, and Kohn, Robert.
+\newblock Variational bayes with intractable likelihood.
+\newblock \emph{Journal of Computational and Graphical Statistics}, \penalty0
+  (just-accepted), 2017.
+
+\bibitem[{Wierstra} et~al.(2011){Wierstra}, {Schaul}, {Glasmachers}, {Sun}, and
+  {Schmidhuber}]{2011arXiv1106.4487W}
+{Wierstra}, D., {Schaul}, T., {Glasmachers}, T., {Sun}, Y., and {Schmidhuber},
+  J.
+\newblock {Natural Evolution Strategies}.
+\newblock \emph{ArXiv e-prints}, June 2011.
+
+\end{thebibliography}

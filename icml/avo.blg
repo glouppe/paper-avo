@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: avo.aux
+The style file: icml2018.bst
+Database file #1: bibliography.bib.bib
+Warning--can't use both volume and number fields in cranmer2016experiments
+Warning--there's a number but no volume in tran2017variational
+You've used 36 entries,
+            2773 wiz_defined-function locations,
+            791 strings with 10944 characters,
+and the built_in function-call counts, 17925 in all, are:
+= -- 1572
+> -- 1154
+< -- 22
++ -- 387
+- -- 351
+* -- 1463
+:= -- 2740
+add.period$ -- 115
+call.type$ -- 36
+change.case$ -- 223
+chr.to.int$ -- 36
+cite$ -- 74
+duplicate$ -- 831
+empty$ -- 1369
+format.name$ -- 404
+if$ -- 3773
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 37
+newline$ -- 194
+num.names$ -- 144
+pop$ -- 442
+preamble$ -- 1
+purify$ -- 188
+quote$ -- 0
+skip$ -- 675
+stack$ -- 0
+substring$ -- 531
+swap$ -- 141
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 391
+warning$ -- 2
+while$ -- 145
+width$ -- 0
+write$ -- 472
+(There were 2 warnings)
