@@ -1,5 +1,5 @@
 import autograd.numpy as np
-from autograd.util import flatten_func
+from autograd.misc.flatten import flatten_func
 import copy
 
 

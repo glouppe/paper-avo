@@ -42,8 +42,11 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0.0, 5.0]
-colors = ["C1", "C2"]
+# gammas = [0.0, 5.0]
+# colors = ["C1", "C2"]
+
+gammas = [5.0]
+colors = ["C2"]
 
 def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
