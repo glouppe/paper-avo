@@ -162,11 +162,6 @@ Marjoram, Paul, Molitor, John, Plagnol, Vincent, and Tavar{\'e}, Simon.
 \newblock \emph{Proceedings of the National Academy of Sciences}, 100\penalty0
   (26):\penalty0 15324--15328, 2003.
 
-\bibitem[Meeds et~al.(2015)Meeds, Leenders, and Welling]{meeds2015hamiltonian}
-Meeds, Edward, Leenders, Robert, and Welling, Max.
-\newblock Hamiltonian abc.
-\newblock \emph{arXiv preprint arXiv:1503.01916}, 2015.
-
 \bibitem[Mescheder et~al.(2017)Mescheder, Nowozin, and
   Geiger]{DBLP:journals/corr/MeschederNG17}
 Mescheder, Lars~M., Nowozin, Sebastian, and Geiger, Andreas.
@@ -233,6 +228,13 @@ Staines, J and Barber, D.
 \newblock In \emph{ESANN 2013 proceedings, 21st European Symposium on
   Artificial Neural Networks, Computational Intelligence and Machine Learning},
   pp.\  473--478, 2013.
+
+\bibitem[{Tran} et~al.(2017){Tran}, {Ranganath}, and
+  {Blei}]{2017arXiv170208896T}
+{Tran}, D., {Ranganath}, R., and {Blei}, D.~M.
+\newblock {Hierarchical Implicit Models and Likelihood-Free Variational
+  Inference}.
+\newblock \emph{ArXiv e-prints}, February 2017.
 
 \bibitem[Tran et~al.(2017)Tran, Nott, and Kohn]{tran2017variational}
 Tran, Minh-Ngoc, Nott, David~J, and Kohn, Robert.

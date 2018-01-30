@@ -8,14 +8,14 @@ Warning--can't use both volume and number fields in cranmer2016experiments
 Warning--there's a number but no volume in tran2017variational
 You've used 37 entries,
             2773 wiz_defined-function locations,
-            793 strings with 11137 characters,
-and the built_in function-call counts, 18230 in all, are:
+            793 strings with 11178 characters,
+and the built_in function-call counts, 18232 in all, are:
 = -- 1587
 > -- 1202
 < -- 21
 + -- 403
 - -- 366
-* -- 1499
+* -- 1501
 := -- 2808
 add.period$ -- 118
 call.type$ -- 37
@@ -35,10 +35,10 @@ pop$ -- 457
 preamble$ -- 1
 purify$ -- 195
 quote$ -- 0
-skip$ -- 678
+skip$ -- 677
 stack$ -- 0
 substring$ -- 501
-swap$ -- 132
+swap$ -- 133
 text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 0
