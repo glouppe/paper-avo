@@ -1,4 +1,4 @@
-\begin{thebibliography}{36}
+\begin{thebibliography}{37}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -43,6 +43,11 @@ Beaumont, Mark~A, Zhang, Wenyang, and Balding, David~J.
 Bernton, Espen, Jacob, Pierre~E, Gerber, Mathieu, and Robert, Christian~P.
 \newblock Inference in generative models using the wasserstein distance.
 \newblock \emph{arXiv preprint arXiv:1701.05146}, 2017.
+
+\bibitem[Buesing et~al.(2016)Buesing, Weber, and Mohamed]{buesingstochastic}
+Buesing, Lars, Weber, Theophane, and Mohamed, Shakir.
+\newblock Stochastic gradient estimation with finite differences.
+\newblock 2016.
 
 \bibitem[Cranmer et~al.(2016)Cranmer, Pavez, Louppe, and
   Brooks]{cranmer2016experiments}
@@ -98,6 +103,13 @@ Goodfellow, Ian, Pouget-Abadie, Jean, Mirza, Mehdi, Xu, Bing, Warde-Farley,
 \newblock Generative adversarial nets.
 \newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
   2672--2680, 2014.
+
+\bibitem[{Grathwohl} et~al.(2017){Grathwohl}, {Choi}, {Wu}, {Roeder}, and
+  {Duvenaud}]{2017arXiv171100123G}
+{Grathwohl}, W., {Choi}, D., {Wu}, Y., {Roeder}, G., and {Duvenaud}, D.
+\newblock {Backpropagation through the Void: Optimizing control variates for
+  black-box gradient estimation}.
+\newblock \emph{ArXiv e-prints}, October 2017.
 
 \bibitem[{Gulrajani} et~al.(2017){Gulrajani}, {Ahmed}, {Arjovsky}, {Dumoulin},
   and {Courville}]{2017arXiv170400028G}
@@ -181,13 +193,6 @@ Montavon, Gr{\'e}goire, M{\"u}ller, Klaus-Robert, and Cuturi, Marco.
 {Ranganath}, R., {Altosaar}, J., {Tran}, D., and {Blei}, D.~M.
 \newblock {Operator Variational Inference}.
 \newblock \emph{ArXiv e-prints}, October 2016.
-
-\bibitem[Ranganath et~al.(2014)Ranganath, Gerrish, and
-  Blei]{ranganath2014black}
-Ranganath, Rajesh, Gerrish, Sean, and Blei, David.
-\newblock Black box variational inference.
-\newblock In \emph{Artificial Intelligence and Statistics}, pp.\  814--822,
-  2014.
 
 \bibitem[Rosca et~al.(2017)Rosca, Lakshminarayanan, Warde-Farley, and
   Mohamed]{rosca2017variational}

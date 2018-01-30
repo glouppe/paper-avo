@@ -90,20 +90,21 @@
 
 
 \begin{abstract}
-    Complex computer simulators are increasingly used across fields of science as
-    generative models tying parameters of an underlying theory to
-    experimental observations. Inference in this setup is often
-    difficult, as simulators rarely admit a tractable density or likelihood
-    function. We introduce Adversarial Variational Optimization (AVO), a likelihood-free
-    inference algorithm for fitting a non-differentiable generative model incorporating ideas from empirical Bayes and variational inference.
-    We adapt the training procedure of generative
-    adversarial networks by replacing the differentiable generative network with a
-    domain-specific simulator. We solve the resulting non-differentiable
-    minimax problem by minimizing variational upper bounds of the two adversarial objectives.
-    Effectively, the procedure results in learning a
-    proposal distribution over simulator parameters, such that the corresponding
-    marginal distribution of the generated data matches the observations.
-    We present results of the method with simulators producing both discrete and continuous data.
+    Complex computer simulators are increasingly used across fields
+of science as generative models tying parameters of an underlying theory to
+experimental observations. Inference in this setup is often difficult, as
+simulators rarely admit a tractable density or likelihood function. We introduce
+Adversarial Variational Optimization (AVO), a likelihood-free inference
+algorithm for fitting a non-differentiable generative model incorporating ideas
+from generative adversarial networks (GANs) and variational inference. We adapt the
+training procedure of (Wasserstein) GANs by replacing the
+differentiable generative network with a domain-specific simulator. We solve the
+resulting non-differentiable minimax problem by minimizing variational upper
+bounds of the two adversarial objectives. Effectively, the procedure results in
+learning a proposal distribution over simulator parameters, such that the
+corresponding marginal distribution of the generated data matches the
+observations. We present results of the method with simulators producing both
+discrete and continuous data.
 \end{abstract}
 
 
@@ -111,16 +112,19 @@
 
 \section{Introduction}
 
-In many fields of science such as particle physics, epidemiology,  and population
-genetics, computer simulators are used to describe complex data generation processes. These simulators relate
-observations $\bfx$ to the parameters $\bftheta$ of an underlying theory or mechanistic model.
-In most cases, these simulators are specified as procedural implementations of forward, stochastic processes involving latent variables $\bfz$.
-Rarely do these simulators admit a tractable density (or likelihood) $p(\bfx |
-\bftheta)$. The prevalence and significance of this problem has motivated an
-active research effort in so-called \textit{likelihood-free inference}
-algorithms such as Approximate Bayesian Computation
-(ABC) and density estimation-by-comparison algorithms~\cite{beaumont2002approximate, marjoram2003markov, sisson2007sequential,
-sisson2011likelihood, marin2012approximate, cranmer2015approximating}.
+In many fields of science such as particle physics, epidemiology,  and
+population genetics, computer simulators are used to describe complex data
+generation processes. These simulators relate observations $\bfx$ to the
+parameters $\bftheta$ of an underlying theory or mechanistic model. In most
+cases, these simulators are specified as procedural implementations of forward,
+stochastic processes involving latent variables $\bfz$. Rarely do these
+simulators admit a tractable density (or likelihood) $p(\bfx | \bftheta)$. The
+prevalence and significance of this problem has motivated an active research
+effort in so-called \textit{likelihood-free inference} algorithms such as
+Approximate Bayesian Computation (ABC) and density estimation-by-comparison
+algorithms~\cite{beaumont2002approximate, marjoram2003markov,
+sisson2007sequential, sisson2011likelihood, marin2012approximate,
+cranmer2015approximating}.
 
 In parallel, with the introduction of variational
 auto-encoders~\cite{DBLP:journals/corr/KingmaW13} and generative adversarial
@@ -172,7 +176,7 @@ We assume that the stochastic generative process that defines $p(\mathbf{x}|\bft
 specified through a non-differentiable deterministic function $g(\cdot; \bftheta) : {\cal Z} \to
 \mathbb{R}^d$. Operationally, %That is, we consider
 \begin{equation}\label{eqn:p_theta}
-    \mathbf{x} \sim p(\mathbf{x}|\bftheta) \equiv \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta)
+    \mathbf{x} \sim p(\mathbf{x}|\bftheta) \triangleq \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta)
 \end{equation}
 such that the density $p(\mathbf{x}|\bftheta)$ can be
 written as
@@ -344,9 +348,8 @@ optimization (AVO) procedure, as built on top of WGAN-GP.
 Algorithm~\ref{alg:avo} represents the simplest version of AVO; however, the
 variance of the noisy estimator of the gradients may be too large to be useful in many problems.
 We use Adam~\cite{2014arXiv1412.6980K}, but note the opportunity to use instead the Natural Evolution Strategy
-algorithm~\cite{2011arXiv1106.4487W} or variance reduction techniques
-such as Rao-Blackwellization,
-control variates, or quasi-Monte Carlo~\cite{ranganath2014black, tran2017variational}.
+algorithm~\cite{2011arXiv1106.4487W} or variance reduction techniques as
+control variates~\cite{2017arXiv171100123G} or finite differences~\cite{buesingstochastic}.
 
 
 \subsection{Parameter Point Estimates}
@@ -367,7 +370,7 @@ nevertheless, it can generate samples for $\bfx$ whose expectations are differen
 respect to $\bfpsi$.
 Operationally, we sample from this marginal model via
 \begin{equation}\label{eqn:p_psi}
-\mathbf{x} \sim \qxpsi \equiv \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
+\mathbf{x} \sim \qxpsi \triangleq \bftheta \sim q(\bftheta|\bfpsi), \bfz \sim p(\bfz|\bftheta), \mathbf{x} = g(\bfz; \bftheta).
 \end{equation}
 
 We can view the optimization of $q(\bfx | \bfpsi)$ with respect to $\bfpsi$ through the lens of empirical Bayes, where the data are used to optimize a prior within the family $q(\bftheta|\bfpsi)$. If $\rho$ is the KL distance, $\bfpsi^*$ would correspond to the maximum marginal likelihood estimator advocated by Rubin~\cite{rubin1984}.
@@ -392,7 +395,7 @@ where $\gamma \in \mathbb{R}^+$ is a hyper-parameter controlling the trade-off
 between the generator objective and the tightness of the proposal distribution.
 For small values of $\gamma$,
 proposal distributions with large entropy are not penalized, which results
-in learning a smeared variation of the original simulator corresponding to the marginal or prior predictive model. On the other hand,
+in learning a smeared variation of the original simulator. On the other hand,
 for large values of $\gamma$, the procedure is encouraged to fit a proposal
 distribution with low entropy, which has the effect of concentrating its density
 tightly around one or a few $\bftheta$ values.
@@ -408,36 +411,47 @@ typically increases as the entropy of the proposal decreases.
 
 \subsection{Univariate discrete data}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
+\caption{Discrete Poisson model with unknown mean.
+ ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=1$, the distributions correctly concentrate their density around
+            the true value $\log(\lambda^*)$. Entropic regularization ($\gamma=1$) results in a tighter density.
+ ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
+ ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+ }\label{fig:poisson}
+\end{figure}
+
 As a first illustrative experiment, we evaluate inference for a discrete Poisson
 distribution with unknown mean $\lambda$. We artificially consider
 the distribution as a parametrized simulator, from which we can only
 generate data.
 
 The observed data is sampled from a Poisson with mean $\lambda^* = 7$.
-Algorithm~\ref{alg:avo} is run for 300 epochs with mini-batches of size $M=64$
+Algorithm~\ref{alg:avo} is run for 500 epochs with mini-batches of size $M=64$
 and the following configuration. For the critic $d$, we use a 3-layer MLP with 10
 hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
-$n_\text{critic}=100$ iterations with a step size $\alpha=0.01$, decay rates
-$\beta_1=\beta_2=0.5$ and its inner first and second moment vectors reset at
+$n_\text{critic}=5$ iterations with a step size $\alpha=0.01$ and otherwise default parameters.
+Its inner first and second moment vectors are reset at
 each outer epoch in order to avoid building momentum in staled directions.  For
 estimating $\lambda^*$, we parametrize $\bftheta$ as $\log(\lambda)$ and use a univariate Gaussian proposal distribution
 $q(\bftheta|\bfpsi)$ initialized with a mean at $\log(5)$ and unit variance. At
-each epoch, parameters $\bfpsi$ are updated by taking one Adam step, with
-$\alpha=0.01$ and $\beta_1=\beta_2=0.5$. The gradient penalty coefficient is set to
-$\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=5$.
+each epoch, parameters $\bfpsi$ are updated by taking one Adam step, with step size
+$\alpha=0.01$. The gradient penalty coefficient is set to
+$\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=1$.
 
 The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
 distributions $q(\bftheta|\bfpsi)$ after AVO.  For
-both $\gamma=0$ and $\gamma=5$, the proposal distributions correctly concentrate
+both $\gamma=0$ and $\gamma=1$, the proposal distributions correctly concentrate
 their density around the true parameter value $\log(\lambda^*) = 1.94$. Under
-the effect of the positive entropy penalty $H(q(\bftheta|\bfpsi))$,
-the proposal distribution for $\gamma=5$ concentrates its mass more tightly,
-yielding in this case a more precise inference.  The top right plot compares the
+the effect of entropic regularization,
+the proposal distribution for $\gamma=1$ concentrates its mass tightly,
+yielding in this case precise inference.  The top right plot compares the
 model distributions to the true distribution.  As theoretically expected from
-adversarial training, we see that the resulting distributions closely match
+adversarial training, we see that the resulting distributions align with
 the true distribution, with in this case visually slightly better results for the penalized
 model.  The bottom plot of Figure~\ref{fig:poisson} shows empirical estimates
-of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=5$,
+of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=1$,
 the curves quickly fall towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)}
 [d(\tilde{\mathbf{x}};\bfphi)] \approx \mathbb{E}_{\mathbf{x} \sim
@@ -446,47 +460,39 @@ between true and model data. This confirms that adversarial variational optimiza
 works despite the discreteness of the data and lack of access to the
 density $p(\bfx | \bftheta)$ or its gradient.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
-\caption{Discrete Poisson model with unknown mean.
- ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
-            the true value $\log(\lambda^*)$. Penalizing the entropy of the proposal distribution ($\gamma=5$) results in a tighter density.
- ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
- ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
- }\label{fig:poisson}
-\end{figure}
+
 
 \subsection{Multidimensional continuous data}
 
 As a second toy example, we consider a generator producing
-5-dimensional continuous data, as originally specified in Section 4.2. of
-\cite{cranmer2015approximating}. More specifically, we consider the following
-generative process:
-\begin{itemize}
-\item $\bfz = (z_0, z_1, z_2, z_3, z_4)$, such that \\
-$z_0 \sim {\cal N}(\mu=\alpha, \sigma=1)$,
-$z_1 \sim {\cal N}(\mu=\beta, \sigma=3)$,
-$z_2 \sim {\text{Mixture}}[\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \\  \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5)]$,
-$z_3 \sim {\text{Exponential}(\lambda=3)}$, and
-$z_4 \sim {\text{Exponential}(\lambda=0.5)}$;
-\item $\mathbf{x} = R  \bfz$, where $R$ is a fixed
-semi-positive definite $5 \times 5$ matrix defining a fixed projection
-of $\bfz$ into the observed space.
-\end{itemize}
-Again, the AVO algorithm does not have access to the density or its gradient, only samples from the generative model.
+5-dimensional continuous data, as originally specified in Section 4.2 of
+\cite{cranmer2015approximating}.
+% More specifically, we consider the following
+% generative process:
+% \begin{itemize}
+% \item $\bfz = (z_0, z_1, z_2, z_3, z_4)$, such that \\
+% $z_0 \sim {\cal N}(\mu=\alpha, \sigma=1)$,
+% $z_1 \sim {\cal N}(\mu=\beta, \sigma=3)$,
+% $z_2 \sim {\text{Mixture}}[\frac{1}{2}\,{\cal N}(\mu=-2, \sigma=1), \\  \frac{1}{2}\,{\cal N}(\mu=2, \sigma=0.5)]$,
+% $z_3 \sim {\text{Exponential}(\lambda=3)}$, and
+% $z_4 \sim {\text{Exponential}(\lambda=0.5)}$;
+% \item $\mathbf{x} = R  \bfz$, where $R$ is a fixed
+% semi-positive definite $5 \times 5$ matrix defining a fixed projection
+% of $\bfz$ into the observed space.
+% \end{itemize}
+Again, AVO does not have access to the density or its gradient, only samples from the generative model.
 We consider observed data generated at the nominal values $\bftheta^* = (\alpha^*=1,\beta^*=-1)$.
 The simulator parameters are modeled with a factored  (mean field) Gaussian
 proposal distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
 initialized with zero mean and unit variance.
 Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
-Adam configured with $\alpha=0.01$, $\beta_1=0.9$ and $\beta_2=0.999$.
+Adam configured with a step size $\alpha=0.01$ and otherwise default parameters.
 The architecture of the critic is the same as in the previous example.
 
 
 Starting with a proposal distribution $q(\bftheta|\bfpsi)$ largely spread over
 the parameter space, as illustrated in the left plot of Figure~\ref{fig:multi},
-AVO quickly converges towards a variational distribution whose density
+AVO quickly converges towards a proposal distribution whose density
 concentrates around the nominal values $\bftheta^*$, as shown in the right plot of Figure~\ref{fig:multi}.
 Overall, this example further illustrates and confirms the ability of adversarial
 variational optimization for inference with multiple parameters and multidimensional
@@ -504,6 +510,11 @@ MLE setting would otherwise be difficult to construct.
  }\label{fig:multi}
 \end{figure}
 
+\subsection{Benchmarks}
+
+\glnote{Compare against ABC and others.}
+\glnote{Sections 6.1 and 6.4 of Bernton.}
+
 
 
 % ==============================================================================
@@ -512,7 +523,7 @@ MLE setting would otherwise be difficult to construct.
 
 This work sits at the intersection of several lines of research related to
 likelihood-free inference, approximate Bayesian computation (ABC),
-implicit generative networks, and variational inference.
+implicit generative models, and variational inference.
 Viewed from the literature around implicit generative models based on neural networks,
 the proposed method can be considered as a direct adaptation of
 generative adversarial networks~\cite{goodfellow2014generative,2017arXiv170104862A, 2017arXiv170107875A} to
@@ -580,7 +591,7 @@ program $q(\bfx | \bfpsi)$ provides the ability to differentiate expectations
 with respect to $\bfpsi$ as in Eqn~\ref{eqn:approx-grad}; however, the density
 $q(\bfx | \bfpsi)$ is still intractable. Moreover, we do not attempt to define a
 recognition model  $q(\bfz, \bftheta|\bfpsi)$ as the latent space $\mathcal{Z}$
-of many real-world simulators is complicated and not amenable to neural a
+of many real-world simulators is complicated and not amenable to a neural
 recognition model.
 
 This work has also many connections to work on variational inference, in which the
@@ -635,7 +646,7 @@ the proposed method. While the obtained results are encouraging, the complete
 validation of the method remains to be carried out in real conditions on a full
 fledged scientific simulator -- which we plan to achieve for a next version of
 this work. In terms of method, several components need further investigation.
-First, we need to better study the interplay between the entropy penalty and the
+First, we need to better study the interplay between the entropic regularization and the
 adversarial objectives. Second, we should better understand the dynamics of the
 optimization procedure, in particular when combined with momentum-based
 optimizers like Adam. Third, we need to consider whether less noisy estimates of
@@ -675,7 +686,7 @@ the gradients $\nabla_\bfpsi U_g$ can be computed.
  }\label{fig:weinberg}
 \end{figure}
 
-As a more realistic example, we now consider a (simplified) simulator from
+As a more realistic example, we here consider a (simplified) simulator from
 particle physics for electron--positron collisions resulting in muon--antimuon
 pairs ($e^+e^- \rightarrow \mu^+\mu^-$). The simulator approximates the
 distribution of observed measurements $\mathbf{x} = \cos(A) \in [-1,1]$, where $A$ is the

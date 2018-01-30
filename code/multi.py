@@ -240,6 +240,6 @@ for i in range(n_epochs):
             plt.tight_layout()
 
             if i == n_epochs - 1:
-                plt.savefig("figs/multi-%d.pdf" % seed)
+                plt.savefig("multi-%d.pdf" % seed)
 
             plt.close()

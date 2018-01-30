@@ -44,7 +44,8 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Algorithm}{2}{subsection.4.1}}
 \citation{2014arXiv1412.6980K}
 \citation{2011arXiv1106.4487W}
-\citation{ranganath2014black,tran2017variational}
+\citation{2017arXiv171100123G}
+\citation{buesingstochastic}
 \citation{2016arXiv161009033R}
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Adversarial variational optimization (AVO).}}{3}{algorithm.1}}
 \newlabel{alg:avo}{{1}{3}{}{algorithm.1}{}}
@@ -54,21 +55,22 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Parameter Point Estimates}{3}{subsection.4.2}}
 \newlabel{eq:marginal_likelihood}{{13}{3}{}{equation.4.13}{}}
 \citation{rubin1984}
-\citation{cranmer2015approximating}
 \newlabel{eqn:p_psi}{{14}{4}{}{equation.4.14}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{4}{section.5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Univariate discrete data}{4}{subsection.5.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Multidimensional continuous data}{4}{subsection.5.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Discrete Poisson model with unknown mean. ({\it  Top left}) Proposal distributions $q({\bm  {\theta }}|{\bm  {\psi }})$ after training. For both $\gamma =0$ and $\gamma =1$, the distributions correctly concentrate their density around the true value $\qopname  \relax o{log}(\lambda ^*)$. Entropic regularization ($\gamma =1$) results in a tighter density. ({\it  Top right}) Model distributions $q(\mathbf  {x}|{\bm  {\psi }})$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution. ({\it  Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses. }}{4}{figure.1}}
+\newlabel{fig:poisson}{{1}{4}{Discrete Poisson model with unknown mean. ({\it Top left}) Proposal distributions $q(\bftheta |\bfpsi )$ after training. For both $\gamma =0$ and $\gamma =1$, the distributions correctly concentrate their density around the true value $\log (\lambda ^*)$. Entropic regularization ($\gamma =1$) results in a tighter density. ({\it Top right}) Model distributions $\qxpsi $ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution. ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses}{figure.1}{}}
+\citation{cranmer2015approximating}
 \citation{goodfellow2014generative,2017arXiv170104862A,2017arXiv170107875A}
 \citation{2012arXiv1212.4507S,staines2013optimization}
 \citation{bernton2017inference}
 \citation{montavon2016wasserstein}
 \citation{cuturi2013sinkhorn,genevay2016stochastic,montavon2016wasserstein}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Discrete Poisson model with unknown mean. ({\it  Top left}) Proposal distributions $q({\bm  {\theta }}|{\bm  {\psi }})$ after training. For both $\gamma =0$ and $\gamma =5$, the distributions correctly concentrate their density around the true value $\qopname  \relax o{log}(\lambda ^*)$. Penalizing the entropy of the proposal distribution ($\gamma =5$) results in a tighter density. ({\it  Top right}) Model distributions $q(\mathbf  {x}|{\bm  {\psi }})$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution. ({\it  Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses. }}{5}{figure.1}}
-\newlabel{fig:poisson}{{1}{5}{Discrete Poisson model with unknown mean. ({\it Top left}) Proposal distributions $q(\bftheta |\bfpsi )$ after training. For both $\gamma =0$ and $\gamma =5$, the distributions correctly concentrate their density around the true value $\log (\lambda ^*)$. Penalizing the entropy of the proposal distribution ($\gamma =5$) results in a tighter density. ({\it Top right}) Model distributions $\qxpsi $ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution. ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Multidimensional continuous data}{5}{subsection.5.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Benchmarks}{5}{subsection.5.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Related work}{5}{section.6}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Multidimensional continuous data. ({\it  Left}) Density $q({\bm  {\theta }}|{\bm  {\psi }})$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance. Contours correspond to parameters ${\bm  {\theta }}$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q({\bm  {\theta }}|{\bm  {\psi }})$. ({\it  Right}) Density $q({\bm  {\theta }}|{\bm  {\psi }})$ after adversarial variational optimization ($\gamma =10$). The proposal density correctly converges towards a distribution whose density concentrates around ${\bm  {\theta }}^* = (1, -1)$. }}{5}{figure.2}}
 \newlabel{fig:multi}{{2}{5}{Multidimensional continuous data. ({\it Left}) Density $q(\bftheta |\bfpsi )$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance. Contours correspond to parameters $\bftheta $ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta |\bfpsi )$. ({\it Right}) Density $q(\bftheta |\bfpsi )$ after adversarial variational optimization ($\gamma =10$). The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta ^* = (1, -1)$}{figure.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Related work}{5}{section.6}}
 \citation{2016arXiv161003483M}
 \citation{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}
 \citation{meeds2015hamiltonian}
@@ -89,36 +91,37 @@
 \bibcite{2017arXiv170107875A}{{4}{2017}{{{Arjovsky} et~al.}}{{{Arjovsky}, {Chintala}, and {Bottou}}}}
 \bibcite{beaumont2002approximate}{{5}{2002}{{Beaumont et~al.}}{{Beaumont, Zhang, and Balding}}}
 \bibcite{bernton2017inference}{{6}{2017}{{Bernton et~al.}}{{Bernton, Jacob, Gerber, and Robert}}}
-\bibcite{cranmer2016experiments}{{7}{2016}{{Cranmer et~al.}}{{Cranmer, Pavez, Louppe, and Brooks}}}
-\bibcite{cranmer2015approximating}{{8}{2015}{{Cranmer et~al.}}{{Cranmer, Pavez, and Louppe}}}
-\bibcite{cuturi2013sinkhorn}{{9}{2013}{{Cuturi}}{{}}}
-\bibcite{donahue2016adversarial}{{10}{2016}{{Donahue et~al.}}{{Donahue, Kr{\"a}henb{\"u}hl, and Darrell}}}
-\bibcite{dumoulin2016adversarially}{{11}{2016}{{Dumoulin et~al.}}{{Dumoulin, Belghazi, Poole, Lamb, Arjovsky, Mastropietro, and Courville}}}
-\bibcite{2016arXiv161110242D}{{12}{2016}{{{Dutta} et~al.}}{{{Dutta}, {Corander}, {Kaski}, and {Gutmann}}}}
-\bibcite{genevay2016stochastic}{{13}{2016}{{Genevay et~al.}}{{Genevay, Cuturi, Peyr{\'e}, and Bach}}}
-\bibcite{goodfellow2014generative}{{14}{2014}{{Goodfellow et~al.}}{{Goodfellow, Pouget-Abadie, Mirza, Xu, Warde-Farley, Ozair, Courville, and Bengio}}}
-\bibcite{2017arXiv170400028G}{{15}{2017}{{{Gulrajani} et~al.}}{{{Gulrajani}, {Ahmed}, {Arjovsky}, {Dumoulin}, and {Courville}}}}
-\bibcite{gutmann2012noise}{{16}{2012}{{Gutmann \& Hyv{\"a}rinen}}{{Gutmann and Hyv{\"a}rinen}}}
-\bibcite{gutmann2017likelihood}{{17}{2017}{{Gutmann et~al.}}{{Gutmann, Dutta, Kaski, and Corander}}}
-\bibcite{2017arXiv170208235H}{{18}{2017}{{Husz{\'a}r}}{{}}}
-\bibcite{2014arXiv1412.6980K}{{19}{2014}{{{Kingma} \& {Ba}}}{{{Kingma} and {Ba}}}}
-\bibcite{DBLP:journals/corr/KingmaW13}{{20}{2013}{{Kingma \& Welling}}{{Kingma and Welling}}}
-\bibcite{marin2012approximate}{{21}{2012}{{Marin et~al.}}{{Marin, Pudlo, Robert, and Ryder}}}
-\bibcite{marjoram2003markov}{{22}{2003}{{Marjoram et~al.}}{{Marjoram, Molitor, Plagnol, and Tavar{\'e}}}}
-\bibcite{meeds2015hamiltonian}{{23}{2015}{{Meeds et~al.}}{{Meeds, Leenders, and Welling}}}
-\bibcite{DBLP:journals/corr/MeschederNG17}{{24}{2017}{{Mescheder et~al.}}{{Mescheder, Nowozin, and Geiger}}}
-\bibcite{2016arXiv161003483M}{{25}{2016}{{{Mohamed} \& {Lakshminarayanan}}}{{{Mohamed} and {Lakshminarayanan}}}}
-\bibcite{montavon2016wasserstein}{{26}{2016}{{Montavon et~al.}}{{Montavon, M{\"u}ller, and Cuturi}}}
-\bibcite{2016arXiv161009033R}{{27}{2016}{{{Ranganath} et~al.}}{{{Ranganath}, {Altosaar}, {Tran}, and {Blei}}}}
-\bibcite{ranganath2014black}{{28}{2014}{{Ranganath et~al.}}{{Ranganath, Gerrish, and Blei}}}
-\bibcite{rosca2017variational}{{29}{2017}{{Rosca et~al.}}{{Rosca, Lakshminarayanan, Warde-Farley, and Mohamed}}}
-\bibcite{rubin1984}{{30}{1984}{{Rubin}}{{}}}
-\bibcite{sisson2011likelihood}{{31}{2011}{{Sisson \& Fan}}{{Sisson and Fan}}}
-\bibcite{sisson2007sequential}{{32}{2007}{{Sisson et~al.}}{{Sisson, Fan, and Tanaka}}}
-\bibcite{2012arXiv1212.4507S}{{33}{2012}{{{Staines} \& {Barber}}}{{{Staines} and {Barber}}}}
-\bibcite{staines2013optimization}{{34}{2013}{{Staines \& Barber}}{{Staines and Barber}}}
-\bibcite{tran2017variational}{{35}{2017}{{Tran et~al.}}{{Tran, Nott, and Kohn}}}
-\bibcite{2011arXiv1106.4487W}{{36}{2011}{{{Wierstra} et~al.}}{{{Wierstra}, {Schaul}, {Glasmachers}, {Sun}, and {Schmidhuber}}}}
+\bibcite{buesingstochastic}{{7}{2016}{{Buesing et~al.}}{{Buesing, Weber, and Mohamed}}}
+\bibcite{cranmer2016experiments}{{8}{2016}{{Cranmer et~al.}}{{Cranmer, Pavez, Louppe, and Brooks}}}
+\bibcite{cranmer2015approximating}{{9}{2015}{{Cranmer et~al.}}{{Cranmer, Pavez, and Louppe}}}
+\bibcite{cuturi2013sinkhorn}{{10}{2013}{{Cuturi}}{{}}}
+\bibcite{donahue2016adversarial}{{11}{2016}{{Donahue et~al.}}{{Donahue, Kr{\"a}henb{\"u}hl, and Darrell}}}
+\bibcite{dumoulin2016adversarially}{{12}{2016}{{Dumoulin et~al.}}{{Dumoulin, Belghazi, Poole, Lamb, Arjovsky, Mastropietro, and Courville}}}
+\bibcite{2016arXiv161110242D}{{13}{2016}{{{Dutta} et~al.}}{{{Dutta}, {Corander}, {Kaski}, and {Gutmann}}}}
+\bibcite{genevay2016stochastic}{{14}{2016}{{Genevay et~al.}}{{Genevay, Cuturi, Peyr{\'e}, and Bach}}}
+\bibcite{goodfellow2014generative}{{15}{2014}{{Goodfellow et~al.}}{{Goodfellow, Pouget-Abadie, Mirza, Xu, Warde-Farley, Ozair, Courville, and Bengio}}}
+\bibcite{2017arXiv171100123G}{{16}{2017}{{{Grathwohl} et~al.}}{{{Grathwohl}, {Choi}, {Wu}, {Roeder}, and {Duvenaud}}}}
+\bibcite{2017arXiv170400028G}{{17}{2017}{{{Gulrajani} et~al.}}{{{Gulrajani}, {Ahmed}, {Arjovsky}, {Dumoulin}, and {Courville}}}}
+\bibcite{gutmann2012noise}{{18}{2012}{{Gutmann \& Hyv{\"a}rinen}}{{Gutmann and Hyv{\"a}rinen}}}
+\bibcite{gutmann2017likelihood}{{19}{2017}{{Gutmann et~al.}}{{Gutmann, Dutta, Kaski, and Corander}}}
+\bibcite{2017arXiv170208235H}{{20}{2017}{{Husz{\'a}r}}{{}}}
+\bibcite{2014arXiv1412.6980K}{{21}{2014}{{{Kingma} \& {Ba}}}{{{Kingma} and {Ba}}}}
+\bibcite{DBLP:journals/corr/KingmaW13}{{22}{2013}{{Kingma \& Welling}}{{Kingma and Welling}}}
+\bibcite{marin2012approximate}{{23}{2012}{{Marin et~al.}}{{Marin, Pudlo, Robert, and Ryder}}}
+\bibcite{marjoram2003markov}{{24}{2003}{{Marjoram et~al.}}{{Marjoram, Molitor, Plagnol, and Tavar{\'e}}}}
+\bibcite{meeds2015hamiltonian}{{25}{2015}{{Meeds et~al.}}{{Meeds, Leenders, and Welling}}}
+\bibcite{DBLP:journals/corr/MeschederNG17}{{26}{2017}{{Mescheder et~al.}}{{Mescheder, Nowozin, and Geiger}}}
+\bibcite{2016arXiv161003483M}{{27}{2016}{{{Mohamed} \& {Lakshminarayanan}}}{{{Mohamed} and {Lakshminarayanan}}}}
+\bibcite{montavon2016wasserstein}{{28}{2016}{{Montavon et~al.}}{{Montavon, M{\"u}ller, and Cuturi}}}
+\bibcite{2016arXiv161009033R}{{29}{2016}{{{Ranganath} et~al.}}{{{Ranganath}, {Altosaar}, {Tran}, and {Blei}}}}
+\bibcite{rosca2017variational}{{30}{2017}{{Rosca et~al.}}{{Rosca, Lakshminarayanan, Warde-Farley, and Mohamed}}}
+\bibcite{rubin1984}{{31}{1984}{{Rubin}}{{}}}
+\bibcite{sisson2011likelihood}{{32}{2011}{{Sisson \& Fan}}{{Sisson and Fan}}}
+\bibcite{sisson2007sequential}{{33}{2007}{{Sisson et~al.}}{{Sisson, Fan, and Tanaka}}}
+\bibcite{2012arXiv1212.4507S}{{34}{2012}{{{Staines} \& {Barber}}}{{{Staines} and {Barber}}}}
+\bibcite{staines2013optimization}{{35}{2013}{{Staines \& Barber}}{{Staines and Barber}}}
+\bibcite{tran2017variational}{{36}{2017}{{Tran et~al.}}{{Tran, Nott, and Kohn}}}
+\bibcite{2011arXiv1106.4487W}{{37}{2011}{{{Wierstra} et~al.}}{{{Wierstra}, {Schaul}, {Glasmachers}, {Sun}, and {Schmidhuber}}}}
 \bibstyle{icml2018}
 \citation{Alwall:2011uj}
 \citation{Agostinelli:2002hh}

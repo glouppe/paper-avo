@@ -21,7 +21,7 @@ seed = 777
 rng = check_random_state(seed)
 
 batch_size = 64
-n_epochs = 300+1
+n_epochs = 500+1
 lambda_gp = 0.025
 
 true_theta = np.array([np.log(7)])
@@ -42,11 +42,11 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-# gammas = [0.0, 5.0]
-# colors = ["C1", "C2"]
+gammas = [0.0, 1.0]
+colors = ["C1", "C2"]
 
-gammas = [5.0]
-colors = ["C2"]
+# gammas = [5.0]
+# colors = ["C2"]
 
 def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
@@ -142,24 +142,23 @@ for state in history:
         return grad_u
 
     # Training loop
-    opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
-                               step_size=0.01, b1=0.5, b2=0.5)
-    opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"],
-                                 step_size=0.01, b1=0.5, b2=0.5)
+    opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"]) #, step_size=0.01, b1=0.5, b2=0.5)
+    opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"]) #, step_size=0.01, b1=0.5, b2=0.5)
 
     opt_critic.step(100)
     opt_critic.move_to(state["params_critic"])
 
     for i in range(n_epochs):
-        print(i, state["gamma"], state["params_proposal"])
+        print(i, state["gamma"], state["params_proposal"], np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
 
         # fit simulator
+        opt_proposal.reset()
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
 
         # fit critic
         opt_critic.reset()   # reset moments
-        opt_critic.step(100)
+        opt_critic.step(5)
         opt_critic.move_to(state["params_critic"])
 
         state["loss_d"].append(-loss_critic(state["params_critic"], i,
@@ -188,6 +187,7 @@ if make_plots:
                  color=state["color"])
 
     plt.legend(loc="upper right")
+    plt.ylim(0, 15)
 
     # histograms
     ax2 = plt.subplot2grid((2, 2), (0, 1))
@@ -197,11 +197,14 @@ if make_plots:
     Xs = [X_obs]
 
     for state in history:
-        thetas = gaussian_draw(state["params_proposal"], 20000, random_state=rng)
+        thetas = gaussian_draw(state["params_proposal"], 50000, random_state=rng)
         X_ = np.zeros((len(thetas), 1))
         for j, theta in enumerate(thetas):
             X_[j, :] = simulator(theta, 1).ravel()
         Xs.append(X_)
+
+    for i in range(len(Xs)):
+        Xs[i] = np.array(Xs[i]).ravel()
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
@@ -220,10 +223,10 @@ if make_plots:
                  label=r"$-U_d\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs)
-    plt.ylim(0, 30)
+    plt.ylim(0, 10)
     plt.legend(loc="upper right")
 
     plt.tight_layout()
-    plt.savefig("figs/poisson-%d.pdf" % seed)
+    plt.savefig("poisson-%d.pdf" % seed)
 
     plt.close()
