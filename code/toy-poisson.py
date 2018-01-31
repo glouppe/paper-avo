@@ -20,9 +20,11 @@ from sklearn.utils import check_random_state
 seed = 777
 rng = check_random_state(seed)
 
-batch_size = 64
+batch_size = 64   # try increasing, default=64
 n_epochs = 500+1
-lambda_gp = 0.025
+lambda_gp = 0.1 # ok~0.1; try reducing (=> worse), try increasing (0.4, not sure what to conclude)
+
+# see zigzag near the end... hence the reset? but works better without in multi.py
 
 true_theta = np.array([np.log(7)])
 make_plots = True
@@ -42,7 +44,7 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0.0, 1.0]
+gammas = [0.0, 5.0]
 colors = ["C1", "C2"]
 
 # gammas = [5.0]
@@ -72,7 +74,7 @@ history = [{"gamma": gammas[i],
             "color": colors[i],
             "loss_d": [],
             "params_proposal": make_gaussian_proposal(n_params,
-                                                      mu=np.log(5.0)),
+                                                      mu=np.log(10.0)),
             "params_critic": make_critic(n_features, 10, random_state=rng)}
            for i in range(len(gammas))]
 
@@ -142,23 +144,24 @@ for state in history:
         return grad_u
 
     # Training loop
-    opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"]) #, step_size=0.01, b1=0.5, b2=0.5)
-    opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"]) #, step_size=0.01, b1=0.5, b2=0.5)
+    opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"], step_size=0.005, b1=0.05, b2=0.05) #, step_size=0.01, b1=0.5, b2=0.5)
+    opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"], step_size=0.005, b1=0.05, b2=0.05) #, step_size=0.01, b1=0.5, b2=0.5)
 
     opt_critic.step(100)
     opt_critic.move_to(state["params_critic"])
+    opt_critic.reset()
 
     for i in range(n_epochs):
         print(i, state["gamma"], state["params_proposal"], np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
 
         # fit simulator
-        opt_proposal.reset()
+        #opt_proposal.reset()
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
 
         # fit critic
-        opt_critic.reset()   # reset moments
-        opt_critic.step(5)
+        #opt_critic.reset()   # reset moments
+        opt_critic.step(10)
         opt_critic.move_to(state["params_critic"])
 
         state["loss_d"].append(-loss_critic(state["params_critic"], i,
@@ -187,7 +190,7 @@ if make_plots:
                  color=state["color"])
 
     plt.legend(loc="upper right")
-    plt.ylim(0, 15)
+    plt.ylim(0, 6)
 
     # histograms
     ax2 = plt.subplot2grid((2, 2), (0, 1))

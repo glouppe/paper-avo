@@ -22,15 +22,21 @@ from proposals import grad_gaussian_entropy
 from sklearn.utils import check_random_state
 from scipy.spatial.distance import mahalanobis
 
+# What works:
+# remove the reset!!
+# effect of lambda_gp?  lambda_gp=0.1 works
+# effect of gamma? works ok for gamma=0, tighter bands with gamma=1.0
+# refit critic periodically? some zigzag with 1:10 but fine; refitting not necessary
+
 # Global params
 
 seed = 777
 rng = check_random_state(seed)
 
 batch_size = 64
-n_epochs = 300+1
-lambda_gp = 0.025
-gamma = 10.0
+n_epochs = 1000+1
+lambda_gp = 0.1
+gamma = 1.0
 
 true_theta = np.array([1.0, -1.0])
 make_plots = True
@@ -157,22 +163,25 @@ def approx_grad_u(params_proposal, i, gamma=gamma):
 
 # Training loop
 
-opt_critic = AdamOptimizer(grad_loss_critic, params_critic, step_size=0.01)
-opt_proposal = AdamOptimizer(approx_grad_u, params_proposal, step_size=0.01)
+opt_critic = AdamOptimizer(grad_loss_critic, params_critic, step_size=0.005, b1=0.05, b2=0.05)
+opt_proposal = AdamOptimizer(approx_grad_u, params_proposal, step_size=0.005, b1=0.05, b2=0.05)
 
 opt_critic.step(100)
 opt_critic.move_to(params_critic)
+opt_critic.reset()
 
 for i in range(n_epochs):
     print(i, params_proposal)
 
     # fit simulator
+    #opt_proposal.reset()
     opt_proposal.step(1)
     opt_proposal.move_to(params_proposal)
 
     # fit critic
-    opt_critic.reset()   # reset moments
-    opt_critic.step(100)
+    #opt_critic.reset()   # reset moments
+    #opt_critic.step(1000 if i % 50 == 0 else 10)
+    opt_critic.step(10)
     opt_critic.move_to(params_critic)
 
     # plot
@@ -195,7 +204,7 @@ for i in range(n_epochs):
             Z = np.array(Z).reshape(X.shape)
 
             CS = plt.contour(X, Y, Z, [1.0, 2.0, 3.0], colors="C1")
-            fmt = {l:s for l, s in zip(CS.levels, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])}
+            fmt = {l:s for l, s in zip(CS.levels, [r"$1$", r"$2$", r"$3$"])}
             plt.clabel(CS, fmt=fmt)
 
             plt.scatter(mu[0], mu[1], c="C1", marker="+")
@@ -223,7 +232,7 @@ for i in range(n_epochs):
             Z = np.array(Z).reshape(X.shape)
 
             CS = plt.contour(X, Y, Z, [1.0, 2.0, 3.0], colors="C1")
-            fmt = {l:s for l, s in zip(CS.levels, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])}
+            fmt = {l:s for l, s in zip(CS.levels, [r"$1$", r"$2$", r"$3$"])}
             plt.clabel(CS, fmt=fmt)
 
             plt.scatter(mu[0], mu[1], c="C1", marker="+")

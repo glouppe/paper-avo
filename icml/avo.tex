@@ -415,8 +415,8 @@ typically increases as the entropy of the proposal decreases.
 \centering
 \includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
 \caption{Discrete Poisson model with unknown mean.
- ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=1$, the distributions correctly concentrate their density around
-            the true value $\log(\lambda^*)$. Entropic regularization ($\gamma=1$) results in a tighter density.
+ ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
+            the true value $\log(\lambda^*)$. Entropic regularization ($\gamma=5$) results in a tighter density.
  ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
  ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
  }\label{fig:poisson}
@@ -431,28 +431,29 @@ The observed data is sampled from a Poisson with mean $\lambda^* = 7$.
 Algorithm~\ref{alg:avo} is run for 500 epochs with mini-batches of size $M=64$
 and the following configuration. For the critic $d$, we use a 3-layer MLP with 10
 hidden nodes per layer and ReLU activations. At each epoch, Adam is run for
-$n_\text{critic}=5$ iterations with a step size $\alpha=0.01$ and otherwise default parameters.
-Its inner first and second moment vectors are reset at
-each outer epoch in order to avoid building momentum in staled directions.  For
+$n_\text{critic}=10$ iterations with a step size $\alpha=0.005$ and $\beta_1=\beta_2=0.05$.
+% Its inner first and second moment vectors are reset at
+% each outer epoch in order to avoid building momentum in staled directions.
+For
 estimating $\lambda^*$, we parametrize $\bftheta$ as $\log(\lambda)$ and use a univariate Gaussian proposal distribution
-$q(\bftheta|\bfpsi)$ initialized with a mean at $\log(5)$ and unit variance. At
-each epoch, parameters $\bfpsi$ are updated by taking one Adam step, with step size
-$\alpha=0.01$. The gradient penalty coefficient is set to
-$\lambda=0.025$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=1$.
+$q(\bftheta|\bfpsi)$ initialized with a mean at $\log(10)$ and unit variance. At
+each epoch, parameters $\bfpsi$ are updated by taking one Adam step and the same hyper-parameters as for the critic.
+The gradient penalty coefficient is set to
+$\lambda=0.1$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=5$.
 
 The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
 distributions $q(\bftheta|\bfpsi)$ after AVO.  For
-both $\gamma=0$ and $\gamma=1$, the proposal distributions correctly concentrate
+both $\gamma=0$ and $\gamma=5$, the proposal distributions correctly concentrate
 their density around the true parameter value $\log(\lambda^*) = 1.94$. Under
 the effect of entropic regularization,
-the proposal distribution for $\gamma=1$ concentrates its mass tightly,
+the proposal distribution for $\gamma=5$ concentrates its mass tightly,
 yielding in this case precise inference.  The top right plot compares the
 model distributions to the true distribution.  As theoretically expected from
 adversarial training, we see that the resulting distributions align with
 the true distribution, with in this case visually slightly better results for the penalized
 model.  The bottom plot of Figure~\ref{fig:poisson} shows empirical estimates
-of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=1$,
-the curves quickly fall towards $0$, which indicates that
+of $-U_d$ with respect to the epoch number. For both $\gamma=0$ and $\gamma=5$,
+the curves fall towards $0$, which indicates that
 $\mathbb{E}_{\tilde{\mathbf{x}} \sim p(\mathbf{x}|\bftheta)}
 [d(\tilde{\mathbf{x}};\bfphi)] \approx \mathbb{E}_{\mathbf{x} \sim
 p_r(\mathbf{x})} [d(\mathbf{x};\bfphi)]$ and that the critic cannot distinguish
@@ -485,14 +486,13 @@ We consider observed data generated at the nominal values $\bftheta^* = (\alpha^
 The simulator parameters are modeled with a factored  (mean field) Gaussian
 proposal distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
 initialized with zero mean and unit variance.
-Hyper-parameters are set to $M=64$, $n_\text{critic}=100$, $\lambda=0.025$, $\gamma=10$ and
-Adam configured with a step size $\alpha=0.01$ and otherwise default parameters.
+Hyper-parameters are set to $M=64$, $n_\text{critic}=10$, $\lambda=0.1$, $\gamma=1$ and
+Adam configured with a step size $\alpha=0.005$ and $\beta_1=\beta_2=0.05$.
 The architecture of the critic is the same as in the previous example.
-
 
 Starting with a proposal distribution $q(\bftheta|\bfpsi)$ largely spread over
 the parameter space, as illustrated in the left plot of Figure~\ref{fig:multi},
-AVO quickly converges towards a proposal distribution whose density
+AVO converges towards a proposal distribution whose density
 concentrates around the nominal values $\bftheta^*$, as shown in the right plot of Figure~\ref{fig:multi}.
 Overall, this example further illustrates and confirms the ability of adversarial
 variational optimization for inference with multiple parameters and multidimensional
@@ -571,11 +571,11 @@ model distribution is first compared to the true data distribution and then
 updated to make it more comparable to the latter. Relevant work in this
 direction includes those that rely on a classifier to estimate the discrepancy between the observed data and the model distributions
 \cite{gutmann2012noise,cranmer2015approximating,cranmer2016experiments,2016arXiv161110242D,gutmann2017likelihood,rosca2017variational}.
-% Also of direct relevance in the likelihood-free setup, Hamiltonian ABC~\cite{meeds2015hamiltonian}
-% estimate gradients with respect
-% to $\bftheta$ through finite differences from multiple forward passes of the
-% simulator with variance reduction strategies based on controlling the source of
-% randomness used for the latent variable $\bfz$.
+Also of direct relevance in the likelihood-free setup, Hamiltonian ABC~\cite{meeds2015hamiltonian}
+estimate gradients with respect
+to $\bftheta$ through finite differences from multiple forward passes of the
+simulator with variance reduction strategies based on controlling the source of
+randomness used for the latent variable $\bfz$.
 
 Likewise, AVO closely relates to recent extensions of GANs, such as
 Adversarial Learned Inference (ALI)~\cite{dumoulin2016adversarially},
@@ -610,7 +610,8 @@ More recently, \cite{2017arXiv170208896T} adapted variational inference to
 hierarchical implicit models defined on simulators. In this work, the authors
 step around the intractable likelihoods by reformulating the optimization of the
 ELBO in terms of a neural and differentiable approximation $r$ of the log-likelihood
-ratio $\log \tfrac{p}{q}$.
+ratio $\log \tfrac{p}{q}$, thereby effectively using the same core principle as used
+in GANs~\cite{2016arXiv161003483M}.
 
 Lastly, we make a connection to Operator Variational Inference (OPVI)~\cite{2016arXiv161009033R},
 which is a generalization of variational inference formulated as the following optimization problem:
@@ -732,7 +733,7 @@ in the neighborhood of $\bftheta^*$, with a density  more highly concentrated fo
 $\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
 distance with $\bftheta^*$, both models closely match the observed data, as shown
 in the top right plot of  Figure~\ref{fig:weinberg}, with again slightly better
-results for the entropy penalized model. This suggests either a relatively flat
+results when using entropic regularization. This suggests either a relatively flat
 landscape around $\bftheta^*$ or that the observed data can in this case also be
 reproduced with the  predictive distribution $\qxpsi$.
 Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that for both
