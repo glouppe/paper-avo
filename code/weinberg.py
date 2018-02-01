@@ -21,7 +21,7 @@ seed = 777
 rng = check_random_state(seed)
 
 batch_size = 64
-n_epochs = 300+1
+n_epochs = 1000+1
 lambda_gp = 0.0025
 
 true_theta = np.array([(42.0-40)/(50-40),
@@ -89,7 +89,7 @@ def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
     params = {"W": [glorot_uniform(n_hidden, n_features, rng),
                     glorot_uniform(n_hidden, n_hidden, rng),
-                    glorot_uniform(n_hidden, 0, rng)],
+                    glorot_uniform(n_hidden, 0, rng, scale=0.01)],
               "b": [np.zeros(n_hidden),
                     np.zeros(n_hidden),
                     np.zeros(1)]}
@@ -184,12 +184,13 @@ for state in history:
     # Training loop
     init_critic = copy.copy(state["params_critic"])
     opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
-                               step_size=0.01)
+                               step_size=0.005, b1=0.05, b2=0.05)
     opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"],
-                                 step_size=0.01)
+                                 step_size=0.005, b1=0.05, b2=0.05)
 
-    opt_critic.step(1000)
+    opt_critic.step(100)
     opt_critic.move_to(state["params_critic"])
+    opt_critic.reset()
 
     for i in range(n_epochs):
         # fit simulator
@@ -197,14 +198,14 @@ for state in history:
         opt_proposal.move_to(state["params_proposal"])
 
         # fit critic
-        opt_critic.reset()   # reset moments
-        opt_critic.step(100)
+        #opt_critic.reset()   # reset moments
+        opt_critic.step(10)
         opt_critic.move_to(state["params_critic"])
 
         state["loss_d"].append(-loss_critic(state["params_critic"], i,
                                             batch_size=10000))
 
-        print(i, state["gamma"], state["params_proposal"], state["loss_d"][-1])
+        print(i, state["gamma"], state["params_proposal"], true_theta - state["params_proposal"]["mu"], state["loss_d"][-1])
 
 
 # Plot
@@ -261,6 +262,9 @@ if make_plots:
             X_[j, :] = simulator(theta, 1).ravel()
         Xs.append(X_)
 
+    for i in range(len(Xs)):
+        Xs[i] = np.array(Xs[i]).ravel()
+
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
                    [r"$x \sim p(x|\psi)\ \gamma=%d$" % state["gamma"] for state in history],
@@ -281,6 +285,6 @@ if make_plots:
     plt.legend(loc="upper right")
 
     plt.tight_layout()
-    plt.savefig("figs/weinberg-%d.pdf" % seed)
+    plt.savefig("weinberg-%d.pdf" % seed)
 
     plt.close()

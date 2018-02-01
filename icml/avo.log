@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.24)  31 JAN 2018 14:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.24)  1 FEB 2018 14:31
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -767,12 +767,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 89--89
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 92.
 
-Underfull \hbox (badness 1406) in paragraph at lines 129--141
+Underfull \hbox (badness 1406) in paragraph at lines 131--143
 []\OT1/ptm/m/n/10 In par-al-lel, with the in-tro-duc-tion of vari-a-tional auto
 -
  []
 
-LaTeX Font Info:    Try loading font information for U+bbold on input line 162.
+LaTeX Font Info:    Try loading font information for U+bbold on input line 164.
 
 (/usr/share/texlive/texmf-dist/tex/latex/bbold/Ubbold.fd)
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -783,52 +783,63 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 ]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 281.
- [2]
-Underfull \vbox (badness 5431) has occurred while \output is active []
-
- [3]
-<figures/poisson.pdf, id=204, 433.62pt x 433.62pt>
+put line 283.
+ [2] [3]
+<figures/poisson.pdf, id=200, 433.62pt x 433.62pt>
 File: figures/poisson.pdf Graphic file (type pdf)
  <use figures/poisson.pdf>
-Package pdftex.def Info: figures/poisson.pdf used on input line 416.
+Package pdftex.def Info: figures/poisson.pdf used on input line 457.
 (pdftex.def)             Requested size: 234.15271pt x 234.1513pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-Underfull \vbox (badness 1888) has occurred while \output is active []
-
- [4 <./figures/poisson.pdf>] <figures/multi.pdf, id=261, 433.62pt x 216.81pt>
+<figures/multi.pdf, id=205, 433.62pt x 216.81pt>
 File: figures/multi.pdf Graphic file (type pdf)
-
-<use figures/multi.pdf>
-Package pdftex.def Info: figures/multi.pdf used on input line 504.
+ <use figures/multi.pdf>
+Package pdftex.def Info: figures/multi.pdf used on input line 505.
 (pdftex.def)             Requested size: 234.15271pt x 117.07565pt.
 
-Underfull \hbox (badness 1953) in paragraph at lines 510--510
+Underfull \hbox (badness 1953) in paragraph at lines 511--511
 [][][]\OT1/ptm/m/n/9 Multidimensional con-tin-u-ous data. (\OT1/ptm/m/it/9 Left
 \OT1/ptm/m/n/9 ) Den-sity
  []
 
+<figures/weinberg.pdf, id=206, 433.62pt x 433.62pt>
+File: figures/weinberg.pdf Graphic file (type pdf)
+ <use figures/weinberg.pdf>
+Package pdftex.def Info: figures/weinberg.pdf used on input line 523.
+(pdftex.def)             Requested size: 234.15271pt x 234.1513pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [5 <./figures/multi.pdf>]
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 584.
+ [4]
 
- (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 551.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [5 <./figures/poisson.pdf> <./figures/multi.pdf
 
-Overfull \hbox (3.11806pt too wide) in alignment at lines 623--626
+pdfTeX warning: pdflatex (file ./figures/multi.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+>]
+Underfull \vbox (badness 1454) has occurred while \output is active []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6 <./figures/weinberg.pdf>]
+Overfull \hbox (3.11806pt too wide) in alignment at lines 686--689
  [][][] []
  []
 
-[6] (./avo.bbl
+(./avo.bbl
 Underfull \hbox (badness 2189) in paragraph at lines 37--40
 []\OT1/ptm/m/n/10 Beaumont, Mark A, Zhang, Wenyang, and Bald-ing,
  []
@@ -844,7 +855,7 @@ Underfull \hbox (badness 1163) in paragraph at lines 43--46
 preprint
  []
 
-
+[7]
 Underfull \hbox (badness 10000) in paragraph at lines 75--78
 []\OT1/ptm/m/n/10 Donahue, Jeff, Kr[]ahenb[]uhl, Philipp, and Dar-rell,
  []
@@ -859,33 +870,27 @@ Underfull \hbox (badness 1107) in paragraph at lines 123--128
 []\OT1/ptm/m/n/10 Gutmann, Michael U and Hyv[]arinen, Aapo.  Noise-
  []
 
-[7]) <figures/weinberg.pdf, id=385, 433.62pt x 433.62pt>
-File: figures/weinberg.pdf Graphic file (type pdf)
-
-<use figures/weinberg.pdf>
-Package pdftex.def Info: figures/weinberg.pdf used on input line 685.
-(pdftex.def)             Requested size: 234.15271pt x 234.1513pt.
- [8 <./figures/weinberg.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 744.
+[8])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 745.
  [9
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 744.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 745.
  (./avo.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 744.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 744.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 745.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 745.
 Package rerunfilecheck Info: File `avo.out' has not changed.
-(rerunfilecheck)             Checksum: E483C97CAF2F7E193DF6DDA592E1E65E;993.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 744.
+(rerunfilecheck)             Checksum: 03D1CDE9C1942823A1FADBA7E4939A32;876.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 745.
  ) 
 Here is how much of TeX's memory you used:
- 17633 strings out of 493029
- 322264 string characters out of 6136234
- 404166 words of memory out of 5000000
- 20698 multiletter control sequences out of 15000+600000
+ 17629 strings out of 493029
+ 322212 string characters out of 6136234
+ 404181 words of memory out of 5000000
+ 20696 multiletter control sequences out of 15000+600000
  35600 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,13n,54p,858b,493s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,13n,54p,873b,496s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/bbold-type1/bbold10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dis
@@ -913,10 +918,10 @@ r/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/ti
 mes/utmri8a.pfb>
-Output written on avo.pdf (9 pages, 373785 bytes).
+Output written on avo.pdf (9 pages, 371901 bytes).
 PDF statistics:
- 563 PDF objects out of 1000 (max. 8388607)
- 441 compressed objects within 5 object streams
- 88 named destinations out of 1000 (max. 500000)
- 156 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 555 PDF objects out of 1000 (max. 8388607)
+ 433 compressed objects within 5 object streams
+ 86 named destinations out of 1000 (max. 500000)
+ 140 words of extra memory for PDF output out of 10000 (max. 10000000)
 

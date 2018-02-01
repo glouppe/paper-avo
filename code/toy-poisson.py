@@ -54,7 +54,7 @@ def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
     params = {"W": [glorot_uniform(n_hidden, n_features, rng),
                     glorot_uniform(n_hidden, n_hidden, rng),
-                    glorot_uniform(n_hidden, 0, rng)],
+                    glorot_uniform(n_hidden, 0, rng, scale=0.01)],
               "b": [np.zeros(n_hidden),
                     np.zeros(n_hidden),
                     np.zeros(1)]}

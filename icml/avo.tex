@@ -68,7 +68,7 @@
            Non-Differentiable Simulators}
 
 \begin{icmlauthorlist}
-\icmlauthor{Glles Louppe}{uliege}
+\icmlauthor{Gilles Louppe}{uliege}
 \icmlauthor{Kyle Cranmer}{nyu}
 \end{icmlauthorlist}
 
@@ -96,14 +96,16 @@ experimental observations. Inference in this setup is often difficult, as
 simulators rarely admit a tractable density or likelihood function. We introduce
 Adversarial Variational Optimization (AVO), a likelihood-free inference
 algorithm for fitting a non-differentiable generative model incorporating ideas
-from generative adversarial networks (GANs) and variational inference. We adapt the
-training procedure of (Wasserstein) GANs by replacing the
+from generative adversarial networks (GANs) and variational optimization. We adapt the
+training procedure of Wasserstein GANs by replacing the
 differentiable generative network with a domain-specific simulator. We solve the
 resulting non-differentiable minimax problem by minimizing variational upper
-bounds of the two adversarial objectives. Effectively, the procedure results in
-learning a proposal distribution over simulator parameters, such that the
-corresponding marginal distribution of the generated data matches the
-observations. We present results of the method with simulators producing both
+bounds of the two adversarial objectives.
+Effectively, the procedure results in
+learning a proposal distribution over simulator parameters, such that
+the Wasserstein distance between the marginal distribution of the synthetic data and
+the empirical distribution of observed data is minimized.
+We present results of the method with simulators producing both
 discrete and continuous data.
 \end{abstract}
 
@@ -112,7 +114,7 @@ discrete and continuous data.
 
 \section{Introduction}
 
-In many fields of science such as particle physics, epidemiology,  and
+In many fields of science such as particle physics, epidemiology  or
 population genetics, computer simulators are used to describe complex data
 generation processes. These simulators relate observations $\bfx$ to the
 parameters $\bftheta$ of an underlying theory or mechanistic model. In most
@@ -139,7 +141,7 @@ relatively few parameters and they are endowed with some level of
 interpretation. In this setting, inference on the model parameters $\bftheta$ is
 often of more interest than the latent variables $\bfz$.
 
-In this note, we develop a likelihood-free inference algorithm
+In this work, we develop a likelihood-free inference algorithm
 for non-differentiable, implicit generative models.
 We adapt the adversarial
 training procedure of generative adversarial
@@ -214,7 +216,7 @@ trained to optimality before each parameter update of the generator, it can
 be shown that the original adversarial learning procedure~\cite{goodfellow2014generative} amounts to minimizing
 the Jensen-Shannon divergence $\text{JSD}(p_r(\mathbf{x}) \parallel p(\mathbf{x}|\bftheta))$ between $p_r(\mathbf{x})$ and $p(\mathbf{x}|\bftheta)$.
 
-As thoroughly explored in \cite{2017arXiv170104862A}, GANs remain remarkably
+As explored in \cite{2017arXiv170104862A}, GANs remain remarkably
 difficult to train because of vanishing gradients as $d$ saturates, or because of
 unreliable updates when the training procedure is relaxed. As a remedy,
 Wasserstein GANs~\cite{2017arXiv170107875A} (WGANs) reformulate the adversarial
@@ -411,17 +413,6 @@ typically increases as the entropy of the proposal decreases.
 
 \subsection{Univariate discrete data}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
-\caption{Discrete Poisson model with unknown mean.
- ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
-            the true value $\log(\lambda^*)$. Entropic regularization ($\gamma=5$) results in a tighter density.
- ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
- ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
- }\label{fig:poisson}
-\end{figure}
-
 As a first illustrative experiment, we evaluate inference for a discrete Poisson
 distribution with unknown mean $\lambda$. We artificially consider
 the distribution as a parametrized simulator, from which we can only
@@ -461,6 +452,16 @@ between true and model data. This confirms that adversarial variational optimiza
 works despite the discreteness of the data and lack of access to the
 density $p(\bfx | \bftheta)$ or its gradient.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/poisson.pdf}
+\caption{Discrete Poisson model with unknown mean.
+ ({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after training. For both $\gamma=0$ and $\gamma=5$, the distributions correctly concentrate their density around
+            the true value $\log(\lambda^*)$. Entropic regularization ($\gamma=5$) results in a tighter density.
+ ({\it Top right}) Model distributions $\qxpsi$ after training. This plot shows that the resulting parametrizations of the simulator closely reproduce the true distribution.
+ ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+ }\label{fig:poisson}
+\end{figure}
 
 
 \subsection{Multidimensional continuous data}
@@ -510,11 +511,73 @@ MLE setting would otherwise be difficult to construct.
  }\label{fig:multi}
 \end{figure}
 
-\subsection{Benchmarks}
+% \subsection{Benchmarks}
+%
+% \glnote{Compare against ABC and others.}
+% \glnote{Sections 6.1 and 6.4 of Bernton.}
 
-\glnote{Compare against ABC and others.}
-\glnote{Sections 6.1 and 6.4 of Bernton.}
+\subsection{Electron--positron annihilation}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
+\caption{Electron--positron annihilation.
+({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization.
+         Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
+         The density of the entropically regularized distribution ($\gamma=5$) is  highly concentrated, resulting in the green mass near $\bftheta^*$.
+({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their proposal distributions, both models closely match the observed data.
+({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
+ }\label{fig:weinberg}
+\end{figure}
+
+As a more realistic example, we here consider a (simplified) simulator from
+particle physics for electron--positron collisions resulting in muon--antimuon
+pairs ($e^+e^- \rightarrow \mu^+\mu^-$). The simulator approximates the
+distribution of observed measurements $\mathbf{x} = \cos(A) \in [-1,1]$, where $A$ is the
+polar angle of the outgoing muon with respect  to the originally incoming
+electron. Neglecting measurement uncertainty induced from the particle detectors,
+this random variable is approximately distributed as
+\begin{equation}\label{eq:simple_weinberg}
+p(\mathbf{x}|E_\text{beam}, G_f) = \frac{1}{Z} \left[ (1 + \mathbf{x}^2) + c(E_\text{beam}, G_f) \mathbf{x} \right]
+\end{equation}
+where $Z$ is a known normalization constant and $c$ is an asymmetry coefficient
+function. Due to the linear term in the expression, the density $p(\mathbf{x} |
+E_\text{beam}, G_f)$ exhibits a so-called {\it forward-backward} asymmetry.  Its
+size depends on the values of the parameters $E_\text{beam}$ (the beam energy)
+and $G_f$ (the Fermi constant) through the coefficient function $c$.
+
+A typical physics simulator for this process includes a more precise treatment of the
+quantum mechanical  $e^+e^- \rightarrow \mu^+\mu^-$ scattering
+using \texttt{MadGraph}~\cite{Alwall:2011uj},  ionization of matter in the
+detector due to the passage of the out-going $\mu^+\mu^-$ particles using
+\texttt{GEANT4}~\cite{Agostinelli:2002hh}, electronic noise and other details of the sensors
+that measure the ionization signal, and the deterministic algorithms that
+estimate the polar angle $A$ based on the sensor readouts. The simulation of
+this process is highly non-trivial as is the space of latent variables $\mathcal{Z}$.
+
+In this example, we consider observed data generated with the simplified generator of Eqn.~\ref{eq:simple_weinberg}
+using $\bftheta^* = (E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
+factored (mean field) Gaussian proposal distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
+q(G_f|\bfpsi)$, where each component is respectively initialized with mean $45$
+and $1$ and variance $1$ and $0.01$. Hyper-parameters are set to $M=64$,
+$n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
+$\beta_1=0.9$ and $\beta_2=0.999$. As with the first example, we compare
+entropy penalties $\gamma=0$ and $\gamma=5$. \glnote{Double check}
+
+The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting
+proposal distributions $q(\bftheta|\bfpsi)$ for $\gamma=0$ and $\gamma=5$ after
+AVO. We see that the distributions both arrive
+in the neighborhood of $\bftheta^*$, with a density  more highly concentrated for
+$\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
+distance with $\bftheta^*$, both models closely match the observed data, as shown
+in the top right plot of  Figure~\ref{fig:weinberg}, with again slightly better
+results when using entropic regularization. This suggests either a relatively flat
+landscape around $\bftheta^*$ or that the observed data can in this case also be
+reproduced with the  predictive distribution $\qxpsi$.
+Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that for both
+$\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ fall
+towards $0$, which indicates  convergence towards a distribution that the critic
+cannot distinguish from the true distribution.
 
 
 % ==============================================================================
@@ -674,71 +737,9 @@ the gradients $\nabla_\bfpsi U_g$ can be computed.
 
 % ==============================================================================
 
-\appendix
+% \appendix
+%
+% \section{Further experiments}
 
-\section{Further experiments}
-
-\subsection{Electron--positron annihilation}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.48\textwidth]{figures/weinberg.pdf}
-\caption{Electron--positron annihilation.
-({\it Top left}) Proposal distributions $q(\bftheta|\bfpsi)$ after adversarial variational optimization.
-         Contours correspond to parameters $\bftheta$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta|\bfpsi)$.
-         The density of the penalized distribution ($\gamma=5$) is  highly concentrated, resulting in the green mass near $\bftheta^*$.
-({\it Top right}) Model distributions $\qxpsi$ after training. Despite the differences between their proposal distributions, both models closely match the observed data.
-({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses.
- }\label{fig:weinberg}
-\end{figure}
-
-As a more realistic example, we here consider a (simplified) simulator from
-particle physics for electron--positron collisions resulting in muon--antimuon
-pairs ($e^+e^- \rightarrow \mu^+\mu^-$). The simulator approximates the
-distribution of observed measurements $\mathbf{x} = \cos(A) \in [-1,1]$, where $A$ is the
-polar angle of the outgoing muon with respect  to the originally incoming
-electron. Neglecting measurement uncertainty induced from the particle detectors,
-this random variable is approximately distributed as
-\begin{equation}\label{eq:simple_weinberg}
-p(\mathbf{x}|E_\text{beam}, G_f) = \frac{1}{Z} \left[ (1 + \mathbf{x}^2) + c(E_\text{beam}, G_f) \mathbf{x} \right]
-\end{equation}
-where $Z$ is a known normalization constant and $c$ is an asymmetry coefficient
-function. Due to the linear term in the expression, the density $p(\mathbf{x} |
-E_\text{beam}, G_f)$ exhibits a so-called {\it forward-backward} asymmetry.  Its
-size depends on the values of the parameters $E_\text{beam}$ (the beam energy)
-and $G_f$ (the Fermi constant) through the coefficient function $c$.
-
-A typical physics simulator for this process includes a more precise treatment of the
-quantum mechanical  $e^+e^- \rightarrow \mu^+\mu^-$ scattering
-using \texttt{MadGraph}~\cite{Alwall:2011uj},  ionization of matter in the
-detector due to the passage of the out-going $\mu^+\mu^-$ particles using
-\texttt{GEANT4}~\cite{Agostinelli:2002hh}, electronic noise and other details of the sensors
-that measure the ionization signal, and the deterministic algorithms that
-estimate the polar angle $A$ based on the sensor readouts. The simulation of
-this process is highly non-trivial as is the space of latent variables $\mathcal{Z}$.
-
-In this example, we consider observed data generated with the simplified generator of Eqn.~\ref{eq:simple_weinberg}
-using $\bftheta^* = (E_\text{beam}^*=42, G_f^*=0.9)$. The simulator parameters are modeled with a
-factored (mean field) Gaussian proposal distribution $q(\bftheta|\bfpsi) = q(E_\text{beam}|\bfpsi)
-q(G_f|\bfpsi)$, where each component is respectively initialized with mean $45$
-and $1$ and variance $1$ and $0.01$. Hyper-parameters are set to $M=64$,
-$n_\text{critic}=100$, $\lambda=0.0025$ and Adam configured with $\alpha=0.01$,
-$\beta_1=0.9$ and $\beta_2=0.999$. As with the first example, we compare
-entropy penalties $\gamma=0$ and $\gamma=5$.
-
-The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting
-proposal distributions $q(\bftheta|\bfpsi)$ for $\gamma=0$ and $\gamma=5$ after
-AVO. We see that the distributions both arrive
-in the neighborhood of $\bftheta^*$, with a density  more highly concentrated for
-$\gamma=5$ than for $\gamma=0$.  Despite these differences and the relative
-distance with $\bftheta^*$, both models closely match the observed data, as shown
-in the top right plot of  Figure~\ref{fig:weinberg}, with again slightly better
-results when using entropic regularization. This suggests either a relatively flat
-landscape around $\bftheta^*$ or that the observed data can in this case also be
-reproduced with the  predictive distribution $\qxpsi$.
-Finally, the bottom plot of Figure~\ref{fig:weinberg} shows that for both
-$\gamma=0$ and $\gamma=5$ the variational upper bound $-U_d$ quickly fall
-towards $0$, which indicates  convergence towards a distribution that the critic
-cannot distinguish from the true distribution.
 
 \end{document}
