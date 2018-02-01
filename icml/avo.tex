@@ -511,10 +511,10 @@ MLE setting would otherwise be difficult to construct.
  }\label{fig:multi}
 \end{figure}
 
-% \subsection{Benchmarks}
-%
-% \glnote{Compare against ABC and others.}
-% \glnote{Sections 6.1 and 6.4 of Bernton.}
+\subsection{Benchmarks}
+
+\glnote{Compare against ABC and others.}
+\glnote{Sections 6.1 and 6.4 of Bernton.}
 
 \subsection{Electron--positron annihilation}
 
@@ -699,7 +699,7 @@ which reinforces the link to density ratio estimation and inference with implici
 
 \section{Summary}
 
-In this note, we develop a likelihood-free inference algorithm for
+In this work, we develop a likelihood-free inference algorithm for
 non-differentiable, implicit generative models. The algorithm combines
 adversarial training  with variational optimization to minimize variational
 upper bounds  on the otherwise non-differentiable adversarial objectives. The
@@ -710,11 +710,12 @@ provides point estimates for
 the generative model, which asymptotically corresponds to the data generating
 parameters. The algorithm works on continuous or discrete data.
 
+\glnote{to update}
 Preliminary results on toy problems with discrete and continuous data validate
 the proposed method. While the obtained results are encouraging, the complete
 validation of the method remains to be carried out in real conditions on a full
 fledged scientific simulator -- which we plan to achieve for a next version of
-this work \glnote{to update}. In terms of method, several components need further investigation.
+this work. In terms of method, several components need further investigation.
 First, we need to better study the interplay between the entropic regularization and the
 adversarial objectives. Second, we should better understand the dynamics of the
 optimization procedure, in particular when combined with momentum-based
