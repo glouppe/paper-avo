@@ -6,45 +6,45 @@ Database file #1: bibliography.bib.bib
 Warning--empty journal in buesingstochastic
 Warning--can't use both volume and number fields in cranmer2016experiments
 Warning--there's a number but no volume in tran2017variational
-You've used 38 entries,
+You've used 39 entries,
             2773 wiz_defined-function locations,
-            797 strings with 11295 characters,
-and the built_in function-call counts, 18645 in all, are:
-= -- 1621
-> -- 1232
+            801 strings with 11480 characters,
+and the built_in function-call counts, 19060 in all, are:
+= -- 1655
+> -- 1262
 < -- 21
-+ -- 413
-- -- 375
-* -- 1535
-:= -- 2875
-add.period$ -- 121
-call.type$ -- 38
-change.case$ -- 237
-chr.to.int$ -- 38
-cite$ -- 79
-duplicate$ -- 858
-empty$ -- 1408
-format.name$ -- 430
-if$ -- 3901
++ -- 423
+- -- 384
+* -- 1571
+:= -- 2942
+add.period$ -- 124
+call.type$ -- 39
+change.case$ -- 243
+chr.to.int$ -- 39
+cite$ -- 81
+duplicate$ -- 878
+empty$ -- 1439
+format.name$ -- 440
+if$ -- 3985
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 39
-newline$ -- 204
-num.names$ -- 152
-pop$ -- 469
+missing$ -- 40
+newline$ -- 209
+num.names$ -- 156
+pop$ -- 481
 preamble$ -- 1
-purify$ -- 200
+purify$ -- 205
 quote$ -- 0
-skip$ -- 692
+skip$ -- 706
 stack$ -- 0
-substring$ -- 503
-swap$ -- 134
+substring$ -- 505
+swap$ -- 136
 text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 413
+type$ -- 424
 warning$ -- 3
-while$ -- 148
+while$ -- 151
 width$ -- 0
-write$ -- 494
+write$ -- 506
 (There were 3 warnings)

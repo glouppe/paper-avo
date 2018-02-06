@@ -1,4 +1,4 @@
-\begin{thebibliography}{38}
+\begin{thebibliography}{39}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -161,6 +161,13 @@ Marjoram, Paul, Molitor, John, Plagnol, Vincent, and Tavar{\'e}, Simon.
 \newblock Markov chain monte carlo without likelihoods.
 \newblock \emph{Proceedings of the National Academy of Sciences}, 100\penalty0
   (26):\penalty0 15324--15328, 2003.
+
+\bibitem[{McCarthy} et~al.(2017){McCarthy}, {Rodriguez}, and
+  {Minchole}]{2017arXiv171203353M}
+{McCarthy}, A., {Rodriguez}, B., and {Minchole}, A.
+\newblock {Variational Inference over Non-differentiable Cardiac Simulators
+  using Bayesian Optimization}.
+\newblock \emph{ArXiv e-prints}, December 2017.
 
 \bibitem[Meeds et~al.(2015)Meeds, Leenders, and Welling]{meeds2015hamiltonian}
 Meeds, Edward, Leenders, Robert, and Welling, Max.

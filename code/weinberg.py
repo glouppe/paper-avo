@@ -21,8 +21,8 @@ seed = 777
 rng = check_random_state(seed)
 
 batch_size = 64
-n_epochs = 1000+1
-lambda_gp = 0.0025
+n_epochs = 5000+1
+lambda_gp = 0.001
 
 true_theta = np.array([(42.0-40)/(50-40),
                        (0.9 - 0.5) / (1.5-0.5)])
@@ -184,11 +184,11 @@ for state in history:
     # Training loop
     init_critic = copy.copy(state["params_critic"])
     opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
-                               step_size=0.005, b1=0.05, b2=0.05)
+                               step_size=0.0025, b1=0.025, b2=0.025)
     opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"],
-                                 step_size=0.005, b1=0.05, b2=0.05)
+                                 step_size=0.0025, b1=0.025, b2=0.025)
 
-    opt_critic.step(100)
+    opt_critic.step(10000)
     opt_critic.move_to(state["params_critic"])
     opt_critic.reset()
 

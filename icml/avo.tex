@@ -81,7 +81,7 @@
 % You may provide any keywords that you
 % find helpful for describing your paper; these are used to populate
 % the "keywords" metadata in the PDF but will not be shown in the document
-\icmlkeywords{XXXXX}
+\icmlkeywords{likelihood-free inference, implicit models, generative adversarial networks}
 
 \vskip 0.3in
 ]
@@ -90,13 +90,13 @@
 
 
 \begin{abstract}
-    Complex computer simulators are increasingly used across fields
+Complex computer simulators are increasingly used across fields
 of science as generative models tying parameters of an underlying theory to
 experimental observations. Inference in this setup is often difficult, as
 simulators rarely admit a tractable density or likelihood function. We introduce
 Adversarial Variational Optimization (AVO), a likelihood-free inference
 algorithm for fitting a non-differentiable generative model incorporating ideas
-from generative adversarial networks (GANs) and variational optimization. We adapt the
+from generative adversarial networks, variational optimization and empirical Bayes. We adapt the
 training procedure of Wasserstein GANs by replacing the
 differentiable generative network with a domain-specific simulator. We solve the
 resulting non-differentiable minimax problem by minimizing variational upper
@@ -151,7 +151,7 @@ non-differentiable minimax problem by minimizing variational upper
 bounds~\cite{2011arXiv1106.4487W,2012arXiv1212.4507S} of the adversarial
 objectives.
 The objective of the algorithm is to match the marginal distribution of
-the generated data to the empirical distribution of the observations.
+the synthetic data to the empirical distribution of observations.
 
 
 % ==============================================================================
@@ -674,7 +674,9 @@ hierarchical implicit models defined on simulators. In this work, the authors
 step around the intractable likelihoods by reformulating the optimization of the
 ELBO in terms of a neural and differentiable approximation $r$ of the log-likelihood
 ratio $\log \tfrac{p}{q}$, thereby effectively using the same core principle as used
-in GANs~\cite{2016arXiv161003483M}.
+in GANs~\cite{2016arXiv161003483M}. With a similar objective, \cite{2017arXiv171203353M}
+adapt variational inference to a non-differentiable cardiac simulator by maximizing
+the ELBO using Bayesian optimization, hence bypassing altogether the need for gradient estimates.
 
 Lastly, we make a connection to Operator Variational Inference (OPVI)~\cite{2016arXiv161009033R},
 which is a generalization of variational inference formulated as the following optimization problem:
