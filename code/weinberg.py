@@ -20,12 +20,13 @@ from scipy.spatial.distance import mahalanobis
 seed = 777
 rng = check_random_state(seed)
 
-batch_size = 64
-n_epochs = 5000+1
-lambda_gp = 0.001
+batch_size = 50
+n_epochs = 3000+1
+lambda_gp = 0.0
 
-true_theta = np.array([(42.0-40)/(50-40),
-                       (0.9 - 0.5) / (1.5-0.5)])
+true_theta = np.array([(43.0-40)/(50-40),
+                       (1.1 - 0.5) / (1.5-0.5)])
+
 make_plots = True
 plt.rcParams["figure.dpi"] = 200
 
@@ -74,14 +75,14 @@ def simulator(theta, n_samples, random_state=None):
 
     return samples.reshape(-1, 1)
 
-X_obs = simulator(true_theta, 50000, random_state=rng)
+X_obs = simulator(true_theta, 20000, random_state=rng)
 n_params = len(true_theta)
 n_features = X_obs.shape[1]
 
 
 # Critic
 
-gammas = [0.0, 5.0]
+gammas = [0.0, 3.0]
 colors = ["C1", "C2"]
 
 
@@ -95,11 +96,13 @@ def make_critic(n_features, n_hidden, random_state=None):
                     np.zeros(1)]}
     return params
 
+params_critic = make_critic(n_features, 50, random_state=rng)
+
 
 def predict(X, params):
     h = X
-    h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.1)
-    h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.1)
+    h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.2)
+    h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.2)
     h = np.dot(params["W"][2], h.T).T + params["b"][2]
     return h
 
@@ -111,8 +114,8 @@ history = [{"gamma": gammas[i],
             "loss_d": [],
             "params_proposal": make_gaussian_proposal(n_params,
                                                       mu=0.5,
-                                                      log_sigma=np.log(0.1)),
-            "params_critic": make_critic(n_features, 10, random_state=rng)}
+                                                      log_sigma=np.log(0.25)),
+            "params_critic": make_critic(n_features, 20, random_state=rng)}
            for i in range(len(gammas))]
 
 
@@ -141,6 +144,9 @@ for state in history:
 
         y_pred = predict(X, params_critic)
         l_wgan = np.mean(-y_critic * y_pred + (1. - y_critic) * y_pred)
+
+        if lambda_gp == 0.0:
+            return l_wgan
 
         # Gradient penalty
         eps = rng.rand(batch_size // 2, 1)
@@ -184,29 +190,51 @@ for state in history:
     # Training loop
     init_critic = copy.copy(state["params_critic"])
     opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
-                               step_size=0.0025, b1=0.025, b2=0.025)
+                               step_size=10e-4, b1=0.5, b2=0.9)
     opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"],
-                                 step_size=0.0025, b1=0.025, b2=0.025)
+                                 step_size=10e-4, b1=0.5, b2=0.9)
 
-    opt_critic.step(10000)
+    print(predict(X_obs, state["params_critic"]).mean())
+    opt_critic.step(1500)
     opt_critic.move_to(state["params_critic"])
-    opt_critic.reset()
+    print(predict(X_obs, state["params_critic"]).mean())
 
     for i in range(n_epochs):
         # fit simulator
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
+        #opt_proposal.reset()
 
         # fit critic
         #opt_critic.reset()   # reset moments
         opt_critic.step(10)
         opt_critic.move_to(state["params_critic"])
 
-        state["loss_d"].append(-loss_critic(state["params_critic"], i,
-                                            batch_size=10000))
+        if i % 10 == 0:
+            # reset critic
+            state["params_critic"] = make_critic(n_features, 50, random_state=i)
+            opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
+                                       step_size=10e-4, b1=0.5, b2=0.9)
+            opt_critic.step(1500)
+            opt_critic.move_to(state["params_critic"])
+
+            # log
+            state["loss_d"].append(-loss_critic(state["params_critic"], i,
+                                                batch_size=5000))
+
+            print(predict(X_obs, state["params_critic"]).mean())
+
+            thetas = gaussian_draw(state["params_proposal"],
+                                   5000, random_state=i)
+            _X_gen = np.zeros((5000, n_features))
+            for j, theta in enumerate(thetas):
+                _X_gen[j, :] = simulator(theta, 1, random_state=j).ravel()
+            print(predict(_X_gen, state["params_critic"]).mean())
+
+        else:
+            state["loss_d"].append(state["loss_d"][-1])
 
         print(i, state["gamma"], state["params_proposal"], true_theta - state["params_proposal"]["mu"], state["loss_d"][-1])
-
 
 # Plot
 if make_plots:
@@ -277,8 +305,8 @@ if make_plots:
     xs = np.arange(n_epochs)
 
     for state in history:
-        plt.plot(xs,
-                 state["loss_d"],
+        plt.plot(xs[::10],
+                 state["loss_d"][::10],
                  label=r"$-U_d\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs-1)

@@ -46,10 +46,7 @@ def gaussian_logpdf(params, theta, to_scalar=True):
 
 def gaussian_entropy(params):
     sigma = np.exp(params["log_sigma"])
-    if np.sum(sigma) > 0.05:
-        return np.sum(np.log(sigma * (2. * np.pi * np.e) ** 0.5))
-    else:
-        return np.log(0.05 * (2. * np.pi * np.e) ** 0.5)
+    return np.sum(np.log(sigma * (2. * np.pi * np.e) ** 0.5))
 
 
 grad_gaussian_logpdf = ag.grad(gaussian_logpdf)

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.24)  6 FEB 2018 22:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.24)  7 FEB 2018 21:04
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -790,7 +790,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
 put line 283.
  [2] [3]
-<figures/poisson.pdf, id=204, 433.62pt x 433.62pt>
+<figures/poisson.pdf, id=200, 433.62pt x 433.62pt>
 File: figures/poisson.pdf Graphic file (type pdf)
  <use figures/poisson.pdf>
 Package pdftex.def Info: figures/poisson.pdf used on input line 457.
@@ -803,7 +803,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [4]
-<figures/multi.pdf, id=218, 433.62pt x 216.81pt>
+<figures/multi.pdf, id=214, 433.62pt x 216.81pt>
 File: figures/multi.pdf Graphic file (type pdf)
  <use figures/multi.pdf>
 Package pdftex.def Info: figures/multi.pdf used on input line 505.
@@ -814,7 +814,7 @@ Underfull \hbox (badness 1953) in paragraph at lines 511--511
 \OT1/ptm/m/n/9 ) Den-sity
  []
 
-<figures/weinberg.pdf, id=219, 433.62pt x 433.62pt>
+<figures/weinberg.pdf, id=215, 433.62pt x 433.62pt>
 File: figures/weinberg.pdf Graphic file (type pdf)
  <use figures/weinberg.pdf>
 Package pdftex.def Info: figures/weinberg.pdf used on input line 523.
@@ -823,11 +823,7 @@ Package pdftex.def Info: figures/weinberg.pdf used on input line 523.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
 LaTeX Font Info:    Try loading font information for OT1+pcr on input line 551.
-
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
@@ -836,12 +832,12 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 pdfTeX warning: pdflatex (file ./figures/multi.pdf): PDF inclusion: multiple pd
 fs with page group included in a single page
 >]
+Underfull \vbox (badness 2990) has occurred while \output is active []
+
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [6 <./figures/weinberg.pdf>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
 Overfull \hbox (3.11806pt too wide) in alignment at lines 688--691
  [][][] []
  []
@@ -887,14 +883,14 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 748.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 748.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 748.
 Package rerunfilecheck Info: File `avo.out' has not changed.
-(rerunfilecheck)             Checksum: 6552BB0BC9E16218A0A2A9825106E623;936.
+(rerunfilecheck)             Checksum: 03D1CDE9C1942823A1FADBA7E4939A32;876.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 748.
  ) 
 Here is how much of TeX's memory you used:
- 17635 strings out of 493029
- 322347 string characters out of 6136234
+ 17634 strings out of 493029
+ 322327 string characters out of 6136234
  404257 words of memory out of 5000000
- 20700 multiletter control sequences out of 15000+600000
+ 20699 multiletter control sequences out of 15000+600000
  35600 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  55i,13n,54p,873b,493s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -925,10 +921,10 @@ r/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/ti
 mes/utmri8a.pfb>
-Output written on avo.pdf (9 pages, 372581 bytes).
+Output written on avo.pdf (9 pages, 372739 bytes).
 PDF statistics:
- 561 PDF objects out of 1000 (max. 8388607)
- 439 compressed objects within 5 object streams
+ 558 PDF objects out of 1000 (max. 8388607)
+ 436 compressed objects within 5 object streams
  88 named destinations out of 1000 (max. 500000)
- 148 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 140 words of extra memory for PDF output out of 10000 (max. 10000000)
 

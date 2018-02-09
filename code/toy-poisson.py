@@ -15,16 +15,15 @@ from proposals import grad_gaussian_entropy
 
 from sklearn.utils import check_random_state
 
+
 # Global params
 
 seed = 777
 rng = check_random_state(seed)
 
-batch_size = 64   # try increasing, default=64
-n_epochs = 500+1
-lambda_gp = 0.1 # ok~0.1; try reducing (=> worse), try increasing (0.4, not sure what to conclude)
-
-# see zigzag near the end... hence the reset? but works better without in multi.py
+batch_size = 50
+n_epochs = 3000+1
+lambda_gp = 0.001
 
 true_theta = np.array([np.log(7)])
 make_plots = True
@@ -44,11 +43,9 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0.0, 5.0]
+gammas = [0.0, 3.0]
 colors = ["C1", "C2"]
 
-# gammas = [5.0]
-# colors = ["C2"]
 
 def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
@@ -60,10 +57,11 @@ def make_critic(n_features, n_hidden, random_state=None):
                     np.zeros(1)]}
     return params
 
+
 def predict(X, params):
     h = X
-    h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.1)
-    h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.1)
+    h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.2)
+    h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.2)
     h = np.dot(params["W"][2], h.T).T + params["b"][2]
     return h
 
@@ -74,7 +72,8 @@ history = [{"gamma": gammas[i],
             "color": colors[i],
             "loss_d": [],
             "params_proposal": make_gaussian_proposal(n_params,
-                                                      mu=np.log(10.0)),
+                                                      mu=np.log(5),
+                                                      log_sigma=0.0),
             "params_critic": make_critic(n_features, 10, random_state=rng)}
            for i in range(len(gammas))]
 
@@ -138,34 +137,62 @@ for state in history:
 
         M = len(thetas)
 
-        for k in grad_u:
-            grad_u[k] = 1. / M * grad_u[k] + state["gamma"] * grad_ent[k]
+        if state["gamma"] == 0.0:
+            for k in grad_u:
+                grad_u[k] = 1. / M * grad_u[k]
+        else:
+            for k in grad_u:
+                grad_u[k] = 1. / M * grad_u[k] + state["gamma"] * grad_ent[k]
 
         return grad_u
 
     # Training loop
-    opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"], step_size=0.005, b1=0.05, b2=0.05) #, step_size=0.01, b1=0.5, b2=0.5)
-    opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"], step_size=0.005, b1=0.05, b2=0.05) #, step_size=0.01, b1=0.5, b2=0.5)
+    opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
+                               step_size=10e-4, b1=0.5, b2=0.9)
+    opt_proposal = AdamOptimizer(approx_grad_u, state["params_proposal"],
+                                 step_size=10e-4, b1=0.5, b2=0.9)
 
-    opt_critic.step(100)
+    print(predict(X_obs, state["params_critic"]).mean())
+    opt_critic.step(1000)
     opt_critic.move_to(state["params_critic"])
-    opt_critic.reset()
+    print(predict(X_obs, state["params_critic"]).mean())
 
     for i in range(n_epochs):
         print(i, state["gamma"], state["params_proposal"], np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
 
         # fit simulator
-        #opt_proposal.reset()
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
 
         # fit critic
-        #opt_critic.reset()   # reset moments
-        opt_critic.step(10)
+        opt_critic.step(5)
         opt_critic.move_to(state["params_critic"])
 
-        state["loss_d"].append(-loss_critic(state["params_critic"], i,
-                                            batch_size=5000))
+        if i % 10 == 0:
+            # reset critic
+            state["params_critic"] = make_critic(n_features, 10, random_state=i)
+            opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
+                                       step_size=10e-4, b1=0.5, b2=0.9)
+            opt_critic.step(1000)
+            opt_critic.move_to(state["params_critic"])
+
+            # log
+            state["loss_d"].append(-loss_critic(state["params_critic"], i,
+                                                batch_size=5000))
+
+            print(predict(X_obs, state["params_critic"]).mean())
+
+            thetas = gaussian_draw(state["params_proposal"],
+                                   5000, random_state=i)
+            _X_gen = np.zeros((5000, n_features))
+            for j, theta in enumerate(thetas):
+                _X_gen[j, :] = simulator(theta, 1, random_state=j).ravel()
+            print(predict(_X_gen, state["params_critic"]).mean())
+
+            xs = np.linspace(0.0, 10.0, num=10).reshape(-1, 1)
+            print(predict(xs, state["params_critic"]).ravel())
+        else:
+            state["loss_d"].append(state["loss_d"][-1])
 
 
 # Plot
@@ -221,12 +248,12 @@ if make_plots:
     xs = np.arange(n_epochs)
 
     for state in history:
-        plt.plot(xs,
-                 state["loss_d"],
+        plt.plot(xs[::10],
+                 state["loss_d"][::10],
                  label=r"$-U_d\ \gamma=%d$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs)
-    plt.ylim(0, 10)
+    plt.ylim(0, 5)
     plt.legend(loc="upper right")
 
     plt.tight_layout()

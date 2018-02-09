@@ -27,6 +27,12 @@ def softmax(X):
     return np.exp(X - logsumexp(X))
 
 
+def batch_normalize(activations):
+    mbmean = np.mean(activations, axis=0, keepdims=True)
+    return (activations - mbmean) / (np.std(activations, axis=0,
+                                            keepdims=True) + 1)
+
+
 # Initializations
 
 def glorot_uniform(fan_in, fan_out, rng, scale=0.1):
@@ -83,6 +89,48 @@ class AdamOptimizer:
             mhat = self.m / (1 - self.b1 ** (self.counter + 1))
             vhat = self.v / (1 - self.b2 ** (self.counter + 1))
             self.x = self.x - self.step_size*mhat/(np.sqrt(vhat) + self.eps)
+            self.counter += 1
+
+        return self.unflatten(self.x)
+
+    def move_to(self, params):
+        for k, v in self.unflatten(self.x).items():
+            params[k] = v
+        return params
+
+
+class RmsPropOptimizer:
+    def __init__(self, grad, init_params, callback=None,
+                 step_size=0.01, gamma=0.9, eps=10**-8):
+        self.grad = grad
+        self.init_params = copy.copy(init_params)
+        self.callback = callback
+        self.step_size = step_size
+        self.gamma = gamma
+        self.eps = eps
+
+        self.flattened_grad, self.unflatten, self.x = flatten_func(
+            self.grad, self.init_params)
+        self.reset()
+
+    def reset(self):
+        self.avg_sq_grad = np.ones(len(self.x))
+        self.counter = 0
+
+    def step(self,  num_iters=1):
+        for i in range(num_iters):
+            g = self.flattened_grad(self.x, self.counter)
+
+            if self.callback:
+                self.callback(self.unflatten(self.x),
+                              self.counter,
+                              self.unflatten(g))
+
+            self.avg_sq_grad = (self.avg_sq_grad *
+                                self.gamma + g**2 * (1 - self.gamma))
+            self.x = (self.x -
+                      self.step_size * g / (np.sqrt(self.avg_sq_grad) +
+                                            self.eps))
             self.counter += 1
 
         return self.unflatten(self.x)

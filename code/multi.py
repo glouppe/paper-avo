@@ -15,27 +15,21 @@ from nn import AdamOptimizer
 
 from proposals import make_gaussian_proposal
 from proposals import gaussian_draw
-from proposals import gaussian_logpdf
 from proposals import grad_gaussian_logpdf
 from proposals import grad_gaussian_entropy
 
 from sklearn.utils import check_random_state
 from scipy.spatial.distance import mahalanobis
 
-# What works:
-# remove the reset!!
-# effect of lambda_gp?  lambda_gp=0.1 works
-# effect of gamma? works ok for gamma=0, tighter bands with gamma=1.0
-# refit critic periodically? some zigzag with 1:10 but fine; refitting not necessary
 
 # Global params
 
 seed = 777
 rng = check_random_state(seed)
 
-batch_size = 64
-n_epochs = 1000+1
-lambda_gp = 0.1
+batch_size = 50
+n_epochs = 3000+1
+lambda_gp = 0.01
 gamma = 1.0
 
 true_theta = np.array([1.0, -1.0])
@@ -82,7 +76,7 @@ def make_critic(n_features, n_hidden, random_state=None):
     rng = check_random_state(random_state)
     params = {"W": [glorot_uniform(n_hidden, n_features, rng),
                     glorot_uniform(n_hidden, n_hidden, rng),
-                    glorot_uniform(n_hidden, 0, rng)],
+                    glorot_uniform(n_hidden, 0, rng, scale=0.01)],
               "b": [np.zeros(n_hidden),
                     np.zeros(n_hidden),
                     np.zeros(1)]}
@@ -93,8 +87,8 @@ params_critic = make_critic(n_features, 10, random_state=rng)
 
 def predict(X, params):
     h = X
-    h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.1)
-    h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.1)
+    h = relu(np.dot(params["W"][0], h.T).T + params["b"][0], alpha=0.2)
+    h = relu(np.dot(params["W"][1], h.T).T + params["b"][1], alpha=0.2)
     h = np.dot(params["W"][2], h.T).T + params["b"][2]
     return h
 
@@ -163,26 +157,44 @@ def approx_grad_u(params_proposal, i, gamma=gamma):
 
 # Training loop
 
-opt_critic = AdamOptimizer(grad_loss_critic, params_critic, step_size=0.005, b1=0.05, b2=0.05)
-opt_proposal = AdamOptimizer(approx_grad_u, params_proposal, step_size=0.005, b1=0.05, b2=0.05)
+opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
+                           step_size=10e-4, b1=0.5, b2=0.9)
+opt_proposal = AdamOptimizer(approx_grad_u, params_proposal,
+                             step_size=10e-4, b1=0.5, b2=0.9)
 
-opt_critic.step(100)
+print(predict(X_obs, params_critic).mean())
+opt_critic.step(1000)
 opt_critic.move_to(params_critic)
-opt_critic.reset()
+print(predict(X_obs, params_critic).mean())
 
 for i in range(n_epochs):
     print(i, params_proposal)
 
     # fit simulator
-    #opt_proposal.reset()
     opt_proposal.step(1)
     opt_proposal.move_to(params_proposal)
 
     # fit critic
-    #opt_critic.reset()   # reset moments
-    #opt_critic.step(1000 if i % 50 == 0 else 10)
-    opt_critic.step(10)
+    opt_critic.step(5)
     opt_critic.move_to(params_critic)
+
+    if i % 10 == 0:
+        # reset critic
+        params_critic = make_critic(n_features, 10, random_state=i)
+        opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
+                                   step_size=10e-4, b1=0.5, b2=0.9)
+        opt_critic.step(1000)
+        opt_critic.move_to(params_critic)
+
+        # log
+        print(predict(X_obs, params_critic).mean())
+
+        thetas = gaussian_draw(params_proposal,
+                               5000, random_state=i)
+        _X_gen = np.zeros((5000, n_features))
+        for j, theta in enumerate(thetas):
+            _X_gen[j, :] = simulator(theta, 1, random_state=j).ravel()
+        print(predict(_X_gen, params_critic).mean())
 
     # plot
     if make_plots:
