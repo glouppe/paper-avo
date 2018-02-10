@@ -17,15 +17,15 @@ from scipy.spatial.distance import mahalanobis
 
 # Global params
 
-seed = 777
+seed = 123
 rng = check_random_state(seed)
 
 batch_size = 50
-n_epochs = 3000+1
-lambda_gp = 0.0
+n_epochs = 1000+1
+lambda_gp = 0.0001  # works well for 0.0; 0.001
 
-true_theta = np.array([(43.0-40)/(50-40),
-                       (1.1 - 0.5) / (1.5-0.5)])
+true_theta = np.array([(42.0-40) / (50-40),
+                       (1.1-0.5) / (1.5-0.5)])
 
 make_plots = True
 plt.rcParams["figure.dpi"] = 200
@@ -82,8 +82,8 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0.0, 3.0]
-colors = ["C1", "C2"]
+gammas = [5.0]
+colors = ["C1"]
 
 
 def make_critic(n_features, n_hidden, random_state=None):
@@ -114,8 +114,8 @@ history = [{"gamma": gammas[i],
             "loss_d": [],
             "params_proposal": make_gaussian_proposal(n_params,
                                                       mu=0.5,
-                                                      log_sigma=np.log(0.25)),
-            "params_critic": make_critic(n_features, 20, random_state=rng)}
+                                                      log_sigma=np.log(0.1)), 
+            "params_critic": make_critic(n_features, 50, random_state=rng)}
            for i in range(len(gammas))]
 
 
@@ -195,7 +195,7 @@ for state in history:
                                  step_size=10e-4, b1=0.5, b2=0.9)
 
     print(predict(X_obs, state["params_critic"]).mean())
-    opt_critic.step(1500)
+    opt_critic.step(1000)
     opt_critic.move_to(state["params_critic"])
     print(predict(X_obs, state["params_critic"]).mean())
 
@@ -203,10 +203,8 @@ for state in history:
         # fit simulator
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
-        #opt_proposal.reset()
 
         # fit critic
-        #opt_critic.reset()   # reset moments
         opt_critic.step(10)
         opt_critic.move_to(state["params_critic"])
 
@@ -215,7 +213,7 @@ for state in history:
             state["params_critic"] = make_critic(n_features, 50, random_state=i)
             opt_critic = AdamOptimizer(grad_loss_critic, state["params_critic"],
                                        step_size=10e-4, b1=0.5, b2=0.9)
-            opt_critic.step(1500)
+            opt_critic.step(1000)
             opt_critic.move_to(state["params_critic"])
 
             # log
@@ -258,7 +256,7 @@ if make_plots:
         Z = np.array(Z).reshape(X.shape)
 
         CS = plt.contour(X*(50-40)+40, Y*(1.5-0.5)+0.5, Z, [1.0, 2.0, 3.0], colors=state["color"])
-        fmt = {l:s for l, s in zip(CS.levels, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])}
+        fmt = {l:s for l, s in zip(CS.levels, [r"$1$", r"$2$", r"$3$"])}
         plt.clabel(CS, fmt=fmt)
 
         plt.scatter(mu[0]*(50-40)+40, mu[1]*(1.5-0.5)+0.5, c=state["color"], marker="+")

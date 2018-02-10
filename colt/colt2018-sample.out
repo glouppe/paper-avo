@@ -1,0 +1,14 @@
+\BOOKMARK [1][-]{section.0.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.0.2}{Problem statement}{}% 2
+\BOOKMARK [1][-]{section.0.3}{Background}{}% 3
+\BOOKMARK [2][-]{subsection.0.3.1}{Generative adversarial networks}{section.0.3}% 4
+\BOOKMARK [2][-]{subsection.0.3.2}{Variational optimization}{section.0.3}% 5
+\BOOKMARK [1][-]{section.0.4}{Adversarial variational optimization}{}% 6
+\BOOKMARK [2][-]{subsection.0.4.1}{Algorithm}{section.0.4}% 7
+\BOOKMARK [2][-]{subsection.0.4.2}{Parameter Point Estimates}{section.0.4}% 8
+\BOOKMARK [1][-]{section.0.5}{Experiments}{}% 9
+\BOOKMARK [2][-]{subsection.0.5.1}{Univariate discrete data}{section.0.5}% 10
+\BOOKMARK [2][-]{subsection.0.5.2}{Multidimensional continuous data}{section.0.5}% 11
+\BOOKMARK [2][-]{subsection.0.5.3}{Electron\205positron annihilation}{section.0.5}% 12
+\BOOKMARK [1][-]{section.0.6}{Related work}{}% 13
+\BOOKMARK [1][-]{section.0.7}{Summary}{}% 14
