@@ -221,7 +221,7 @@ Under the WGAN-GP formulation of \citep{2017arXiv170400028G}
 for stabilizing the optimization procedure,
 training $d$ and $g$ results in alternating gradient updates on $\bfphi$ and $\bftheta$ in order to respectively minimize
 \begin{align}
-    {\cal L}_d =\,&  \mathcal{L}_W + \lambda \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
+    {\cal L}_d =\,&  \mathcal{L}_W + \lambda_{GP} \mathbb{E}_{\hat{\mathbf{x}} \sim p({\hat{\mathbf{x}})}} [(|| \nabla_{\hat{\mathbf{x}}} d({\hat{\mathbf{x}}};\bfphi) ||_2 - 1)^2] \\
     {\cal L}_g =\,& - \mathcal{L}_W
 \end{align}
 where ${\hat{\mathbf{x}}} := \epsilon \mathbf{x} +
@@ -431,7 +431,7 @@ estimating $\lambda^*$, we parametrize $\bftheta$ as $\log(\lambda)$ and use a u
 $q(\bftheta|\bfpsi)$ initialized with a mean at $\log(5)$ and unit variance. At
 each iteration, parameters $\bfpsi$ are updated by taking one Adam step and the same hyper-parameters as for the critic.
 The gradient penalty coefficient is set to
-$\lambda=0.001$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=3$.
+$\lambda_{GP}=0.001$, and the entropy penalty is evaluated at both $\gamma=0$ and $\gamma=3$.
 
 The top left plot in Figure~\ref{fig:poisson} illustrates the resulting proposal
 distributions $q(\bftheta|\bfpsi)$ after AVO.  For
@@ -477,7 +477,7 @@ We consider observed data generated at the nominal values $\bftheta^* = (\alpha^
 The simulator parameters are modeled with a factored  (mean field) Gaussian
 proposal distribution $q(\bftheta|\bfpsi) = q(\alpha|\bfpsi) q(\beta|\bfpsi)$, where each component was
 initialized with zero mean and unit variance.
-Hyper-parameters are set to $M=50$, $n_\text{critic}=100$, $\lambda=0.01$, $\gamma=1$ and
+Hyper-parameters are set to $M=50$, $n_\text{critic}=100$, $\lambda_{GP}=0.01$, $\gamma=1$ and
 Adam configured with a step size $\alpha=0.001$ with $\beta_1=0.5$ and $\beta_2=0.9$.
 The architecture of the critic is the same as in the previous example.
 
@@ -552,14 +552,17 @@ factored (mean field) Gaussian proposal distribution $q(\bftheta|\bfpsi) = q(E_\
 q(G_f|\bfpsi)$, where each component is respectively initialized with mean $45$
 and $1$ and variance $1$ and $0.01$. Hyper-parameters are set to $M=50$,
 $n_\text{critic}=100$, $\lambda=0.0001$, $\gamma=5$ and Adam configured with $\alpha=0.001$,
-$\beta_1=0.5$ and $\beta_2=0.9$.
+$\beta_1=0.5$ and $\beta_2=0.9$. For the critic $d$, we use a 3-layer MLP with 50
+hidden nodes per layer and ReLU activations.
 % As with the first example, we compare
 % entropy penalties $\gamma=0$ and $\gamma=5$. \glnote{Double check}
 
 The top left plot in Figure~\ref{fig:weinberg} illustrates the resulting
 proposal distributions $q(\bftheta|\bfpsi)$ after
 AVO. We see that the proposal distribution concentrates
-in the neighborhood of $\bftheta^*$.  Despite the width of the resulting proposal distribution with respect to $\bftheta^*$
+in the neighborhood of $\bftheta^*$.
+Despite the width of the resulting proposal distribution with respect to $\bftheta^*$,
+the synthetic data closely match with the observed data, as shown
 in the top right plot of  Figure~\ref{fig:weinberg}. This suggests either a relatively flat
 landscape around $\bftheta^*$ or that the observed data can in this case also be
 reproduced with the  predictive distribution $\qxpsi$.

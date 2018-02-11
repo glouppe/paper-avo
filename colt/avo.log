@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.24)  10 FEB 2018 22:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.24)  11 FEB 2018 10:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -838,13 +838,13 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.570 
+l.573 
        <./figures/multi.pdf>] [9pdfTeX warning (ext4): destination with the sam
 e identifier (name{figure.3}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.570 
+l.573 
        <./figures/weinberg.pdf>] [10] [11] (./avo.bbl [12] [13]
 Underfull \hbox (badness 1454) in paragraph at lines 169--172
 []\OT1/ptm/m/n/10.95 Edward Meeds, Robert Leen-ders, and Max Welling.  Hamil-to
@@ -852,11 +852,11 @@ Underfull \hbox (badness 1454) in paragraph at lines 169--172
  []
 
 [14]) [15]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 726.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 726.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 729.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 729.
  (./avo.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 726.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 726.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 729.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 729.
 Package rerunfilecheck Info: File `avo.out' has not changed.
 (rerunfilecheck)             Checksum: C0B622B3E1CDC01B30EA1F814F827ADE;918.
  ) 
@@ -887,7 +887,7 @@ e/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive
 onts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/
 times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.p
 fb>
-Output written on avo.pdf (15 pages, 298735 bytes).
+Output written on avo.pdf (15 pages, 299406 bytes).
 PDF statistics:
  545 PDF objects out of 1000 (max. 8388607)
  428 compressed objects within 5 object streams
