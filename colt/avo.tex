@@ -1,4 +1,4 @@
-\documentclass[12pt]{colt2018} % Anonymized submission
+\documentclass[anon,12pt]{colt2018} % Anonymized submission
 % \documentclass{colt2017} % Include author names
 
 % The following packages will be automatically loaded:
@@ -275,7 +275,7 @@ and parameter scaling).
     \begin{flushleft}
         {\it Inputs:} observed data $\{ \mathbf{x}_i \sim p_r(\mathbf{x}) \}_{i=1}^N$, simulator $g$.\\
         {\it Outputs:} proposal distribution $q(\bftheta|\bfpsi)$, such that $\qxpsi \approx p_r(\mathbf{x})$.\\
-        {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the size $M$ of a mini-batch; the gradient penalty coefficient $\lambda$; the entropy penalty coefficient $\gamma$.
+        {\it Hyper-parameters:} The number $n_{\text{critic}}$ of training iterations of $d$; the size $M$ of a mini-batch; the gradient penalty coefficient $\lambda_{GP}$; the entropy penalty coefficient $\gamma$.
     \end{flushleft}
 
     \label{alg:avo}
@@ -287,7 +287,7 @@ and parameter scaling).
                 \For{$m=1$ to $M$}
                     \State{$\tilde{\mathbf{x}}_m \leftarrow g(\bfz_m; \bftheta_m)$}
                     \State{$\hat{\mathbf{x}}_m \leftarrow \epsilon_m \mathbf{x}_m + (1 - \epsilon_m) \tilde{\mathbf{x}}_m$}
-                    \State{$U_d^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \bfphi) - d(\mathbf{x}_m; \bfphi) + \lambda (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \bfphi) ||_2 - 1)^2 $}
+                    \State{$U_d^{(m)} \leftarrow d(\tilde{\mathbf{x}}_m; \bfphi) - d(\mathbf{x}_m; \bfphi) + \lambda_{GP} (|| \nabla_{\hat{\mathbf{x}}_m} d(\hat{\mathbf{x}}_m; \bfphi) ||_2 - 1)^2 $}
                 \EndFor
                 \State{$\bfphi \leftarrow \text{Adam}(\nabla_\bfphi \tfrac{1}{M} \sum_{m=1}^M U_d^{(m)})$}
             \EndFor

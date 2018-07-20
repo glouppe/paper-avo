@@ -117,7 +117,7 @@ class RmsPropOptimizer:
         self.avg_sq_grad = np.ones(len(self.x))
         self.counter = 0
 
-    def step(self,  num_iters=1):
+    def step(self, num_iters=1):
         for i in range(num_iters):
             g = self.flattened_grad(self.x, self.counter)
 

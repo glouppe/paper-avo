@@ -21,14 +21,17 @@
 \citation{DBLP:journals/corr/KingmaW13}
 \citation{goodfellow2014generative}
 \citation{2016arXiv161003483M}
+\citation{goodfellow2014generative}
+\citation{2011arXiv1106.4487W,2012arXiv1212.4507S}
+\jmlr@author{author names withheld}{author names withheld}
+\jmlr@workshop{31th Annual Conference on Learning Theory}
 \jmlr@title{Adversarial Variational Optimization}{Adversarial Variational Optimization\\ of Non-Differentiable Simulators}
-\jmlr@author{\Name {Gilles Louppe} \Email {g.louppe@uliege.be}\\ \addr University of Li\`{e}ge, Belgium \AND \Name {Kyle Cranmer} \Email {kyle.cranmer@nyu.edu}\\ \addr New York University, USA }{\Name {Gilles Louppe} \Email {g.louppe@uliege.be}\\ \addr University of Li\`{e}ge, Belgium \AND \Name {Kyle Cranmer} \Email {kyle.cranmer@nyu.edu}\\ \addr New York University, USA }
 \newlabel{jmlrstart}{{}{1}{}{Doc-Start}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.0.1}}
 \citation{goodfellow2014generative}
-\citation{2011arXiv1106.4487W,2012arXiv1212.4507S}
 \citation{goodfellow2014generative}
-\citation{goodfellow2014generative}
+\citation{2017arXiv170104862A}
+\citation{2017arXiv170107875A}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Problem statement}{2}{section.0.2}}
 \newlabel{sec:problem}{{2}{2}{Problem statement}{section.0.2}{}}
 \newlabel{eqn:p_theta}{{1}{2}{Problem statement}{equation.0.2.1}{}}
@@ -36,8 +39,6 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3}Background}{2}{section.0.3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Generative adversarial networks}{2}{subsection.0.3.1}}
 \newlabel{sec:gans}{{3.1}{2}{Generative adversarial networks}{subsection.0.3.1}{}}
-\citation{2017arXiv170104862A}
-\citation{2017arXiv170107875A}
 \citation{2017arXiv170400028G}
 \citation{2012arXiv1212.4507S,staines2013optimization}
 \citation{2011arXiv1106.4487W}
@@ -50,13 +51,13 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Algorithm}{4}{subsection.0.4.1}}
 \newlabel{eqn:vo-ud}{{9}{4}{Algorithm}{equation.0.4.9}{}}
 \newlabel{eqn:vo-ug}{{10}{4}{Algorithm}{equation.0.4.10}{}}
+\newlabel{eqn:grad-ug-approx}{{11}{4}{Algorithm}{equation.0.4.11}{}}
 \citation{2014arXiv1412.6980K}
 \citation{2011arXiv1106.4487W}
 \citation{2017arXiv171100123G}
 \citation{buesingstochastic}
 \citation{2016arXiv161009033R}
 \citation{rubin1984}
-\newlabel{eqn:grad-ug-approx}{{11}{5}{Algorithm}{equation.0.4.11}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Parameter Point Estimates}{5}{subsection.0.4.2}}
 \newlabel{eq:marginal_likelihood}{{13}{5}{Parameter Point Estimates}{equation.0.4.13}{}}
 \newlabel{eqn:p_psi}{{14}{5}{Parameter Point Estimates}{equation.0.4.14}{}}
@@ -66,11 +67,11 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Univariate discrete data}{6}{subsection.0.5.1}}
 \citation{cranmer2015approximating}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Multidimensional continuous data}{7}{subsection.0.5.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Electron--positron annihilation}{7}{subsection.0.5.3}}
 \citation{Alwall:2011uj}
 \citation{Agostinelli:2002hh}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Multidimensional continuous data. ({\obsoletefontcs  {it}Left}) Density $q({\bm  {\theta }}|{\bm  {\psi }})$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance. Contours correspond to parameters ${\bm  {\theta }}$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q({\bm  {\theta }}|{\bm  {\psi }})$. ({\obsoletefontcs  {it}Right}) Density $q({\bm  {\theta }}|{\bm  {\psi }})$ after adversarial variational optimization. The proposal density correctly converges towards a distribution whose density concentrates around ${\bm  {\theta }}^* = (1, -1)$. }}{8}{figure.2}}
 \newlabel{fig:multi}{{2}{8}{Multidimensional continuous data. ({\it Left}) Density $q(\bftheta |\bfpsi )$ at the beginning of the procedure, for a proposal distribution initialized with zero mean and unit variance. Contours correspond to parameters $\bftheta $ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta |\bfpsi )$. ({\it Right}) Density $q(\bftheta |\bfpsi )$ after adversarial variational optimization. The proposal density correctly converges towards a distribution whose density concentrates around $\bftheta ^* = (1, -1)$}{figure.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Electron--positron annihilation}{8}{subsection.0.5.3}}
 \newlabel{eq:simple_weinberg}{{16}{8}{Electron--positron annihilation}{equation.0.5.16}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Electron--positron annihilation. ({\obsoletefontcs  {it}Top left}) Proposal distributions $q({\bm  {\theta }}|{\bm  {\psi }})$ after adversarial variational optimization. Contours correspond to parameters ${\bm  {\theta }}$ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q({\bm  {\theta }}|{\bm  {\psi }})$. The density of the proposal distribution concentrates in the neighborhood of ${\bm  {\theta }}^*$. ({\obsoletefontcs  {it}Top right}) Model distribution $q(\mathbf  {x}|{\bm  {\psi }})$ after training. Despite the width of the proposal distribution with respect to ${\bm  {\theta }}^*$, the synthetic data distribution matches the observed data. ({\obsoletefontcs  {it}Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses. }}{9}{figure.3}}
 \newlabel{fig:weinberg}{{3}{9}{Electron--positron annihilation. ({\it Top left}) Proposal distributions $q(\bftheta |\bfpsi )$ after adversarial variational optimization. Contours correspond to parameters $\bftheta $ within $1$-$2$-$3$ Mahalanobis distance units from the mean of $q(\bftheta |\bfpsi )$. The density of the proposal distribution concentrates in the neighborhood of $\bftheta ^*$. ({\it Top right}) Model distribution $\qxpsi $ after training. Despite the width of the proposal distribution with respect to $\bftheta ^*$, the synthetic data distribution matches the observed data. ({\it Bottom}) Empirical estimates of the variational upper bound $U_d$ as optimization progresses}{figure.3}{}}
@@ -102,11 +103,11 @@
 \bibcite{2017arXiv170107875A}{{4}{2017}{{{Arjovsky} et~al.}}{{{Arjovsky}, {Chintala}, and {Bottou}}}}
 \bibcite{beaumont2002approximate}{{5}{2002}{{Beaumont et~al.}}{{Beaumont, Zhang, and Balding}}}
 \bibcite{bernton2017inference}{{6}{2017}{{Bernton et~al.}}{{Bernton, Jacob, Gerber, and Robert}}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Summary}{12}{section.0.7}}
 \bibcite{buesingstochastic}{{7}{2016}{{Buesing et~al.}}{{Buesing, Weber, and Mohamed}}}
 \bibcite{cranmer2016experiments}{{8}{2016}{{Cranmer et~al.}}{{Cranmer, Pavez, Louppe, and Brooks}}}
 \bibcite{cranmer2015approximating}{{9}{2015}{{Cranmer et~al.}}{{Cranmer, Pavez, and Louppe}}}
 \bibcite{cuturi2013sinkhorn}{{10}{2013}{{Cuturi}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Summary}{12}{section.0.7}}
 \bibcite{donahue2016adversarial}{{11}{2016}{{Donahue et~al.}}{{Donahue, Kr{\"a}henb{\"u}hl, and Darrell}}}
 \bibcite{dumoulin2016adversarially}{{12}{2016}{{Dumoulin et~al.}}{{Dumoulin, Belghazi, Poole, Lamb, Arjovsky, Mastropietro, and Courville}}}
 \bibcite{2016arXiv161110242D}{{13}{2016}{{{Dutta} et~al.}}{{{Dutta}, {Corander}, {Kaski}, and {Gutmann}}}}
@@ -136,4 +137,4 @@
 \bibcite{2017arXiv170208896T}{{37}{2017}{{{Tran} et~al.}}{{{Tran}, {Ranganath}, and {Blei}}}}
 \bibcite{tran2017variational}{{38}{2017}{{Tran et~al.}}{{Tran, Nott, and Kohn}}}
 \bibcite{2011arXiv1106.4487W}{{39}{2011}{{{Wierstra} et~al.}}{{{Wierstra}, {Schaul}, {Glasmachers}, {Sun}, and {Schmidhuber}}}}
-\newlabel{jmlrend}{{7}{15}{end of Adversarial Variational Optimization}{section*.3}{}}
+\newlabel{jmlrend}{{7}{14}{end of Adversarial Variational Optimization}{section*.2}{}}

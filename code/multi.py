@@ -11,7 +11,7 @@ import theano
 
 from nn import glorot_uniform
 from nn import relu
-from nn import AdamOptimizer
+from nn import RmsPropOptimizer
 
 from proposals import make_gaussian_proposal
 from proposals import gaussian_draw
@@ -27,10 +27,10 @@ from scipy.spatial.distance import mahalanobis
 seed = 777
 rng = check_random_state(seed)
 
-batch_size = 50
-n_epochs = 3000+1
-lambda_gp = 0.01
-gamma = 1.0
+batch_size = 64
+n_epochs = 500+1
+lambda_reg = 20.
+gamma = 0.005
 
 true_theta = np.array([1.0, -1.0])
 make_plots = True
@@ -54,6 +54,7 @@ p0 = LinearTransform(Join(components=[
                                         Normal(mu=2, sigma=0.5)]),
                     Exponential(inverse_scale=3.0),
                     Exponential(inverse_scale=0.5)]), R)
+
 
 def simulator(theta, n_samples, random_state=None):
     A.set_value(theta[0])
@@ -95,7 +96,7 @@ def predict(X, params):
 grad_predict_critic = ag.elementwise_grad(predict)
 
 
-def loss_critic(params_critic, i, lambda_gp=lambda_gp, batch_size=batch_size):
+def loss_critic(params_critic, i, lambda_reg=lambda_reg, batch_size=batch_size):
     y_critic = np.zeros(batch_size)
     # y_critic[:batch_size // 2] = 0.0  # 0 == fake
     y_critic[batch_size // 2:] = 1.0
@@ -115,14 +116,19 @@ def loss_critic(params_critic, i, lambda_gp=lambda_gp, batch_size=batch_size):
     y_pred = predict(X, params_critic)
     l_wgan = np.mean(-y_critic * y_pred + (1. - y_critic) * y_pred)
 
-    # Gradient penalty
-    eps = rng.rand(batch_size // 2, 1)
-    _X_hat = eps * _X_obs + (1. - eps) * _X_gen
-    grad_Dx = grad_predict_critic(_X_hat, params_critic)
-    norms = np.sum(grad_Dx ** 2, axis=1) ** 0.5
-    l_gp = np.mean((norms - 1.0) ** 2.0)
+    # # Gradient penalty
+    # eps = rng.rand(batch_size // 2, 1)
+    # _X_hat = eps * _X_obs + (1. - eps) * _X_gen
+    # grad_Dx = grad_predict_critic(_X_hat, params_critic)
+    # norms = np.sum(grad_Dx ** 2, axis=1) ** 0.5
+    # l_gp = np.mean((norms - 1.0) ** 2.0)
 
-    return l_wgan + lambda_gp * l_gp
+    # Stable GAN penalty 'real'
+    grad_Dx = grad_predict_critic(_X_obs, params_critic)
+    norms = np.sum(grad_Dx ** 2, axis=1)
+    l_reg = np.mean(norms)
+
+    return l_wgan + lambda_reg * l_reg
 
 grad_loss_critic = ag.grad(loss_critic)
 
@@ -157,15 +163,15 @@ def approx_grad_u(params_proposal, i, gamma=gamma):
 
 # Training loop
 
-opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
-                           step_size=10e-4, b1=0.5, b2=0.9)
-opt_proposal = AdamOptimizer(approx_grad_u, params_proposal,
-                             step_size=10e-4, b1=0.5, b2=0.9)
+opt_critic = RmsPropOptimizer(grad_loss_critic, params_critic,
+                           step_size=10e-3)
+opt_proposal = RmsPropOptimizer(approx_grad_u, params_proposal,
+                             step_size=10e-3)
 
-print(predict(X_obs, params_critic).mean())
-opt_critic.step(1000)
-opt_critic.move_to(params_critic)
-print(predict(X_obs, params_critic).mean())
+# print(predict(X_obs, params_critic).mean())
+# opt_critic.step(1000)
+# opt_critic.move_to(params_critic)
+# print(predict(X_obs, params_critic).mean())
 
 for i in range(n_epochs):
     print(i, params_proposal)
@@ -175,26 +181,26 @@ for i in range(n_epochs):
     opt_proposal.move_to(params_proposal)
 
     # fit critic
-    opt_critic.step(5)
+    opt_critic.step(1)
     opt_critic.move_to(params_critic)
 
-    if i % 10 == 0:
-        # reset critic
-        params_critic = make_critic(n_features, 10, random_state=i)
-        opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
-                                   step_size=10e-4, b1=0.5, b2=0.9)
-        opt_critic.step(1000)
-        opt_critic.move_to(params_critic)
-
-        # log
-        print(predict(X_obs, params_critic).mean())
-
-        thetas = gaussian_draw(params_proposal,
-                               5000, random_state=i)
-        _X_gen = np.zeros((5000, n_features))
-        for j, theta in enumerate(thetas):
-            _X_gen[j, :] = simulator(theta, 1, random_state=j).ravel()
-        print(predict(_X_gen, params_critic).mean())
+    # if i % 10 == 0:
+    #     # # reset critic
+    #     # params_critic = make_critic(n_features, 10, random_state=i)
+    #     # opt_critic = AdamOptimizer(grad_loss_critic, params_critic,
+    #     #                            step_size=10e-4, b1=0.5, b2=0.9)
+    #     # opt_critic.step(1000)
+    #     # opt_critic.move_to(params_critic)
+    #
+    #     # log
+    #     print(predict(X_obs, params_critic).mean())
+    #
+    #     thetas = gaussian_draw(params_proposal,
+    #                            5000, random_state=i)
+    #     _X_gen = np.zeros((5000, n_features))
+    #     for j, theta in enumerate(thetas):
+    #         _X_gen[j, :] = simulator(theta, 1, random_state=j).ravel()
+    #     print(predict(_X_gen, params_critic).mean())
 
     # plot
     if make_plots:
