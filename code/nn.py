@@ -126,8 +126,8 @@ class RmsPropOptimizer:
                               self.counter,
                               self.unflatten(g))
 
-            self.avg_sq_grad = (self.avg_sq_grad *
-                                self.gamma + g**2 * (1 - self.gamma))
+            self.avg_sq_grad = (self.avg_sq_grad * self.gamma +
+                                g**2 * (1 - self.gamma))
             self.x = (self.x -
                       self.step_size * g / (np.sqrt(self.avg_sq_grad) +
                                             self.eps))

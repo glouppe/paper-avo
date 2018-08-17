@@ -19,10 +19,11 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-seed = 666
+seed = 777
 rng = check_random_state(seed)
 
-batch_size = 64  # was 32
+learning_rate = 10e-3
+batch_size = 16  # was 32
 n_epochs = 500+1  # was 500
 lambda_reg = 20.
 
@@ -53,7 +54,7 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0.0, 0.005]
+gammas = [0] #[0.0, 0.005]
 colors = ["C1", "C2"]
 
 
@@ -82,6 +83,7 @@ history = [{"gamma": gammas[i],
             "color": colors[i],
             "loss_d": [],
             "mse": [],
+            "logpdf_true": [],
             "params_proposal": make_gaussian_proposal(n_params,
                                                       mu=np.log(5),
                                                       log_sigma=0.0),
@@ -170,9 +172,9 @@ for state in history:
     #                              step_size=10e-3, b1=0.5, b2=0.99)
 
     opt_critic = RmsPropOptimizer(grad_loss_critic, state["params_critic"],
-                                  step_size=10e-3)  # was 10e-3
+                                  step_size=learning_rate)  # was 10e-3
     opt_proposal = RmsPropOptimizer(approx_grad_u, state["params_proposal"],
-                                    step_size=10e-3)  # was 10e-3
+                                    step_size=learning_rate)  # was 10e-3
 
     # print(predict(X_obs, state["params_critic"]).mean())
     # opt_critic.step(1000)
@@ -180,8 +182,6 @@ for state in history:
     # print(predict(X_obs, state["params_critic"]).mean())
 
     for i in range(n_epochs):
-        print(i, state["gamma"], state["params_proposal"], np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
-
         # fit simulator
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
@@ -215,7 +215,10 @@ for state in history:
         #     # print(predict(xs, state["params_critic"]).ravel())
         # else:
         #     state["loss_d"].append(state["loss_d"][-1])
-        state["mse"].append(np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
+        state["mse"].append(np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))  # not good, as this depends on the scale of the param values
+        state["logpdf_true"].append(-gaussian_logpdf(state["params_proposal"], true_theta))
+
+        print(i, state["gamma"], state["params_proposal"], state["mse"][-1], state["logpdf_true"][-1])
 
 
 # Plot
@@ -276,8 +279,9 @@ if make_plots:
         #          label=r"$-U_d\ \gamma=%.3f$" % state["gamma"],
         #          color=state["color"])
         plt.plot(xs,
-                 state["mse"],
-                 label=r"$MSE\ \gamma=%.3f$" % state["gamma"],
+                 #state["mse"],
+                 state["logpdf_true"],
+                 label=r"$-\log q(\theta^*|\psi)\ \gamma=%.3f$" % state["gamma"],
                  color=state["color"])
     plt.xlim(0, n_epochs)
     # plt.ylim(0, 5)
