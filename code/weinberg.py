@@ -18,7 +18,7 @@ from scipy.spatial.distance import mahalanobis
 
 # Global params
 
-seed = 777
+seed = 42
 rng = check_random_state(seed)
 
 learning_rate = 10e-4
