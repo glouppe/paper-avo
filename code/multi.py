@@ -24,13 +24,15 @@ from scipy.spatial.distance import mahalanobis
 
 # Global params
 
-seed = 777
+seed = 123
 rng = check_random_state(seed)
 
-batch_size = 64
-n_epochs = 500+1
+learning_rate = 10e-3
+lr_schedule_rate = np.inf
+batch_size = 32
+n_epochs = 1000+1
 lambda_reg = 20.
-gamma = 0.005
+gamma = 0.001
 
 true_theta = np.array([1.0, -1.0])
 make_plots = True
@@ -164,9 +166,9 @@ def approx_grad_u(params_proposal, i, gamma=gamma):
 # Training loop
 
 opt_critic = RmsPropOptimizer(grad_loss_critic, params_critic,
-                           step_size=10e-3)
+                           step_size=learning_rate)
 opt_proposal = RmsPropOptimizer(approx_grad_u, params_proposal,
-                             step_size=10e-3)
+                             step_size=learning_rate)
 
 # print(predict(X_obs, params_critic).mean())
 # opt_critic.step(1000)
@@ -179,6 +181,9 @@ for i in range(n_epochs):
     # fit simulator
     opt_proposal.step(1)
     opt_proposal.move_to(params_proposal)
+
+    if i > 0 and (i % lr_schedule_rate == 0):
+        opt_proposal.step_size *= 0.5
 
     # fit critic
     opt_critic.step(1)

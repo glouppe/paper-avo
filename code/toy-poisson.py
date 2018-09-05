@@ -19,13 +19,14 @@ from sklearn.utils import check_random_state
 
 # Global params
 
-seed = 777
+seed = 123
 rng = check_random_state(seed)
 
 learning_rate = 10e-3
-batch_size = 16  # was 32
+lr_schedule_rate = 100
+batch_size = 32  # was 32
 n_epochs = 500+1  # was 500
-lambda_reg = 20.
+lambda_reg = 25.
 
 true_theta = np.array([np.log(7)])
 make_plots = True
@@ -54,7 +55,7 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0] #[0.0, 0.005]
+gammas = [0.0, 0.001] #[0.0, 0.005]
 colors = ["C1", "C2"]
 
 
@@ -86,7 +87,7 @@ history = [{"gamma": gammas[i],
             "logpdf_true": [],
             "params_proposal": make_gaussian_proposal(n_params,
                                                       mu=np.log(5),
-                                                      log_sigma=0.0),
+                                                      log_sigma=np.log(0.1)),
             "params_critic": make_critic(n_features, 10, random_state=rng),
             "seed": rng.randint(10000)}
            for i in range(len(gammas))]
@@ -186,6 +187,9 @@ for state in history:
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
 
+        if i > 0 and (i % lr_schedule_rate == 0):
+            opt_proposal.step_size *= 0.5
+
         # fit critic
         opt_critic.step(1)
         opt_critic.move_to(state["params_critic"])
@@ -239,11 +243,11 @@ if make_plots:
                          for theta in thetas])
         plt.plot(thetas,
                  np.exp([l[0] for l in logp]),
-                 label=r"$q(\theta|\psi)\ \gamma=%.3f$" % state["gamma"],
+                 label=r"$q(\theta|\psi)$",
                  color=state["color"])
 
     plt.legend(loc="upper right")
-    plt.ylim(0, 6)
+    #plt.ylim(0, 6)
 
     # histograms
     ax2 = plt.subplot2grid((2, 2), (0, 1))
@@ -264,7 +268,7 @@ if make_plots:
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
-                   [r"$x \sim p(x|\psi)\ \gamma=%.3f$" % state["gamma"] for state in history],
+                   [r"$x \sim p(x|\psi)$" for state in history],
              color=["C0"] + [state["color"] for state in history],
              range=(0, 15), bins=16, normed=1)
     plt.legend(loc="upper right")
@@ -281,8 +285,9 @@ if make_plots:
         plt.plot(xs,
                  #state["mse"],
                  state["logpdf_true"],
-                 label=r"$-\log q(\theta^*|\psi)\ \gamma=%.3f$" % state["gamma"],
+                 label=r"$-\log q(\theta^*|\psi)$",
                  color=state["color"])
+
     plt.xlim(0, n_epochs)
     # plt.ylim(0, 5)
     plt.legend(loc="upper right")

@@ -11,17 +11,20 @@ from proposals import make_gaussian_proposal
 from proposals import gaussian_draw
 from proposals import grad_gaussian_logpdf
 from proposals import grad_gaussian_entropy
+from proposals import gaussian_logpdf
 
 from sklearn.utils import check_random_state
 from scipy.spatial.distance import mahalanobis
 
 # Global params
 
-seed = 123
+seed = 777
 rng = check_random_state(seed)
 
-batch_size = 64
-n_epochs = 5000+1
+learning_rate = 10e-4
+lr_schedule_rate = np.inf
+batch_size = 32
+n_epochs = 1000+1
 lambda_reg = 20.
 
 true_theta = np.array([(42.0-40) / (50-40),
@@ -61,7 +64,7 @@ def rej_sample_costheta(n_samples, theta, rng):
         ntrials = ntrials+1
         xprop = rng.uniform(-1, 1)
         ycut = rng.rand()
-        yprop = diffxsec(xprop, sqrtshalf, gf)/maxval
+        yprop = diffxsec(xprop, sqrtshalf, gf)
         if yprop/maxval < ycut:
             continue
         samples.append(xprop)
@@ -82,7 +85,7 @@ n_features = X_obs.shape[1]
 
 # Critic
 
-gammas = [0.005]
+gammas = [0.001]
 colors = ["C1"]
 
 
@@ -113,9 +116,10 @@ history = [{"gamma": gammas[i],
             "color": colors[i],
             "loss_d": [],
             "mse": [],
+            "logpdf_true": [],
             "params_proposal": make_gaussian_proposal(n_params,
                                                       mu=0.5,
-                                                      log_sigma=0),  # was np.log(0.1)
+                                                      log_sigma=np.log(0.1)),  # was np.log(0.1)
             "params_critic": make_critic(n_features, 50, random_state=rng)}
            for i in range(len(gammas))]
 
@@ -196,9 +200,9 @@ for state in history:
     # Training loop
     init_critic = copy.copy(state["params_critic"])
     opt_critic = RmsPropOptimizer(grad_loss_critic, state["params_critic"],
-                               step_size=10e-4)
+                               step_size=learning_rate)
     opt_proposal = RmsPropOptimizer(approx_grad_u, state["params_proposal"],
-                                 step_size=10e-4)
+                                 step_size=learning_rate)
 
     # print(predict(X_obs, state["params_critic"]).mean())
     # opt_critic.step(1000)
@@ -209,6 +213,9 @@ for state in history:
         # fit simulator
         opt_proposal.step(1)
         opt_proposal.move_to(state["params_proposal"])
+
+        if i > 0 and (i % lr_schedule_rate == 0):
+            opt_proposal.step_size *= 0.5
 
         # fit critic
         opt_critic.step(1)
@@ -238,6 +245,7 @@ for state in history:
         # else:
         #     state["loss_d"].append(state["loss_d"][-1])
         state["mse"].append(np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
+        state["logpdf_true"].append(-gaussian_logpdf(state["params_proposal"], true_theta))
 
         print(i, state["gamma"], state["params_proposal"], np.mean((true_theta - state["params_proposal"]["mu"]) ** 2))
 
@@ -310,9 +318,13 @@ if make_plots:
     xs = np.arange(n_epochs)
 
     for state in history:
+        # plt.plot(xs,
+        #          state["mse"],
+        #          label=r"$-U_d\ \gamma=%d$" % state["gamma"],
+        #          color=state["color"])
         plt.plot(xs,
-                 state["mse"],
-                 label=r"$-U_d\ \gamma=%d$" % state["gamma"],
+                 state["logpdf_true"],
+                 label=r"$-\log q(\theta^*|\psi)$",
                  color=state["color"])
     plt.xlim(0, n_epochs-1)
     plt.legend(loc="upper right")
