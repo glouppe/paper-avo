@@ -1,3 +1,6 @@
+from contextlib import suppress
+import os
+
 import autograd as ag
 import autograd.numpy as np
 import matplotlib.pyplot as plt
@@ -191,20 +194,20 @@ if make_plots:
     plt.xlim(0, 15)
     plt.ylim(0, 0.25)
 
-    Xs = [X_obs]
+    Xs = [X_obs.reshape(-1)]
 
     for state in history:
         thetas = gaussian_draw(state["params_proposal"], 20000, random_state=rng)
         X_ = np.zeros((len(thetas), 1))
         for j, theta in enumerate(thetas):
             X_[j, :] = simulator(theta, 1).ravel()
-        Xs.append(X_)
+        Xs.append(X_.reshape(-1))
 
     plt.hist(Xs, histtype="bar",
              label=[r"$x \sim p_r(x)$"] +
                    [r"$x \sim p(x|\psi)\ \gamma=%d$" % state["gamma"] for state in history],
              color=["C0"] + [state["color"] for state in history],
-             range=(0, 15), bins=16, normed=1)
+             range=(0, 15), bins=16, density=True)
     plt.legend(loc="upper right")
 
     # U_g
@@ -221,6 +224,8 @@ if make_plots:
     plt.legend(loc="upper right")
 
     plt.tight_layout()
+    with suppress(FileExistsError):
+        os.makedirs("figs")
     plt.savefig("figs/poisson-%d.pdf" % seed)
 
     plt.close()
